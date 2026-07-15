@@ -1,5 +1,3 @@
-/* eslint-disable no-eval */
-
 import CodeMirror from 'codemirror-minified/lib/codemirror'
 import 'codemirror-minified/mode/javascript/javascript'
 import 'codemirror-minified/addon/hint/javascript-hint'
@@ -10,7 +8,7 @@ import 'codemirror-minified/addon/comment/comment'
 import EventEmitter from 'nanobus'
 import keymaps from './keymaps.js'
 import Mutator from './randomizer/Mutator.js'
-import beautify from 'js-beautify'
+import { evaluateDocument } from './evaluate-document.js'
 
 var isShowing = true
 
@@ -35,9 +33,9 @@ export default class Editor extends EventEmitter {
     // }
     Object.entries(keymaps).forEach(([key, e]) => extraKeys[key] = () => {
       if(e == 'editor: eval block') {
-        this.emit('repl: eval', this.getCurrentBlock().text)
+        evaluateDocument(this, () => this.getCurrentBlock())
       } else if (e == 'editor: eval line') {
-        this.emit('repl: eval', this.getLine())
+        evaluateDocument(this, () => this.getLine())
       // } else if (e == 'editor: eval all') {
       //   const code = this.cm.getValue()
       //   this.flashCode()
@@ -80,7 +78,7 @@ export default class Editor extends EventEmitter {
   }
 
   clear() {
-    this.cm.setValue('\n \n // Type some code on a new line (such as "osc().out()"), and press CTRL+shift+enter')
+    this.cm.setValue('search hydra\n\nhydraOsc().write(o0)')
   }
 
   setValue(val) {
@@ -92,8 +90,17 @@ export default class Editor extends EventEmitter {
   }
 
   formatCode() {
-    const formatted = beautify(this.cm.getValue(), { indent_size: 2, "break_chained_methods": true, "indent_with_tabs": true})
-    this.cm.setValue(formatted)
+    const engine = window.hydraSynth?.hydraEngine
+    if (!engine?.parse || !engine?.unparse) {
+      window._reportError?.(new Error('Noisemaker parser is not ready'))
+      return
+    }
+
+    try {
+      this.cm.setValue(engine.unparse(engine.parse(this.cm.getValue())))
+    } catch (error) {
+      window._reportError?.(error)
+    }
   }
 
   addCodeToTop(code = '') {
@@ -179,4 +186,3 @@ ${current}
   }
 
 }
-

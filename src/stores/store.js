@@ -1,4 +1,4 @@
-import repl from './repl-v2.js'
+import repl, { formatError } from './repl-v2.js'
 // console.log('ENVIRONMENT IS', process.env.NODE_ENV)
 
 export default function store(state, emitter) {
@@ -13,7 +13,7 @@ export default function store(state, emitter) {
   state.serverURL = SERVER_URL !== undefined ? SERVER_URL : null
 
   window._reportError = (err) => {
-    state.errorMessage = err.message
+    state.errorMessage = formatError(err)
     state.isError = true
     emitter.emit('render')
   }
@@ -35,14 +35,14 @@ export default function store(state, emitter) {
   })
 
   emitter.on('screencap', () => {
-    screencap()
+    state.hydra.downloadFrame()
     const editor = state.editor.editor
     const text = editor.getValue()
     const data = new Blob([text], { type: 'text/plain' });
     const a = document.createElement('a')
     a.style.display = 'none'
     let d = new Date()
-    a.download = `hydra-${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.js`
+    a.download = `hydra-${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.hydra`
     a.href = URL.createObjectURL(data)
     a.click()
 
@@ -53,8 +53,7 @@ export default function store(state, emitter) {
 
   function clearAll() {
     const editor = state.editor.editor
-    hush()
-    speed = 1
+    state.hydra.clear().catch(window._reportError)
     emitter.emit('gallery: clear')
     editor.clear()
   }
@@ -116,4 +115,3 @@ export default function store(state, emitter) {
 
   // })
 }
-

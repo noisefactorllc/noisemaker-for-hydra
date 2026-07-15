@@ -2,8 +2,8 @@ import Gallery from './gallery.js'
 let sketches
 
 export default function galleryStore(state, emitter) {
-    emitter.on('DOMContentLoaded', function () {
-   
+    emitter.on('hydra loaded', function () {
+
         sketches = new Gallery((code, sketchFromURL) => {
           emitter.emit('load and eval code', code, false)
           if(sketchFromURL) {
@@ -15,7 +15,7 @@ export default function galleryStore(state, emitter) {
           // @todo create gallery store
         //  console.warn('gallery callback not let implemented')
         }, state, emitter)
-    
+
         state.gallery = sketches
       })
 
@@ -43,7 +43,7 @@ export default function galleryStore(state, emitter) {
         emitter.emit('repl: eval', editorText, (code, error) => {
             if (!error) {
                 showConfirmation((name) => {
-                  sketches.shareSketch(editorText, state.hydra.hydra, name)
+                  sketches.shareSketch(editorText, state.hydra, name)
                 }, () => { })
               } else {
                 console.warn(error)

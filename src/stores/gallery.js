@@ -44,9 +44,6 @@ export default class Gallery {
 
   
   setSketchFromURL(path = window.location.search, callback) {
-    hush()
-    render(o0)
-
     let searchParams = new URLSearchParams(path)
     this.searchParams = searchParams
     let base64Code = searchParams.get('code')
@@ -183,29 +180,17 @@ ${code}
   }
 
   setRandomSketch() {
-    // if there are sketches, set code from sketch, otherwise generate random
-    //console.log("examples length", this.examples, this.exampleIndex)
-    if (this.examples.length > 0) {
-      let index
-      // if(this.exampleIndex === null) {
-      index = Math.floor(Math.random() * this.examples.length)
-      while (index === this.exampleIndex) {
-        index = Math.floor(Math.random() * this.examples.length)
-      }
-      // } else {
-      //   index = this.exampleIndex +1
-      //   if(index >= this.examples.length) index = 0
-      // }
-      this.exampleIndex = index
-      //  console.log('example is', this.examples[rand])
-      this.setSketch(this.examples[index])
-    } else {
-      var startString = 'osc(' + 2 + Math.floor(Math.pow(10, Math.random() * 2)) + ')'
-      startString += '.color(' + Math.random().toFixed(2) + ',' + Math.random().toFixed(2) + ',' + Math.random().toFixed(2) + ')'
-      startString += '.rotate(' + Math.random().toFixed(2) + ')'
-      startString += '.out(o0)'
-      this.code = startString
-    }
+    const frequency = 2 + Math.floor(Math.pow(10, Math.random() * 2))
+    const red = Math.random().toFixed(2)
+    const green = Math.random().toFixed(2)
+    const blue = Math.random().toFixed(2)
+    const angle = Math.random().toFixed(2)
+    this.current = null
+    this.code = `search hydra
+hydraOsc(frequency: ${frequency}, sync: 0.1, offset: 0)
+  .color(r: ${red}, g: ${green}, b: ${blue}, a: 1)
+  .rotate(angle: ${angle}, speed: 0)
+  .write(o0)`
   }
 
   // shares via twitter
@@ -305,4 +290,3 @@ ${code}
     return sketches[0]
   }
 }
-
