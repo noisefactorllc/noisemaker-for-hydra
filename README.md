@@ -1,3 +1,8 @@
+<!-- repo-hero -->
+<a href="https://noisemaker.app/"><img src="docs/hero.jpg" alt="Noisemaker for Hydra" width="100%"></a>
+
+<sub>Open source from <a href="https://noisefactor.io">Noise Factor</a> &middot; <a href="https://github.com/noisefactorllc">more projects</a></sub>
+
 # Noisemaker for Hydra
 
 Noisemaker for Hydra is an experimental demo fork of the Hydra web editor, allowing mixed native use of Hydra and [Noisemaker](https://noisemaker.app/) in the same programs. The Noisemaker engine takes Hydra from WebGL 1 to 2, adds a WebGPU render target, and mixes in a library of 100+ effects including stateful simulations and particle systems.
