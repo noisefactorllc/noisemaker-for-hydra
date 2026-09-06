@@ -5,9 +5,9 @@
 
 # Noisemaker for Hydra
 
-Noisemaker for Hydra is an experimental demo fork of the Hydra web editor, allowing mixed native use of Hydra and [Noisemaker](https://noisemaker.app/) in the same programs. The Noisemaker engine takes Hydra from WebGL 1 to 2, adds a WebGPU render target, and mixes in a library of 100+ effects including stateful simulations and particle systems.
+Noisemaker for Hydra is an experimental demo fork of the Hydra web editor. It allows mixed native use of Hydra and [Noisemaker](https://noisemaker.app/) in the same programs. The Noisemaker engine takes Hydra from WebGL 1 to 2, adds a WebGPU render target, and mixes in a library of 100+ effects including stateful simulations and particle systems.
 
-To accomplish this, Hydra's renderer and editor were surgically swapped out, and Hydra's built-in effects were ported to Noisemaker definition format. Noisemaker programs are written in Polymorphic DSL, a similar but more verbose live coding dialect.
+The fork replaces Hydra's renderer and editor. It ports Hydra's built-in effects to Noisemaker definition format. Noisemaker programs are written in Polymorphic DSL, a similar but more verbose live coding dialect.
 
 This is intended to be an interesting short-lived tech demo only, illustrating how Noisemaker can be dropped in to other projects.
 
@@ -56,7 +56,7 @@ The test suite covers editor evaluation, Noisemaker AST mutation, renderer lifec
 
 ## Engine bundle
 
-The browser loads the companion engine bundle from `public/_engine/hydra-synth.js`. The historical bundle filename is retained as an internal runtime path; the repository and package are named `noisemaker-for-hydra` and `noisemaker-for-hydra-synth`.
+The browser loads the companion engine bundle from `public/_engine/hydra-synth.js`. The historical bundle filename is retained as an internal runtime path. The repository and package are named `noisemaker-for-hydra` and `noisemaker-for-hydra-synth`.
 
 ## Upstream
 
