@@ -1,4 +1,5 @@
 import UndoStack from './UndoStack.js'
+import { parseProgram, unparseProgram } from '../../../lib/noisemaker-program.mjs'
 
 function collectNumbers(value, result = []) {
   if (!value || typeof value !== 'object') return result
@@ -15,7 +16,7 @@ function collectNumbers(value, result = []) {
 function runtime() {
   const renderer = window.hydraSynth
   const engine = renderer?.hydraEngine
-  if (!renderer || !engine?.parse || !engine?.unparse) {
+  if (!renderer || !engine?.lex || !engine?.parse || !engine?.validate || !engine?.unparse || !engine?.getEffect) {
     throw new Error('Noisemaker parser is not ready')
   }
   return { renderer, engine }
@@ -47,7 +48,7 @@ export default class Mutator {
 
     try {
       const { renderer, engine } = runtime()
-      const ast = engine.parse(source)
+      const ast = parseProgram(engine, source)
       const numbers = collectNumbers(ast)
       if (numbers.length === 0) return source
 
@@ -63,7 +64,7 @@ export default class Mutator {
         this.initialVector[index]
       )
 
-      const updated = engine.unparse(ast)
+      const updated = unparseProgram(engine, ast)
       this.editor.cm.setValue(updated)
       compile(renderer, updated)
       return updated

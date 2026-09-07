@@ -9,6 +9,7 @@ import EventEmitter from 'nanobus'
 import keymaps from './keymaps.js'
 import Mutator from './randomizer/Mutator.js'
 import { evaluateDocument } from './evaluate-document.js'
+import { formatProgram } from '../../lib/noisemaker-program.mjs'
 
 var isShowing = true
 
@@ -91,13 +92,13 @@ export default class Editor extends EventEmitter {
 
   formatCode() {
     const engine = window.hydraSynth?.hydraEngine
-    if (!engine?.parse || !engine?.unparse) {
+    if (!engine?.lex || !engine?.parse || !engine?.validate || !engine?.unparse || !engine?.getEffect) {
       window._reportError?.(new Error('Noisemaker parser is not ready'))
       return
     }
 
     try {
-      this.cm.setValue(engine.unparse(engine.parse(this.cm.getValue())))
+      this.cm.setValue(formatProgram(engine, this.cm.getValue()))
     } catch (error) {
       window._reportError?.(error)
     }

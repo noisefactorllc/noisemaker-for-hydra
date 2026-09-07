@@ -15,15 +15,25 @@ test('mutator uses the Noisemaker AST and recompiles mutated and restored source
     _reportError: error => errors.push(error),
     hydraSynth: {
       hydraEngine: {
-        parse(source) {
+        lex(source) {
           assert.equal(source, 'hydraOsc(2).write(o0)')
+          return [{ type: 'source', value: source }]
+        },
+        parse(tokens) {
+          assert.deepEqual(tokens, [{ type: 'source', value: 'hydraOsc(2).write(o0)' }])
           return {
             type: 'Program',
             body: [{ type: 'Number', value: 2, loc: { start: 9, end: 10 } }]
           }
         },
-        unparse(ast) {
-          return `hydraOsc(${ast.body[0].value}).write(o0)`
+        validate(ast) {
+          return { plans: [{ value: ast.body[0].value }] }
+        },
+        getEffect() { return null },
+        unparse(compiled, overrides, options) {
+          assert.deepEqual(overrides, {})
+          assert.equal(typeof options.getEffectDef, 'function')
+          return `hydraOsc(${compiled.plans[0].value}).write(o0)`
         }
       },
       compile(source) {

@@ -57,7 +57,7 @@ test('active editor formats and clears with native Noisemaker syntax', () => {
   const source = readFileSync('src/views/editor/editor.js', 'utf8')
 
   assert.doesNotMatch(source, /js-beautify/)
-  assert.match(source, /engine\.unparse\(engine\.parse\(this\.cm\.getValue\(\)\)\)/)
+  assert.match(source, /formatProgram\(engine, this\.cm\.getValue\(\)\)/)
   assert.match(source, /search hydra\\n\\nhydraOsc\(\)\.write\(o0\)/)
   assert.doesNotMatch(source, /osc\(\)\.out\(\)/)
 })
