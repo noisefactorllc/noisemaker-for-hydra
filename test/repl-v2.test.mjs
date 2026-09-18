@@ -15,6 +15,12 @@ async function loadRepl() {
   return import(url)
 }
 
+const originalWindow = global.window
+
+test.afterEach(() => {
+  global.window = originalWindow
+})
+
 test('forwards the complete editor document unchanged to one compiler', async () => {
   const repl = await loadRepl()
   const compiled = []
@@ -33,4 +39,66 @@ test('forwards the complete editor document unchanged to one compiler', async ()
     codeString: source,
     errorMessage: ''
   })
+})
+
+test('repl.eval returns error when engine is not ready', async () => {
+  const repl = await loadRepl()
+  global.window = {}
+  const info = await new Promise(resolve => repl.default.eval('search hydra', resolve))
+  assert.equal(info.isError, true)
+  assert.equal(info.errorMessage, 'engine not ready — try again in a moment')
+})
+
+test('repl.eval formats compiler errors containing diagnostics', async () => {
+  const repl = await loadRepl()
+  const err = new Error('Compilation failed with 1 error(s)')
+  err.diagnostics = [{ message: "Unknown effect: 'solid'", location: { line: 2, column: 5 } }]
+  global.window = {
+    hydraSynth: {
+      async compile() { throw err }
+    }
+  }
+
+  const info = await new Promise(resolve => repl.default.eval('solid()', resolve))
+  assert.equal(info.isError, true)
+  assert.equal(info.errorMessage, "Unknown effect: 'solid' (line 2, col 5)")
+})
+
+test('formatError formats strings, nulls, and standard Error instances', async () => {
+  const { formatError } = await loadRepl()
+  assert.equal(formatError(null), 'unknown error')
+  assert.equal(formatError(undefined), 'unknown error')
+  assert.equal(formatError('plain message'), 'plain message')
+  assert.equal(formatError(new Error('runtime failure')), 'runtime failure')
+})
+
+test('formatError prioritizes diagnostics and errors on Error instances', async () => {
+  const { formatError } = await loadRepl()
+  const errWithDiags = new Error('Compilation failed with 2 error(s)')
+  errWithDiags.diagnostics = [
+    { message: "Unknown effect: 'foo'", location: { line: 1, col: 3 } },
+    { message: "Unterminated string", location: { start: { line: 4, column: 10 } } }
+  ]
+  assert.equal(
+    formatError(errWithDiags),
+    "Unknown effect: 'foo' (line 1, col 3); Unterminated string (line 4, col 10)"
+  )
+
+  const errWithErrors = new Error('Failed to expand')
+  errWithErrors.errors = [{ message: 'Pass cycle detected' }]
+  assert.equal(formatError(errWithErrors), 'Pass cycle detected')
+})
+
+test('formatError handles plain objects with diagnostics or error properties', async () => {
+  const { formatError } = await loadRepl()
+  assert.equal(
+    formatError({ diagnostics: [{ message: 'Syntax error', location: { row: 3, col: 8 } }] }),
+    'Syntax error (line 3, col 8)'
+  )
+  assert.equal(
+    formatError({ diagnostics: [{ message: 'Unexpected token', loc: { line: 5, column: 12 } }] }),
+    'Unexpected token (line 5, col 12)'
+  )
+  assert.equal(formatError({ error: 'custom error message' }), 'custom error message')
+  assert.equal(formatError({ code: 'ERR_ABORTED' }), '{"code":"ERR_ABORTED"}')
 })

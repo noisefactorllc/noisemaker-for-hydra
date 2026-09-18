@@ -1,7 +1,6 @@
 export function formatError(err) {
   if (err == null) return 'unknown error'
   if (typeof err === 'string') return err
-  if (err instanceof Error) return err.message || err.toString()
   if (typeof err === 'object') {
     if (Array.isArray(err.diagnostics) && err.diagnostics.length > 0) {
       return err.diagnostics.map(formatDiagnostic).join('; ')
@@ -9,6 +8,7 @@ export function formatError(err) {
     if (Array.isArray(err.errors) && err.errors.length > 0) {
       return err.errors.map(formatDiagnostic).join('; ') || err.code || 'expansion failed'
     }
+    if (err instanceof Error) return err.message || err.toString()
     if (typeof err.message === 'string' && err.message.length > 0) return err.message
     if (typeof err.error === 'string') return err.error
     try {
@@ -30,8 +30,9 @@ function formatDiagnostic(diagnostic) {
   if (typeof diagnostic.message === 'string' && diagnostic.message.length > 0) {
     parts.push(diagnostic.message)
   }
-  if (diagnostic.location) {
-    const location = diagnostic.location
+  const rawLoc = diagnostic.location || diagnostic.loc
+  if (rawLoc) {
+    const location = rawLoc.start || rawLoc
     const line = location.line != null ? location.line : location.row
     const column = location.col != null ? location.col : location.column
     if (line != null) {

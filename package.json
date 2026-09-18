@@ -1,6 +1,7 @@
 {
   "name": "noisemaker-for-hydra",
   "version": "1.5.3",
+  "type": "module",
   "description": "Hydra live-coding editor powered exclusively by the Noisemaker shader engine",
   "main": "index.js",
   "scripts": {
