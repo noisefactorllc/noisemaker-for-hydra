@@ -41,6 +41,26 @@ test('forwards the complete editor document unchanged to one compiler', async ()
   })
 })
 
+test('forwards chained variable alias syntax through repl.eval to compiler', async () => {
+  const repl = await loadRepl()
+  const compiled = []
+  global.window = {
+    hydraSynth: {
+      async compile(source) { compiled.push(source) }
+    }
+  }
+  const source = 'search hydra, synth, filter\nlet eff = rotate(1, 0.1)\nnoise().eff().write(o0)\nrender(o0)'
+
+  const info = await new Promise(resolve => repl.default.eval(source, resolve))
+
+  assert.deepEqual(compiled, [source])
+  assert.deepEqual(info, {
+    isError: false,
+    codeString: source,
+    errorMessage: ''
+  })
+})
+
 test('repl.eval returns error when engine is not ready', async () => {
   const repl = await loadRepl()
   global.window = {}

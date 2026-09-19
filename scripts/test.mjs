@@ -52,6 +52,11 @@ try {
       name: 'default DSL',
       path: '/',
       expected: ['search hydra', '.write(o0)']
+    },
+    {
+      name: 'chained variable alias DSL',
+      path: `/?code=${encodeURIComponent(Buffer.from(encodeURIComponent('search hydra\nlet eff = rotate(angle: 0.1)\ngradient().eff().write(o0)')).toString('base64'))}`,
+      expected: ['search hydra', 'let eff = rotate(angle: 0.1)', 'gradient().eff().write(o0)']
     }
   ]
 
