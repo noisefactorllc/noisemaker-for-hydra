@@ -101,6 +101,26 @@ test('forwards adjust filter expressions through repl.eval to compiler', async (
   })
 })
 
+test('forwards output surface boundary expressions through repl.eval to compiler', async () => {
+  const repl = await loadRepl()
+  const compiled = []
+  global.window = {
+    hydraSynth: {
+      async compile(source) { compiled.push(source) }
+    }
+  }
+  const source = 'search hydra, synth\nread(o0).write(o7)\nrender(o7)'
+
+  const info = await new Promise(resolve => repl.default.eval(source, resolve))
+
+  assert.deepEqual(compiled, [source])
+  assert.deepEqual(info, {
+    isError: false,
+    codeString: source,
+    errorMessage: ''
+  })
+})
+
 test('repl.eval returns error when engine is not ready', async () => {
   const repl = await loadRepl()
   global.window = {}
@@ -122,6 +142,20 @@ test('repl.eval formats compiler errors containing diagnostics', async () => {
   const info = await new Promise(resolve => repl.default.eval('solid()', resolve))
   assert.equal(info.isError, true)
   assert.equal(info.errorMessage, "Unknown effect: 'solid' (line 2, col 5)")
+})
+
+test('repl.eval formats compiler syntax errors for out-of-range output surfaces', async () => {
+  const repl = await loadRepl()
+  const err = new SyntaxError("Output surface reference 'o8' is out of range; expected o0-o7 at line 1 col 15")
+  global.window = {
+    hydraSynth: {
+      async compile() { throw err }
+    }
+  }
+
+  const info = await new Promise(resolve => repl.default.eval('noise().write(o8)', resolve))
+  assert.equal(info.isError, true)
+  assert.equal(info.errorMessage, "Output surface reference 'o8' is out of range; expected o0-o7 at line 1 col 15")
 })
 
 test('formatError formats strings, nulls, and standard Error instances', async () => {

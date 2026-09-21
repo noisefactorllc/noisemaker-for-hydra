@@ -67,6 +67,11 @@ try {
       name: 'adjust filter DSL',
       path: `/?code=${encodeURIComponent(Buffer.from(encodeURIComponent('search hydra, synth, filter\ngradient().adjust(contrast: 1.2, brightness: 0.1).write(o0)')).toString('base64'))}`,
       expected: ['search hydra', 'gradient().adjust(contrast: 1.2, brightness: 0.1).write(o0)']
+    },
+    {
+      name: 'output surface boundary DSL',
+      path: `/?code=${encodeURIComponent(Buffer.from(encodeURIComponent('search hydra, synth\ngradient(speed: 0).write(o7)\nrender(o7)')).toString('base64'))}`,
+      expected: ['search hydra', 'gradient(speed: 0).write(o7)', 'render(o7)']
     }
   ]
 
@@ -82,11 +87,16 @@ try {
     const knownFailures = [
       'engine not ready',
       'ReferenceError',
+      'SyntaxError',
       'Unknown effect',
       'Unknown argument',
-      'Recompilation failed'
+      'Recompilation failed',
+      'out of range'
     ]
     const failures = knownFailures.filter(message => text.includes(message))
+    if (dom.includes('log-error')) {
+      failures.push('log-error')
+    }
 
     if (!sourceLoaded || failures.length > 0 || result.status !== 0) {
       console.error(`[editor-test] FAIL ${testCase.name}`)
