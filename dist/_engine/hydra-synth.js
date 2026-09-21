@@ -1685,7 +1685,7 @@ void main() {
     backend.copyTexture(state.read, name);
     return { name, surface };
   }
-  function reconcileSurfaceFormats(renderer, outputSurfaces, preserveSurfaces = [], retainSurfaces = []) {
+  function reconcileSurfaceFormats(renderer, outputSurfaces, preserveSurfaces = [], retainSurfaces = [], preBackups = []) {
     const pipeline = renderer.pipeline;
     if (!pipeline?.graph?.textures || !pipeline.backend?.textures || !pipeline.surfaces) return;
     const promoted = new Set(outputSurfaces);
@@ -1711,7 +1711,7 @@ void main() {
       }
     }
     let recreate = false;
-    const backups = [];
+    const backups = [...preBackups];
     for (const surface of touched) {
       const state = pipeline.surfaces.get(surface);
       if (!state) continue;
@@ -1725,7 +1725,9 @@ void main() {
         current.set(surface, retained);
         continue;
       }
-      if (preserve.has(surface)) backups.push(backupSurfaceRead(pipeline, surface));
+      if (preserve.has(surface) && !backups.some((b) => b.surface === surface)) {
+        backups.push(backupSurfaceRead(pipeline, surface));
+      }
       pipeline.backend.destroyTexture(state.read);
       pipeline.backend.destroyTexture(state.write);
       pipeline.surfaces.delete(surface);
@@ -1738,6 +1740,17 @@ void main() {
           const state = pipeline.surfaces.get(backup.surface);
           if (!state) throw new Error(`Hydra surface '${backup.surface}' was not recreated`);
           pipeline.backend.copyTexture(backup.name, state.read);
+        }
+      } finally {
+        for (const backup of backups) pipeline.backend.destroyTexture(backup.name);
+      }
+    } else if (backups.length > 0) {
+      try {
+        for (const backup of backups) {
+          const state = pipeline.surfaces.get(backup.surface);
+          if (state) {
+            pipeline.backend.copyTexture(backup.name, state.read);
+          }
         }
       } finally {
         for (const backup of backups) pipeline.backend.destroyTexture(backup.name);
@@ -1772,20 +1785,103 @@ void main() {
     prototype.compile = async function compileWithHydraParity(source, options = {}) {
       const compiled = engine.compile(source);
       const hydra = buildHydraShaderOverrides(compiled);
-      const pipeline = await compile.call(this, source, {
-        ...options,
-        shaderOverrides: mergeShaderOverrides(
-          hydra.shaderOverrides,
-          options.shaderOverrides
-        )
-      });
-      if (!pipeline || this.pipeline !== pipeline) return pipeline;
+      const previous = PROMOTED_SURFACES.get(this) || /* @__PURE__ */ new Map();
+      const promoted = new Set(hydra.outputSurfaces);
+      const retain = new Set(hydra.retainSurfaces);
+      const preserve = new Set(hydra.preserveSurfaces);
+      const current = /* @__PURE__ */ new Map();
+      const existingPipeline = this.pipeline;
+      const isWebGPU = existingPipeline?.backend?.getName?.() === "WebGPU";
+      for (const surface of promoted) {
+        if (isWebGPU && preserve.has(surface)) {
+          const state = existingPipeline?.surfaces?.get(surface);
+          const actual = state && existingPipeline?.backend?.textures?.get(state.read)?.format;
+          if (actual && actual !== HYDRA_SURFACE_SPEC.format) {
+            current.set(surface, { ...HYDRA_SURFACE_SPEC, format: actual });
+            continue;
+          }
+        }
+        current.set(surface, HYDRA_SURFACE_SPEC);
+      }
+      for (const surface of retain) {
+        if (current.has(surface) || !previous.has(surface)) continue;
+        current.set(surface, previous.get(surface));
+      }
+      const backups = [];
+      let restoreCreateSurfaces = null;
+      if (existingPipeline) {
+        if (existingPipeline.surfaces && existingPipeline.backend?.textures) {
+          for (const surface of existingPipeline.surfaces.keys()) {
+            const state = existingPipeline.surfaces.get(surface);
+            if (!state) continue;
+            const actual = existingPipeline.backend.textures.get(state.read)?.format;
+            const desired = current.get(surface)?.format || "rgba16f";
+            if (actual && actual !== desired && preserve.has(surface)) {
+              backups.push(backupSurfaceRead(existingPipeline, surface));
+            }
+          }
+        }
+        const origCreateSurfaces = existingPipeline.createSurfaces;
+        if (typeof origCreateSurfaces === "function") {
+          const hadOwnProperty = Object.prototype.hasOwnProperty.call(existingPipeline, "createSurfaces");
+          const createSurfacesWithHydraParity = function() {
+            if (this.graph?.textures) {
+              for (const [surface, spec] of current) {
+                this.graph.textures.set(`global_${surface}`, spec);
+              }
+            }
+            return origCreateSurfaces.call(this);
+          };
+          existingPipeline.createSurfaces = createSurfacesWithHydraParity;
+          restoreCreateSurfaces = () => {
+            if (existingPipeline.createSurfaces === createSurfacesWithHydraParity) {
+              if (hadOwnProperty) {
+                existingPipeline.createSurfaces = origCreateSurfaces;
+              } else {
+                delete existingPipeline.createSurfaces;
+              }
+            }
+          };
+        }
+      }
+      let pipeline;
+      let succeeded = false;
+      try {
+        pipeline = await compile.call(this, source, {
+          ...options,
+          shaderOverrides: mergeShaderOverrides(
+            hydra.shaderOverrides,
+            options.shaderOverrides
+          )
+        });
+        succeeded = true;
+      } finally {
+        if (restoreCreateSurfaces) restoreCreateSurfaces();
+        if (!succeeded) {
+          for (const backup of backups) {
+            existingPipeline?.backend?.destroyTexture?.(backup.name);
+          }
+        }
+      }
+      if (!pipeline || this.pipeline !== pipeline) {
+        for (const backup of backups) {
+          existingPipeline?.backend?.destroyTexture?.(backup.name);
+        }
+        return pipeline;
+      }
+      if (existingPipeline && existingPipeline !== pipeline) {
+        for (const backup of backups) {
+          existingPipeline?.backend?.destroyTexture?.(backup.name);
+        }
+        backups.length = 0;
+      }
       applyUniformBindings(pipeline, hydra.uniformBindings);
       reconcileSurfaceFormats(
         this,
         hydra.outputSurfaces,
         hydra.preserveSurfaces,
-        hydra.retainSurfaces
+        hydra.retainSurfaces,
+        backups
       );
       return pipeline;
     };

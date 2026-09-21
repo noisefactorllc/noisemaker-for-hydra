@@ -62,6 +62,11 @@ try {
       name: 'midi note mode DSL',
       path: `/?code=${encodeURIComponent(Buffer.from(encodeURIComponent('search hydra, synth\nlet m = midi(mode: midiMode.noteChange, channel: 1)\ngradient(speed: m).write(o0)')).toString('base64'))}`,
       expected: ['search hydra', 'midiMode.noteChange', 'gradient(speed: m).write(o0)']
+    },
+    {
+      name: 'adjust filter DSL',
+      path: `/?code=${encodeURIComponent(Buffer.from(encodeURIComponent('search hydra, synth, filter\ngradient().adjust(contrast: 1.2, brightness: 0.1).write(o0)')).toString('base64'))}`,
+      expected: ['search hydra', 'gradient().adjust(contrast: 1.2, brightness: 0.1).write(o0)']
     }
   ]
 

@@ -81,6 +81,26 @@ test('forwards midi expressions through repl.eval to compiler', async () => {
   })
 })
 
+test('forwards adjust filter expressions through repl.eval to compiler', async () => {
+  const repl = await loadRepl()
+  const compiled = []
+  global.window = {
+    hydraSynth: {
+      async compile(source) { compiled.push(source) }
+    }
+  }
+  const source = 'search hydra, synth, filter\ngradient().adjust(contrast: 1.2, brightness: 0.1).write(o0)\nrender(o0)'
+
+  const info = await new Promise(resolve => repl.default.eval(source, resolve))
+
+  assert.deepEqual(compiled, [source])
+  assert.deepEqual(info, {
+    isError: false,
+    codeString: source,
+    errorMessage: ''
+  })
+})
+
 test('repl.eval returns error when engine is not ready', async () => {
   const repl = await loadRepl()
   global.window = {}
