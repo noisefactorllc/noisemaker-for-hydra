@@ -215,3 +215,18 @@ test('formatError handles plain objects with diagnostics or error properties', a
   assert.equal(formatError({ error: 'custom error message' }), 'custom error message')
   assert.equal(formatError({ code: 'ERR_ABORTED' }), '{"code":"ERR_ABORTED"}')
 })
+
+test('formatDiagnostic preserves column precedence over col fallback and formats unlocated diagnostics', async () => {
+  const { formatError } = await loadRepl()
+  const err = new Error('Compilation failed')
+  err.diagnostics = [
+    { message: 'Primary column location', location: { line: 2, column: 15, col: 1 } },
+    { message: 'Fallback col location', location: { line: 4, col: 7 } },
+    { message: 'Unlocated diagnostic' }
+  ]
+  assert.equal(
+    formatError(err),
+    'Primary column location (line 2, col 15); Fallback col location (line 4, col 7); Unlocated diagnostic'
+  )
+})
+

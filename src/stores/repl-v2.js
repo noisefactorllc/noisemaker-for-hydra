@@ -34,7 +34,7 @@ function formatDiagnostic(diagnostic) {
   if (rawLoc) {
     const location = rawLoc.start || rawLoc
     const line = location.line != null ? location.line : location.row
-    const column = location.col != null ? location.col : location.column
+    const column = location.column != null ? location.column : location.col
     if (line != null) {
       parts.push(`(line ${line}${column != null ? `, col ${column}` : ''})`)
     }
