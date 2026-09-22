@@ -158,6 +158,25 @@ test('repl.eval formats compiler syntax errors for out-of-range output surfaces'
   assert.equal(info.errorMessage, "Output surface reference 'o8' is out of range; expected o0-o7 at line 1 col 15")
 })
 
+test('repl.eval formats error when step replacement or compilation fails', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const err = new Error('Step at index 0 is a builtin step and cannot be replaced')
+  global.window = {
+    hydraSynth: {
+      async compile() { throw err }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('render(o0)', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, 'Step at index 0 is a builtin step and cannot be replaced')
+  } finally {
+    global.window = originalWindow
+  }
+})
+
 test('formatError formats strings, nulls, and standard Error instances', async () => {
   const { formatError } = await loadRepl()
   assert.equal(formatError(null), 'unknown error')
