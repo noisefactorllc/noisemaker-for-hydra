@@ -5,6 +5,9 @@ export function formatError(err) {
     if (Array.isArray(err.diagnostics) && err.diagnostics.length > 0) {
       return err.diagnostics.map(formatDiagnostic).join('; ')
     }
+    if (err.diagnostic != null) {
+      return formatDiagnostic(err.diagnostic)
+    }
     if (Array.isArray(err.errors) && err.errors.length > 0) {
       return err.errors.map(formatDiagnostic).join('; ') || err.code || 'expansion failed'
     }
@@ -35,7 +38,7 @@ function formatDiagnostic(diagnostic) {
     const location = rawLoc.start || rawLoc
     const line = location.line != null ? location.line : location.row
     const column = location.column != null ? location.column : location.col
-    if (line != null) {
+    if (line != null && !/\bline\s+\d+/i.test(diagnostic.message || '')) {
       parts.push(`(line ${line}${column != null ? `, col ${column}` : ''})`)
     }
   }

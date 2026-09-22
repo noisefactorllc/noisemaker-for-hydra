@@ -230,3 +230,61 @@ test('formatDiagnostic preserves column precedence over col fallback and formats
   )
 })
 
+test('formatError handles singular diagnostic property with structured lexer payload', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErr = new SyntaxError("Unexpected character '@' at line 1 col 1")
+  syntaxErr.diagnostic = {
+    code: 'L001',
+    stage: 'lexer',
+    severity: 'error',
+    message: "Unexpected character '@' at line 1 col 1",
+    location: { line: 1, column: 1 },
+    span: { start: 0, end: 1 }
+  }
+  assert.equal(
+    formatError(syntaxErr),
+    "Unexpected character '@' at line 1 col 1"
+  )
+
+  const plainObjectErr = {
+    diagnostic: {
+      code: 'L004',
+      stage: 'lexer',
+      severity: 'error',
+      message: "Output surface reference 'o99' is out of range",
+      location: { line: 2, column: 8 }
+    }
+  }
+  assert.equal(
+    formatError(plainObjectErr),
+    "Output surface reference 'o99' is out of range (line 2, col 8)"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured lexer diagnostic', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Unexpected character '@' at line 1 col 1")
+  syntaxErr.diagnostic = {
+    code: 'L001',
+    stage: 'lexer',
+    severity: 'error',
+    message: "Unexpected character '@' at line 1 col 1",
+    location: { line: 1, column: 1 },
+    span: { start: 0, end: 1 }
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('@noise()', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Unexpected character '@' at line 1 col 1")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
