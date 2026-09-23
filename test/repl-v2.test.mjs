@@ -288,3 +288,93 @@ test('repl.eval formats compiler syntax errors carrying structured lexer diagnos
   }
 })
 
+test('formatError handles singular diagnostic property with structured parser payload (P001/P002)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP001 = new SyntaxError("Expect '(' at line 2 col 8")
+  syntaxErrP001.diagnostic = {
+    code: 'P001',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expect '(' at line 2 col 8",
+    location: { line: 2, column: 8 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrP001),
+    "Expect '(' at line 2 col 8"
+  )
+
+  const syntaxErrP002 = new SyntaxError("Expect ')' at line 2 col 10")
+  syntaxErrP002.diagnostic = {
+    code: 'P002',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expect ')' at line 2 col 10",
+    location: { line: 2, column: 10 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrP002),
+    "Expect ')' at line 2 col 10"
+  )
+
+  const plainObjectP001 = {
+    diagnostic: {
+      code: 'P001',
+      stage: 'parser',
+      severity: 'error',
+      message: 'Expected identifier',
+      location: { line: 2, column: 5 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP001),
+    'Expected identifier (line 2, col 5)'
+  )
+})
+
+test('formatError handles parser expectation diagnostics with explicit null location and span', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocated = new SyntaxError("Expect '(' at line undefined col undefined")
+  syntaxErrUnlocated.diagnostic = {
+    code: 'P001',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expect '(' at line undefined col undefined",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocated),
+    "Expect '(' at line undefined col undefined"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser diagnostic', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Expect ')' at line 2 col 10")
+  syntaxErr.diagnostic = {
+    code: 'P002',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expect ')' at line 2 col 10",
+    location: { line: 2, column: 10 },
+    span: null
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('render(o0', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Expect ')' at line 2 col 10")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
