@@ -378,3 +378,153 @@ test('repl.eval formats compiler syntax errors carrying structured parser diagno
   }
 })
 
+test('formatError handles singular diagnostic property with structured parser automation payload (P003)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP003 = new SyntaxError("midi() requires 'channel' or 'zone' argument at line 2 col 24")
+  syntaxErrP003.diagnostic = {
+    code: 'P003',
+    stage: 'parser',
+    severity: 'error',
+    message: "midi() requires 'channel' or 'zone' argument at line 2 col 24",
+    location: { line: 2, column: 24 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrP003),
+    "midi() requires 'channel' or 'zone' argument at line 2 col 24"
+  )
+
+  const plainObjectP003 = {
+    diagnostic: {
+      code: 'P003',
+      stage: 'parser',
+      severity: 'error',
+      message: "audio() 'id' requires readable 'name'",
+      location: { line: 2, column: 9 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP003),
+    "audio() 'id' requires readable 'name' (line 2, col 9)"
+  )
+})
+
+test('formatError handles singular diagnostic property with structured parser search directive payload (P004)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP004 = new SyntaxError("Expected namespace identifier after search at line 1 col 7")
+  syntaxErrP004.diagnostic = {
+    code: 'P004',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected namespace identifier after search at line 1 col 7",
+    location: { line: 1, column: 7 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrP004),
+    "Expected namespace identifier after search at line 1 col 7"
+  )
+
+  const plainObjectP004 = {
+    diagnostic: {
+      code: 'P004',
+      stage: 'parser',
+      severity: 'error',
+      message: "Invalid namespace 'bogus'",
+      location: { line: 1, column: 8 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP004),
+    "Invalid namespace 'bogus' (line 1, col 8)"
+  )
+})
+
+test('formatError handles parser automation and search diagnostics with explicit null location and span', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocatedAutomation = new SyntaxError("midi() requires 'channel' or 'zone' argument at line undefined col undefined")
+  syntaxErrUnlocatedAutomation.diagnostic = {
+    code: 'P003',
+    stage: 'parser',
+    severity: 'error',
+    message: "midi() requires 'channel' or 'zone' argument at line undefined col undefined",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedAutomation),
+    "midi() requires 'channel' or 'zone' argument at line undefined col undefined"
+  )
+
+  const syntaxErrUnlocatedSearch = new SyntaxError("Missing required 'search' directive. Every program must start with 'search <namespace>, ...' to specify namespace search order.")
+  syntaxErrUnlocatedSearch.diagnostic = {
+    code: 'P004',
+    stage: 'parser',
+    severity: 'error',
+    message: "Missing required 'search' directive. Every program must start with 'search <namespace>, ...' to specify namespace search order.",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedSearch),
+    "Missing required 'search' directive. Every program must start with 'search <namespace>, ...' to specify namespace search order."
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser automation diagnostic (P003)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("midi() requires 'channel' or 'zone' argument at line 2 col 24")
+  syntaxErr.diagnostic = {
+    code: 'P003',
+    stage: 'parser',
+    severity: 'error',
+    message: "midi() requires 'channel' or 'zone' argument at line 2 col 24",
+    location: { line: 2, column: 24 },
+    span: null
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\nlet x = midi()', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "midi() requires 'channel' or 'zone' argument at line 2 col 24")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser search diagnostic (P004)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Expected namespace identifier after search at line 1 col 7")
+  syntaxErr.diagnostic = {
+    code: 'P004',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected namespace identifier after search at line 1 col 7",
+    location: { line: 1, column: 7 },
+    span: null
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Expected namespace identifier after search at line 1 col 7")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+
