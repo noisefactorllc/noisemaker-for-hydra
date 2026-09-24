@@ -575,4 +575,80 @@ test('forwards classicNoisedeck glitch expressions with zero-work parameters thr
   }
 })
 
+test('formatError handles singular diagnostic property with structured parser output validation payload (P005)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP005 = new SyntaxError("write() requires an explicit surface reference (e.g., o0, o1, xyz0, vel0, rgba0, mesh0, none) at line 2 col 21")
+  syntaxErrP005.diagnostic = {
+    code: 'P005',
+    stage: 'parser',
+    severity: 'error',
+    message: "write() requires an explicit surface reference (e.g., o0, o1, xyz0, vel0, rgba0, mesh0, none) at line 2 col 21",
+    location: { line: 2, column: 21 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrP005),
+    "write() requires an explicit surface reference (e.g., o0, o1, xyz0, vel0, rgba0, mesh0, none) at line 2 col 21"
+  )
+
+  const plainObjectP005 = {
+    diagnostic: {
+      code: 'P005',
+      stage: 'parser',
+      severity: 'error',
+      message: "Expected output reference in render()",
+      location: { line: 2, column: 8 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP005),
+    "Expected output reference in render() (line 2, col 8)"
+  )
+})
+
+test('formatError handles parser output validation diagnostics with explicit null location and span', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocatedOutput = new SyntaxError("Expected output reference in render()")
+  syntaxErrUnlocatedOutput.diagnostic = {
+    code: 'P005',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected output reference in render()",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedOutput),
+    "Expected output reference in render()"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser output validation diagnostic (P005)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("'.write()' is only allowed in statement context at line 2 col 23")
+  syntaxErr.diagnostic = {
+    code: 'P005',
+    stage: 'parser',
+    severity: 'error',
+    message: "'.write()' is only allowed in statement context at line 2 col 23",
+    location: { line: 2, column: 23 },
+    span: null
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\nlet x = noise().write(o0)', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "'.write()' is only allowed in statement context at line 2 col 23")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
 
