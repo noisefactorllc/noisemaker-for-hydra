@@ -61,3 +61,47 @@ test('creates one initialized Noisemaker CanvasRenderer', async () => {
   assert.deepEqual(calls[3][1], ['synth/perlin', 'filter/blur'])
   assert.deepEqual(calls[5], ['compile', source])
 })
+
+test('runtime preserves CanvasRenderer pipeline sink deferral and deferredFrameCount contract', async () => {
+  assert.equal(typeof runtimeModule?.createNoisemakerRuntime, 'function')
+
+  let deferredChecks = 0
+  class MockPipeline {
+    shouldDeferRender() {
+      deferredChecks++
+      return true
+    }
+  }
+
+  class CanvasRenderer {
+    constructor(options) {
+      this.options = options
+      this.manifest = {}
+      this.pipeline = new MockPipeline()
+      this._deferredFrameCount = 3
+    }
+    async loadManifest() {}
+    async loadEffects() {}
+    start() {}
+    get deferredFrameCount() {
+      return this._deferredFrameCount
+    }
+  }
+
+  const engine = { CanvasRenderer }
+  const extension = {
+    async loadHydraEffects() { return engine }
+  }
+  const canvas = { width: 320, height: 240 }
+
+  const renderer = await runtimeModule.createNoisemakerRuntime({
+    canvas,
+    extension,
+    cdn: 'https://example.invalid/noisemaker/1.2.3'
+  })
+
+  assert.equal(typeof renderer.pipeline?.shouldDeferRender, 'function')
+  assert.equal(renderer.pipeline.shouldDeferRender(), true)
+  assert.equal(deferredChecks, 1)
+  assert.equal(renderer.deferredFrameCount, 3)
+})

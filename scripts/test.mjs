@@ -72,6 +72,11 @@ try {
       name: 'output surface boundary DSL',
       path: `/?code=${encodeURIComponent(Buffer.from(encodeURIComponent('search hydra, synth\ngradient(speed: 0).write(o7)\nrender(o7)')).toString('base64'))}`,
       expected: ['search hydra', 'gradient(speed: 0).write(o7)', 'render(o7)']
+    },
+    {
+      name: 'synth noise DSL',
+      path: `/?code=${encodeURIComponent(Buffer.from(encodeURIComponent('search hydra, synth\nnoise(scale: 10, offset: 0.1).write(o0)\nrender(o0)')).toString('base64'))}`,
+      expected: ['search hydra', 'noise(scale: 10, offset: 0.1).write(o0)', 'render(o0)']
     }
   ]
 
