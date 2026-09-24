@@ -651,4 +651,103 @@ test('repl.eval formats compiler syntax errors carrying structured parser output
   }
 })
 
+test('formatError handles singular diagnostic property with structured parser subchain validation payload (P006)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP006 = new SyntaxError("Expected '.' before chain element in subchain body at line 2 col 28")
+  syntaxErrP006.diagnostic = {
+    code: 'P006',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected '.' before chain element in subchain body at line 2 col 28",
+    location: { line: 2, column: 28 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrP006),
+    "Expected '.' before chain element in subchain body at line 2 col 28"
+  )
 
+  const plainObjectP006 = {
+    diagnostic: {
+      code: 'P006',
+      stage: 'parser',
+      severity: 'error',
+      message: "Subchain body cannot be empty",
+      location: { line: 2, column: 9 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP006),
+    "Subchain body cannot be empty (line 2, col 9)"
+  )
+})
+
+test('formatError handles parser subchain validation diagnostics with explicit null location and span', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocatedSubchain = new SyntaxError("Subchain body cannot be empty at line undefined col undefined")
+  syntaxErrUnlocatedSubchain.diagnostic = {
+    code: 'P006',
+    stage: 'parser',
+    severity: 'error',
+    message: "Subchain body cannot be empty at line undefined col undefined",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedSubchain),
+    "Subchain body cannot be empty at line undefined col undefined"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser subchain validation diagnostic (P006)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Expected string value for subchain name at line 2 col 24")
+  syntaxErr.diagnostic = {
+    code: 'P006',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected string value for subchain name at line 2 col 24",
+    location: { line: 2, column: 24 },
+    span: null
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\nnoise().subchain(name: 123) { .invert() }', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Expected string value for subchain name at line 2 col 24")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('forwards subchain expressions through repl.eval to compiler', async () => {
+  const repl = await loadRepl()
+  const compiled = []
+  const originalWindow = global.window
+  global.window = {
+    hydraSynth: {
+      async compile(source) { compiled.push(source) }
+    }
+  }
+  const source = 'search hydra, synth\nnoise().subchain("loop") { .invert() }.write(o0)\nrender(o0)'
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval(source, resolve))
+
+    assert.deepEqual(compiled, [source])
+    assert.deepEqual(info, {
+      isError: false,
+      codeString: source,
+      errorMessage: ''
+    })
+  } finally {
+    global.window = originalWindow
+  }
+})
