@@ -7,7 +7,7 @@ Current measured support: [compatibility report](COMPATIBILITY.md).
 Daily review: 2026-09-25. Current inspected source: [`8c5dafd3cb5232297001e058b6b1dd2a05a215c9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/8c5dafd3cb5232297001e058b6b1dd2a05a215c9).
 Full rendered parity remains **unverified**. No release approval or new closure follows from this review.
 Current upstream discovery: `bbdeb56c4b75cf33379766c3e87b0f5a18bcbba8`. Published Noisemaker authority: `1.0.179`, source `fca611fd8f91424661d4e531d39313d24ea21134`, 210 effect IDs.
-The observations below retain their original source and authority identities; they do not qualify later updates.
+The observations below retain their original source and authority identities. They do not qualify later updates.
 
 ### Earlier source observations
 
@@ -180,7 +180,7 @@ No prior gap closed during this audit.
 
 ## 5. Ordered next actions
 
-Current first action: At an immutable engine revision, run the same Hydra program in WebGL2 and WebGPU and retain output or ERR_NO_WGSL_SOURCE. Require equal useful output before closing GAP-004. Then enumerate the expected Hydra API, Noisemaker effects, and parameter cases; exercise keyboard controls and error recovery separately.
+Current first action: At an immutable engine revision, run the same Hydra program in WebGL2 and WebGPU and retain output or ERR_NO_WGSL_SOURCE. Require equal useful output before closing GAP-004. Then enumerate the expected Hydra API, Noisemaker effects, and parameter cases. Exercise keyboard controls and error recovery separately.
 Subsequent historical actions remain dependent on that evidence. No implementation is authorized by this audit.
 
 1. Resolve immutable authority identities and the missing rendered inventory for GAP-001.
@@ -193,7 +193,7 @@ Implementation remains with the separate job. This audit does not port effects o
 
 ## 6. Pass history
 
-2026-09-25 daily review at `8c5dafd3cb5232297001e058b6b1dd2a05a215c9`: source freshness and bounded evidence reviewed; open qualification limits retained. [Retained review evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json). No new closure claimed.
+2026-09-25 daily review at `8c5dafd3cb5232297001e058b6b1dd2a05a215c9`: source freshness and bounded evidence reviewed. Open qualification limits retained. [Retained review evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json). No new closure claimed.
 
 | Date | Source SHA | Changes | Tested scope | Remaining limits |
 |---|---|---|---|---|
