@@ -1252,3 +1252,65 @@ test('formatError prioritizes diagnostics array attached to Error instances for 
     "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id; Missing ',' between subchain arguments at line 2 col 28"
   )
 })
+
+test('formatError handles effect definition validation errors in errors array (GAP-003)', async () => {
+  const { formatError } = await loadRepl()
+  const singleErr = {
+    errors: [
+      "Effect definition requires non-empty string name"
+    ]
+  }
+  assert.equal(
+    formatError(singleErr),
+    "Effect definition requires non-empty string name"
+  )
+
+  const validationErr = {
+    errors: [
+      "Effect definition requires non-empty string name",
+      "Global 'speed' default is out of range [0, 1]"
+    ]
+  }
+  assert.equal(
+    formatError(validationErr),
+    "Effect definition requires non-empty string name; Global 'speed' default is out of range [0, 1]"
+  )
+})
+
+test('formatError handles Error instance with validation errors array (GAP-003)', async () => {
+  const { formatError } = await loadRepl()
+  const err = new Error("Effect definition validation failed")
+  err.errors = [
+    "Pass 0 requires non-empty string program",
+    "Unknown tag 'invalidTag' in tags array"
+  ]
+  assert.equal(
+    formatError(err),
+    "Pass 0 requires non-empty string program; Unknown tag 'invalidTag' in tags array"
+  )
+})
+
+test('repl.eval formats compiler errors carrying effect definition validation failures (GAP-003)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const validationErr = new Error("Invalid effect definition")
+  validationErr.errors = [
+    "Effect definition must declare passes array",
+    "Global 'color' has invalid type 'unknown'"
+  ]
+  global.window = {
+    hydraSynth: {
+      async compile() { throw validationErr }
+    }
+  }
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search hydra\nnoise().write(o0)\nrender(o0)', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(
+      info.errorMessage,
+      "Effect definition must declare passes array; Global 'color' has invalid type 'unknown'"
+    )
+  } finally {
+    global.window = originalWindow
+  }
+})
