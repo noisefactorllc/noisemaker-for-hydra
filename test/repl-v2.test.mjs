@@ -898,3 +898,357 @@ test('forwards from() and call expressions through repl.eval to compiler', async
   }
 })
 
+test('formatError handles parser expectation diagnostics with structured source location for number coercion (P001)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrNumber = new SyntaxError("Expected number")
+  syntaxErrNumber.diagnostic = {
+    code: 'P001',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected number",
+    location: { line: 2, column: 9 },
+    span: { start: 21, end: 24 }
+  }
+  assert.equal(
+    formatError(syntaxErrNumber),
+    "Expected number (line 2, col 9)"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured number coercion diagnostic with source location (P001)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Expected number")
+  syntaxErr.diagnostic = {
+    code: 'P001',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected number",
+    location: { line: 2, column: 9 },
+    span: { start: 21, end: 24 }
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\nlet y = [1] + 1', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Expected number (line 2, col 9)")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('formatError handles singular diagnostic property with structured parser subchain validation payload (P008)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP008 = new SyntaxError("Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id")
+  syntaxErrP008.diagnostic = {
+    code: 'P008',
+    stage: 'parser',
+    severity: 'warning',
+    message: "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id",
+    location: { line: 2, column: 19 },
+    span: { start: 30, end: 33 }
+  }
+  assert.equal(
+    formatError(syntaxErrP008),
+    "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id"
+  )
+
+  const plainObjectP008 = {
+    diagnostic: {
+      code: 'P008',
+      stage: 'parser',
+      severity: 'warning',
+      message: "Unknown subchain argument 'nme'. Supported arguments are: name, id",
+      location: { line: 2, column: 19 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP008),
+    "Unknown subchain argument 'nme'. Supported arguments are: name, id (line 2, col 19)"
+  )
+})
+
+test('formatError handles parser subchain validation diagnostics with explicit null location and span (P008)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocatedP008 = new SyntaxError("Unknown subchain argument 'nme'")
+  syntaxErrUnlocatedP008.diagnostic = {
+    code: 'P008',
+    stage: 'parser',
+    severity: 'warning',
+    message: "Unknown subchain argument 'nme'",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedP008),
+    "Unknown subchain argument 'nme'"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser subchain validation diagnostic (P008)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id")
+  syntaxErr.diagnostic = {
+    code: 'P008',
+    stage: 'parser',
+    severity: 'error',
+    message: "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id",
+    location: { line: 2, column: 19 },
+    span: { start: 30, end: 33 }
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\nnoise().subchain(nme: "x") { .invert() }', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('formatError handles singular diagnostic property with structured parser subchain validation payload (P009)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP009 = new SyntaxError("Duplicate subchain argument 'name' at line 2 col 31")
+  syntaxErrP009.diagnostic = {
+    code: 'P009',
+    stage: 'parser',
+    severity: 'warning',
+    message: "Duplicate subchain argument 'name' at line 2 col 31",
+    location: { line: 2, column: 31 },
+    span: { start: 42, end: 46 }
+  }
+  assert.equal(
+    formatError(syntaxErrP009),
+    "Duplicate subchain argument 'name' at line 2 col 31"
+  )
+
+  const plainObjectP009 = {
+    diagnostic: {
+      code: 'P009',
+      stage: 'parser',
+      severity: 'warning',
+      message: "Duplicate subchain argument 'name'",
+      location: { line: 2, column: 31 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP009),
+    "Duplicate subchain argument 'name' (line 2, col 31)"
+  )
+})
+
+test('formatError handles parser subchain validation diagnostics with explicit null location and span (P009)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocatedP009 = new SyntaxError("Duplicate subchain argument 'name'")
+  syntaxErrUnlocatedP009.diagnostic = {
+    code: 'P009',
+    stage: 'parser',
+    severity: 'warning',
+    message: "Duplicate subchain argument 'name'",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedP009),
+    "Duplicate subchain argument 'name'"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser subchain validation diagnostic (P009)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Duplicate subchain argument 'name' at line 2 col 31")
+  syntaxErr.diagnostic = {
+    code: 'P009',
+    stage: 'parser',
+    severity: 'error',
+    message: "Duplicate subchain argument 'name' at line 2 col 31",
+    location: { line: 2, column: 31 },
+    span: { start: 42, end: 46 }
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\nnoise().subchain(name: "a", name: "b") { .invert() }', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Duplicate subchain argument 'name' at line 2 col 31")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('formatError handles singular diagnostic property with structured parser subchain validation payload (P010)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP010 = new SyntaxError("Missing ',' between subchain arguments at line 2 col 28")
+  syntaxErrP010.diagnostic = {
+    code: 'P010',
+    stage: 'parser',
+    severity: 'warning',
+    message: "Missing ',' between subchain arguments at line 2 col 28",
+    location: { line: 2, column: 28 },
+    span: { start: 39, end: 41 }
+  }
+  assert.equal(
+    formatError(syntaxErrP010),
+    "Missing ',' between subchain arguments at line 2 col 28"
+  )
+
+  const plainObjectP010 = {
+    diagnostic: {
+      code: 'P010',
+      stage: 'parser',
+      severity: 'warning',
+      message: "Missing ',' between subchain arguments",
+      location: { line: 2, column: 28 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP010),
+    "Missing ',' between subchain arguments (line 2, col 28)"
+  )
+})
+
+test('formatError handles parser subchain validation diagnostics with explicit null location and span (P010)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocatedP010 = new SyntaxError("Missing ',' between subchain arguments")
+  syntaxErrUnlocatedP010.diagnostic = {
+    code: 'P010',
+    stage: 'parser',
+    severity: 'warning',
+    message: "Missing ',' between subchain arguments",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedP010),
+    "Missing ',' between subchain arguments"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser subchain validation diagnostic (P010)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Missing ',' between subchain arguments at line 2 col 28")
+  syntaxErr.diagnostic = {
+    code: 'P010',
+    stage: 'parser',
+    severity: 'error',
+    message: "Missing ',' between subchain arguments at line 2 col 28",
+    location: { line: 2, column: 28 },
+    span: { start: 39, end: 41 }
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\nnoise().subchain(name: "a" id: "b") { .invert() }', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Missing ',' between subchain arguments at line 2 col 28")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('formatError handles multiple subchain validation diagnostics in diagnostics list (P008/P009/P010)', async () => {
+  const { formatError } = await loadRepl()
+  const multiDiag = {
+    diagnostics: [
+      {
+        code: 'P008',
+        stage: 'parser',
+        severity: 'warning',
+        message: "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id",
+        location: { line: 2, column: 19 }
+      },
+      {
+        code: 'P010',
+        stage: 'parser',
+        severity: 'warning',
+        message: "Missing ',' between subchain arguments at line 2 col 28",
+        location: { line: 2, column: 28 }
+      },
+      {
+        code: 'P009',
+        stage: 'parser',
+        severity: 'warning',
+        message: "Duplicate subchain argument 'name' at line 2 col 35",
+        location: { line: 2, column: 35 }
+      }
+    ]
+  }
+  assert.equal(
+    formatError(multiDiag),
+    "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id; Missing ',' between subchain arguments at line 2 col 28; Duplicate subchain argument 'name' at line 2 col 35"
+  )
+})
+
+test('forwards subchain expressions with multiple keyword arguments through repl.eval to compiler', async () => {
+  const repl = await loadRepl()
+  const compiled = []
+  const originalWindow = global.window
+  global.window = {
+    hydraSynth: {
+      async compile(source) { compiled.push(source) }
+    }
+  }
+  const source = 'search hydra, synth\nnoise().subchain(name: "loop", id: "sub1") { .invert() }.write(o0)\nrender(o0)'
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval(source, resolve))
+
+    assert.deepEqual(compiled, [source])
+    assert.deepEqual(info, {
+      isError: false,
+      codeString: source,
+      errorMessage: ''
+    })
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('formatError prioritizes diagnostics array attached to Error instances for subchain validation', async () => {
+  const { formatError } = await loadRepl()
+  const errorInstance = new Error("Generic compilation error")
+  errorInstance.diagnostics = [
+    {
+      code: 'P008',
+      stage: 'parser',
+      severity: 'warning',
+      message: "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id",
+      location: { line: 2, column: 19 }
+    },
+    {
+      code: 'P010',
+      stage: 'parser',
+      severity: 'warning',
+      message: "Missing ',' between subchain arguments at line 2 col 28",
+      location: { line: 2, column: 28 }
+    }
+  ]
+  assert.equal(
+    formatError(errorInstance),
+    "Unknown subchain argument 'nme' at line 2 col 19. Supported arguments are: name, id; Missing ',' between subchain arguments at line 2 col 28"
+  )
+})
