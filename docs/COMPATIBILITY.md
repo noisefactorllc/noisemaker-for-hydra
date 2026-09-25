@@ -137,3 +137,19 @@ All eligible ports retain equal rotation priority. C++ remains excluded. No impl
 
 [Initial compatibility report](https://github.com/noisefactorllc/noisemaker-for-hydra/blob/ea7795f20b4fcb157f6acabbe02935612babc32a/docs/COMPATIBILITY.md).
 Run ID: `audit-20260924-090235`. No gap closed. Publication does not approve a release.
+## 6. Vendor sync audit evidence (2026-09-25, noisemaker 13a8a0491dcf..2f47612c2904)
+
+Commands executed against a local reference checkout of noisefactorllc/noisemaker at `2f47612c29045c1b91af94887a8ff20106e980ef` (release tag `v1.0.182`):
+
+- `git log --oneline 13a8a0491dcf..2f47612c -- shaders/` ->
+  - `2f47612c` fix(shaders): stop double-creating global surfaces on allocation change
+  - `62eb56fa` fix(shaders): allocate the WebGL2 mip chain and cache WebGPU mip bind groups
+  - `a021a283` feat(shaders): authorable mipmaps/persistent/3D filter texture policies (GAP-004)
+- `git log --oneline 13a8a0491dcf..2f47612c -- shaders/effects/` -> empty output (no effect-catalog commits; the 210-ID catalog at `shaders/effects/manifest.json` is unchanged from the previously synced `9d3474df` authority).
+- `git diff --stat 9d3474df..2f47612c -- shaders/` -> 6 files changed, 988 insertions, 45 deletions: `src/runtime/backends/webgl2.js` (+121), `src/runtime/backends/webgpu.js` (+283), `src/runtime/compiler.js` (+17), `src/runtime/effect-validator.js` (+27), `src/runtime/pipeline.js` (+119), `tests/test_mip_controls.js` (+466). No `src/engine/` module and no effect definition changed, so this CDN-consuming port needs no tree change beyond tests and records; the WebGL2/WebGPU backend constructs in the range were cross-checked against the port runtime (`src/lib/noisemaker-runtime.mjs`) which only consumes the published engine and requires `CanvasRenderer` + manifest APIs that are unchanged in the range.
+- The texture-policy validator strings quoted by the three `repl-v2` tests are copied verbatim from `shaders/src/runtime/effect-validator.js` lines 729-750 at `2f47612c` (`"filter" is only supported on 3D texture specs ("textures3d")`, `unknown filter ... (expected 'nearest' or 'linear')`, `"mipmaps" is only supported on 2D texture specs ("textures")`, `"persistent" is only supported on 2D texture specs ("textures")`, `"mipmaps" must be a boolean`, `"persistent" must be a boolean`).
+
+Suite executions bound to delivered commits (local, no CI declared for this delivery):
+- `2b60ce97` (test additions): `node --test test/*.test.mjs` 68 pass / 0 fail; `CHROME=/usr/bin/chromium node scripts/test.mjs` 7 PASS / 0 fail.
+- `1bc5fc2a4526c7d732bc21e1293e3d43582b4c08` (published tip): pristine `git clone` + `npm ci`, same commands -> 68 pass / 0 fail and 7 PASS / 0 fail.
+- The current record commit received the same pre-commit local execution -> 68 pass / 0 fail and 7 PASS / 0 fail.
