@@ -2,6 +2,13 @@
 
 ## 1. Source and authority revisions
 
+Daily review: 2026-09-25. Current inspected source: [`8c5dafd3cb5232297001e058b6b1dd2a05a215c9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/8c5dafd3cb5232297001e058b6b1dd2a05a215c9).
+Full rendered parity remains **unverified**. No release approval or new closure follows from this review.
+Current upstream discovery: `bbdeb56c4b75cf33379766c3e87b0f5a18bcbba8`. Published Noisemaker authority: `1.0.179`, source `fca611fd8f91424661d4e531d39313d24ea21134`, 210 effect IDs.
+The observations below retain their original source and authority identities; they do not qualify later updates.
+
+### Earlier source observations
+
 Observation date: 2026-09-24. Current and tested source: [`d75412d12e27d8a338f635ed6a05e0e5c5b2d57e`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/d75412d12e27d8a338f635ed6a05e0e5c5b2d57e).
 Published engine: `1.0.176`, authority `c9ee8a049b2b63cd300da67c01ee40baf29dc288`.
 Current upstream: `823bbff1d17061d231cb0c7f5bf4527b3344abab`. Its changed behavior remains unverified.
@@ -17,6 +24,9 @@ The served demo records source `626f37c21170927e7c24429ca2c8f31cf38905ec`, which
 [Deployment metadata](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/deployment-meta.data). Audit completion and document publication do not establish parity or release readiness.
 
 ## 2. Host and distribution matrix
+
+Current tests and qualification limits are in [section 3](#3-parity-coverage).
+The matrix below retains the earlier measured scope. A historical verified row is not a current-source or full-platform certification.
 
 | Dimension | Status | Measured scope or limit |
 |---|---|---|
@@ -46,6 +56,14 @@ In-app help still describes ordinary JavaScript Hydra. It does not establish com
 
 ## 3. Parity coverage
 
+### Daily review, 2026-09-25
+
+48 unit tests and seven browser editor checks pass. The browser checks do not compare pixels. The retained WebGPU failure and two bounded WebGL2 comparisons remain relevant, but do not qualify all current authority inputs or the Hydra API. GAP-001, GAP-004, and the missing rendered CI gate remain open. [Raw evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json).
+
+The current full case denominator remains incomplete. Missing parameters, hosts, external inputs, and stateful sequences remain qualification gaps. No skip or tolerated difference counts as exact parity.
+
+### Earlier measurements
+
 | Gate | Expected | Executed | Strict passes | Failures | Skips | Missing or unverified |
 |---|---|---|---|---|---|---|
 | Unit tests | 39 | 39 | not a render gate | 0 | 0 | Render coverage does not follow. |
@@ -64,6 +82,10 @@ The two early measurement attempts remain retained. Their errors do not count as
 No fixtures, goldens, tolerances, or exclusions changed. No case was skipped to obtain a passing summary.
 
 ## 4. Evidence
+
+Review CI boundary: No workflow run exists at the inspected source SHA. A passing export dispatch does not qualify rendered parity. Current complete-render enforcement remains an open verification requirement. [Exact-source responses and workflows](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/noisemaker-for-hydra-remote-evidence.json).
+
+The current-source browser probe independently reproduces ERR_NO_WGSL_SOURCE for Hydra solid after switching to WGSL. [Probe](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-wgsl-current.json).
 
 | Literal command | Exit | Raw evidence |
 |---|---|---|
@@ -87,6 +109,9 @@ The push activates an existing notification webhook. These documentation edits d
 
 ## 5. Open compatibility limits
 
+Next bounded check: At an immutable engine revision, run the same Hydra program in WebGL2 and WebGPU and retain output or ERR_NO_WGSL_SOURCE. Require equal useful output before closing GAP-004. Then enumerate the expected Hydra API, Noisemaker effects, and parameter cases; exercise keyboard controls and error recovery separately.
+See the stable entries in [completion gaps](COMPLETION_GAPS.md).
+
 The stable [gap register](COMPLETION_GAPS.md#4-known-gaps) defines each action, dependency, and acceptance check.
 
 1. Resolve source and authority identities. Inventory every rendered case for GAP-001.
@@ -99,6 +124,8 @@ Full parity requires zero skipped or missing cases. Scheduled audits do not enfo
 All eligible ports retain equal rotation priority. C++ remains excluded. No implementation or parity checkpoint changed.
 
 ## 6. History
+
+2026-09-25 daily review at `8c5dafd3cb5232297001e058b6b1dd2a05a215c9`: source freshness and bounded evidence reviewed; open qualification limits retained. [Retained review evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json). No new closure claimed.
 
 | Date | Source | Result | Change |
 |---|---|---|---|

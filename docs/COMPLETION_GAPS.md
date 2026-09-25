@@ -4,6 +4,13 @@ Current measured support: [compatibility report](COMPATIBILITY.md).
 
 ## 1. Scope and source revisions
 
+Daily review: 2026-09-25. Current inspected source: [`8c5dafd3cb5232297001e058b6b1dd2a05a215c9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/8c5dafd3cb5232297001e058b6b1dd2a05a215c9).
+Full rendered parity remains **unverified**. No release approval or new closure follows from this review.
+Current upstream discovery: `bbdeb56c4b75cf33379766c3e87b0f5a18bcbba8`. Published Noisemaker authority: `1.0.179`, source `fca611fd8f91424661d4e531d39313d24ea21134`, 210 effect IDs.
+The observations below retain their original source and authority identities; they do not qualify later updates.
+
+### Earlier source observations
+
 Audit date: 2026-09-24. Reviewed source: [`d75412d12e27d8a338f635ed6a05e0e5c5b2d57e`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/d75412d12e27d8a338f635ed6a05e0e5c5b2d57e).
 Local HEAD matched remote main. This audit changes documentation only. No effect, implementation, or parity checkpoint changed.
 The experimental editor supports Polymorphic DSL. It does not preserve ordinary Hydra JavaScript syntax. [README](https://github.com/noisefactorllc/noisemaker-for-hydra/blob/d75412d12e27d8a338f635ed6a05e0e5c5b2d57e/README.md).
@@ -37,6 +44,15 @@ The shared result records the publication commit and remote document hashes. [Pu
 | CLAIM-006 | [README](https://github.com/noisefactorllc/noisemaker-for-hydra/blob/d75412d12e27d8a338f635ed6a05e0e5c5b2d57e/README.md) | WebGPU render target for mixed programs | contradicted | Hydra solid fails under WGSL with `ERR_NO_WGSL_SOURCE`. WebGL2 solid passes. GAP-004. |
 
 ## 3. Methods and evidence
+
+Review CI boundary: No workflow run exists at the inspected source SHA. A passing export dispatch does not qualify rendered parity. Current complete-render enforcement remains an open verification requirement. [Exact-source responses and workflows](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/noisemaker-for-hydra-remote-evidence.json).
+
+The current-source browser probe independently reproduces ERR_NO_WGSL_SOURCE for Hydra solid after switching to WGSL. [Probe](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-wgsl-current.json).
+
+### Daily review, 2026-09-25
+
+48 unit tests and seven browser editor checks pass. The browser checks do not compare pixels. The retained WebGPU failure and two bounded WebGL2 comparisons remain relevant, but do not qualify all current authority inputs or the Hydra API. GAP-001, GAP-004, and the missing rendered CI gate remain open. [Raw evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json).
+The review checked source changes, worker evidence, source-bound CI where present, and current served inventories. Full installed-host and platform qualification remains incomplete.
 
 Environment: macOS 26.5, arm64, Node 26.10.0, npm 11.19.1, Chrome 153.0.8010.53.
 Chrome reported WebGL through `WebKit WebGL`. This identifier does not qualify a physical GPU matrix.
@@ -164,6 +180,9 @@ No prior gap closed during this audit.
 
 ## 5. Ordered next actions
 
+Current first action: At an immutable engine revision, run the same Hydra program in WebGL2 and WebGPU and retain output or ERR_NO_WGSL_SOURCE. Require equal useful output before closing GAP-004. Then enumerate the expected Hydra API, Noisemaker effects, and parameter cases; exercise keyboard controls and error recovery separately.
+Subsequent historical actions remain dependent on that evidence. No implementation is authorized by this audit.
+
 1. Resolve immutable authority identities and the missing rendered inventory for GAP-001.
 2. Reproduce `ERR_NO_WGSL_SOURCE` and resolve the supported backend contract for GAP-004.
 3. Establish the exact-source rendered CI gate for GAP-006 through the implementation job.
@@ -173,6 +192,8 @@ No prior gap closed during this audit.
 Implementation remains with the separate job. This audit does not port effects or advance the parity checkpoint.
 
 ## 6. Pass history
+
+2026-09-25 daily review at `8c5dafd3cb5232297001e058b6b1dd2a05a215c9`: source freshness and bounded evidence reviewed; open qualification limits retained. [Retained review evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json). No new closure claimed.
 
 | Date | Source SHA | Changes | Tested scope | Remaining limits |
 |---|---|---|---|---|
