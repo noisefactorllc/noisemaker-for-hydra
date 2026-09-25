@@ -1314,3 +1314,65 @@ test('repl.eval formats compiler errors carrying effect definition validation fa
     global.window = originalWindow
   }
 })
+
+test('formatError handles texture policy validation errors in errors array (GAP-004)', async () => {
+  const { formatError } = await loadRepl()
+  const singleErr = {
+    errors: [
+      "Texture 'noiseTex': \"filter\" is only supported on 3D texture specs (\"textures3d\")"
+    ]
+  }
+  assert.equal(
+    formatError(singleErr),
+    "Texture 'noiseTex': \"filter\" is only supported on 3D texture specs (\"textures3d\")"
+  )
+
+  const validationErr = {
+    errors: [
+      "Texture 'mipTex': \"mipmaps\" is only supported on 2D texture specs (\"textures\")",
+      "Texture 'mipTex': unknown filter 'trilinear' (expected 'nearest' or 'linear')"
+    ]
+  }
+  assert.equal(
+    formatError(validationErr),
+    "Texture 'mipTex': \"mipmaps\" is only supported on 2D texture specs (\"textures\"); Texture 'mipTex': unknown filter 'trilinear' (expected 'nearest' or 'linear')"
+  )
+})
+
+test('formatError handles Error instance with texture policy errors array (GAP-004)', async () => {
+  const { formatError } = await loadRepl()
+  const err = new Error("Effect definition validation failed")
+  err.errors = [
+    "Texture 'persistTex': \"persistent\" must be a boolean",
+    "Texture 'mipTex': \"mipmaps\" must be a boolean"
+  ]
+  assert.equal(
+    formatError(err),
+    "Texture 'persistTex': \"persistent\" must be a boolean; Texture 'mipTex': \"mipmaps\" must be a boolean"
+  )
+})
+
+test('repl.eval formats compiler errors carrying texture policy validation failures (GAP-004)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const validationErr = new Error("Invalid effect definition")
+  validationErr.errors = [
+    "Texture 'noiseTex': \"filter\" is only supported on 3D texture specs (\"textures3d\")",
+    "Texture 'mipTex': \"mipmaps\" must be a boolean"
+  ]
+  global.window = {
+    hydraSynth: {
+      async compile() { throw validationErr }
+    }
+  }
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search hydra\nnoise().write(o0)\nrender(o0)', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(
+      info.errorMessage,
+      "Texture 'noiseTex': \"filter\" is only supported on 3D texture specs (\"textures3d\"); Texture 'mipTex': \"mipmaps\" must be a boolean"
+    )
+  } finally {
+    global.window = originalWindow
+  }
+})
