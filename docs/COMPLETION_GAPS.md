@@ -4,12 +4,15 @@ Current measured support: [compatibility report](COMPATIBILITY.md).
 
 ## 1. Scope and source revisions
 
-Daily review: 2026-09-25. Current inspected source: [`8c5dafd3cb5232297001e058b6b1dd2a05a215c9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/8c5dafd3cb5232297001e058b6b1dd2a05a215c9).
+Daily review: 2026-09-25 (vendor sync audit). Current inspected source: [`2b60ce97ddbfcf5e40e3cfaff1719a45ee9786d9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/2b60ce97ddbfcf5e40e3cfaff1719a45ee9786d9).
 Full rendered parity remains **unverified**. No release approval or new closure follows from this review.
-Current upstream discovery: `bbdeb56c4b75cf33379766c3e87b0f5a18bcbba8`. Published Noisemaker authority: `1.0.179`, source `fca611fd8f91424661d4e531d39313d24ea21134`, 210 effect IDs.
+Current upstream discovery: `2f47612c29045c1b91af94887a8ff20106e980ef` (release tag `v1.0.182`). Published Noisemaker authority: `1.0.182`, source `2f47612c29045c1b91af94887a8ff20106e980ef`, 210 effect IDs (counted from `shaders/effects/manifest.json` at that commit).
+Sync audit: the force-pushed range start `fca611fd8f91424661d4e531d39313d24ea21134` was superseded; the audited shader range `13a8a0491dcf9aeb8eb2db5518682f58a6a0ec0e..2f47612c29045c1b91af94887a8ff20106e980ef` contains three `shaders/` commits (`a021a283`, `62eb56fa`, `2f47612c`). `shaders/effects/` is unchanged at the range end, so effect-catalog parity requires no additions, removals, or parameter-contract updates. The runtime texture-policy changes reach this port through the published engine (`src/lib/noisemaker-runtime.mjs:1`); the new texture-policy validation diagnostics are covered by four `repl-v2` tests in commit 2b60ce97. GAP-001 (full parity qualification, unpinned rolling `/1` engine URL) and the WebGPU GAP-004 remain open; no closure follows from this sync.
 The observations below retain their original source and authority identities. They do not qualify later updates.
 
 ### Earlier source observations
+
+Daily review: 2026-09-25. Inspected source: [`8c5dafd3cb5232297001e058b6b1dd2a05a215c9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/8c5dafd3cb5232297001e058b6b1dd2a05a215c9).
 
 Audit date: 2026-09-24. Reviewed source: [`d75412d12e27d8a338f635ed6a05e0e5c5b2d57e`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/d75412d12e27d8a338f635ed6a05e0e5c5b2d57e).
 Local HEAD matched remote main. This audit changes documentation only. No effect, implementation, or parity checkpoint changed.

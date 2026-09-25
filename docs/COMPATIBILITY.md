@@ -2,12 +2,15 @@
 
 ## 1. Source and authority revisions
 
-Daily review: 2026-09-25. Current inspected source: [`8c5dafd3cb5232297001e058b6b1dd2a05a215c9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/8c5dafd3cb5232297001e058b6b1dd2a05a215c9).
+Daily review: 2026-09-25 (vendor sync audit). Current inspected source: [`2b60ce97ddbfcf5e40e3cfaff1719a45ee9786d9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/2b60ce97ddbfcf5e40e3cfaff1719a45ee9786d9).
 Full rendered parity remains **unverified**. No release approval or new closure follows from this review.
-Current upstream discovery: `bbdeb56c4b75cf33379766c3e87b0f5a18bcbba8`. Published Noisemaker authority: `1.0.179`, source `fca611fd8f91424661d4e531d39313d24ea21134`, 210 effect IDs.
+Current upstream discovery: `2f47612c29045c1b91af94887a8ff20106e980ef` (release tag `v1.0.182`). Published Noisemaker authority: `1.0.182`, source `2f47612c29045c1b91af94887a8ff20106e980ef`, 210 effect IDs (counted from `shaders/effects/manifest.json` at that commit).
+The job's declared range start `fca611fd8f91424661d4e531d39313d24ea21134` predates the previous sync (`9d3474df`, commit 88a05e1) and was superseded by a force-push; the audited shader range is `13a8a0491dcf9aeb8eb2db5518682f58a6a0ec0e..2f47612c29045c1b91af94887a8ff20106e980ef`. Its `shaders/` delta contains three commits: `a021a283` (GAP-004 authorable mipmaps/persistent/3D-filter texture policies), `62eb56fa` (WebGL2 full mip-chain allocation, cached WebGPU mip bind groups), and `2f47612c` (fix double-creation of global surfaces on allocation change). The diffstat touches `shaders/src/runtime/{backends/webgl2.js,backends/webgpu.js,compiler.js,effect-validator.js,pipeline.js}`, `shaders/tests/test_mip_controls.js`, upstream docs, and `scripts/run-js-tests.js`; `shaders/effects/` is unchanged, so the effect catalog (210 IDs) has no additions, removals, or parameter-contract changes to port. No `src/engine/` module changed. This port consumes the published engine from the rolling `/1` CDN (`src/lib/noisemaker-runtime.mjs:1`), so runtime behavior arrives through the published `1.0.182` core without tree changes; the unpinned CDN URL remains an open GAP-001/GAP-003 risk. The port-facing surface added by the range is the texture-policy effect-definition validation diagnostics (`filter`/`mipmaps`/`persistent`), covered by the four `repl-v2` tests in commit 2b60ce97; pipeline and backend changes are engine-internal. Verification at the candidate commit: `node --test test/*.test.mjs` 68 pass, 0 fail; `CHROME=chromium node scripts/test.mjs` 7 browser checks PASS, 0 fail.
 The observations below retain their original source and authority identities. They do not qualify later updates.
 
 ### Earlier source observations
+
+Daily review: 2026-09-25. Inspected source: [`8c5dafd3cb5232297001e058b6b1dd2a05a215c9`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/8c5dafd3cb5232297001e058b6b1dd2a05a215c9).
 
 Observation date: 2026-09-24. Current and tested source: [`d75412d12e27d8a338f635ed6a05e0e5c5b2d57e`](https://github.com/noisefactorllc/noisemaker-for-hydra/commit/d75412d12e27d8a338f635ed6a05e0e5c5b2d57e).
 Published engine: `1.0.176`, authority `c9ee8a049b2b63cd300da67c01ee40baf29dc288`.

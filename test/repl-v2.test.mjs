@@ -1315,7 +1315,7 @@ test('repl.eval formats compiler errors carrying effect definition validation fa
   }
 })
 
-test('formatError handles texture policy validation errors in errors array (GAP-004)', async () => {
+test('formatError handles texture policy validation errors in errors array (noisemaker@2f47612c texture policy)', async () => {
   const { formatError } = await loadRepl()
   const singleErr = {
     errors: [
@@ -1339,7 +1339,7 @@ test('formatError handles texture policy validation errors in errors array (GAP-
   )
 })
 
-test('formatError handles Error instance with texture policy errors array (GAP-004)', async () => {
+test('formatError handles Error instance with texture policy errors array (noisemaker@2f47612c texture policy)', async () => {
   const { formatError } = await loadRepl()
   const err = new Error("Effect definition validation failed")
   err.errors = [
@@ -1352,7 +1352,7 @@ test('formatError handles Error instance with texture policy errors array (GAP-0
   )
 })
 
-test('repl.eval formats compiler errors carrying texture policy validation failures (GAP-004)', async () => {
+test('repl.eval formats compiler errors carrying texture policy validation failures (noisemaker@2f47612c texture policy)', async () => {
   const repl = await loadRepl()
   const originalWindow = global.window
   const validationErr = new Error("Invalid effect definition")
