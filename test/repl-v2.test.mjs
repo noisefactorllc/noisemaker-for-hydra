@@ -751,3 +751,150 @@ test('forwards subchain expressions through repl.eval to compiler', async () => 
     global.window = originalWindow
   }
 })
+
+test('formatError handles singular diagnostic property with structured parser call-form validation payload (P007)', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrP007 = new SyntaxError("Cannot mix positional and keyword arguments at line 2 col 14")
+  syntaxErrP007.diagnostic = {
+    code: 'P007',
+    stage: 'parser',
+    severity: 'error',
+    message: "Cannot mix positional and keyword arguments at line 2 col 14",
+    location: { line: 2, column: 14 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrP007),
+    "Cannot mix positional and keyword arguments at line 2 col 14"
+  )
+
+  const syntaxErrFromP007 = new SyntaxError("'from' requires exactly two arguments (namespace, call) at line 2 col 9")
+  syntaxErrFromP007.diagnostic = {
+    code: 'P007',
+    stage: 'parser',
+    severity: 'error',
+    message: "'from' requires exactly two arguments (namespace, call) at line 2 col 9",
+    location: { line: 2, column: 9 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrFromP007),
+    "'from' requires exactly two arguments (namespace, call) at line 2 col 9"
+  )
+
+  const syntaxErrInlineNsP007 = new SyntaxError("Inline namespace syntax 'nd.noise()' is not allowed. Use 'search nd' at the start of the program instead, at line 2 col 1")
+  syntaxErrInlineNsP007.diagnostic = {
+    code: 'P007',
+    stage: 'parser',
+    severity: 'error',
+    message: "Inline namespace syntax 'nd.noise()' is not allowed. Use 'search nd' at the start of the program instead, at line 2 col 1",
+    location: { line: 2, column: 1 },
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrInlineNsP007),
+    "Inline namespace syntax 'nd.noise()' is not allowed. Use 'search nd' at the start of the program instead, at line 2 col 1"
+  )
+
+  const plainObjectP007 = {
+    diagnostic: {
+      code: 'P007',
+      stage: 'parser',
+      severity: 'error',
+      message: "Inline namespace syntax 'nd.noise()' is not allowed. Use 'search nd' at the start of the program instead",
+      location: { line: 2, column: 1 },
+      span: null
+    }
+  }
+  assert.equal(
+    formatError(plainObjectP007),
+    "Inline namespace syntax 'nd.noise()' is not allowed. Use 'search nd' at the start of the program instead (line 2, col 1)"
+  )
+})
+
+test('formatError handles parser call-form validation diagnostics with explicit null location and span', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrUnlocatedCallForm = new SyntaxError("Cannot mix positional and keyword arguments")
+  syntaxErrUnlocatedCallForm.diagnostic = {
+    code: 'P007',
+    stage: 'parser',
+    severity: 'error',
+    message: "Cannot mix positional and keyword arguments",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrUnlocatedCallForm),
+    "Cannot mix positional and keyword arguments"
+  )
+})
+
+test('repl.eval formats compiler syntax errors carrying structured parser call-form validation diagnostic (P007)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const syntaxErr = new SyntaxError("Cannot mix positional and keyword arguments at line 2 col 14")
+  syntaxErr.diagnostic = {
+    code: 'P007',
+    stage: 'parser',
+    severity: 'error',
+    message: "Cannot mix positional and keyword arguments at line 2 col 14",
+    location: { line: 2, column: 14 },
+    span: null
+  }
+  global.window = {
+    hydraSynth: {
+      async compile() { throw syntaxErr }
+    }
+  }
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search synth\ndiagProbe(1, x: 2)', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "Cannot mix positional and keyword arguments at line 2 col 14")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
+test('formatError handles parser expectation diagnostics with explicit null location and span for number coercion', async () => {
+  const { formatError } = await loadRepl()
+  const syntaxErrNumber = new SyntaxError("Expected number")
+  syntaxErrNumber.diagnostic = {
+    code: 'P001',
+    stage: 'parser',
+    severity: 'error',
+    message: "Expected number",
+    location: null,
+    span: null
+  }
+  assert.equal(
+    formatError(syntaxErrNumber),
+    "Expected number"
+  )
+})
+
+test('forwards from() and call expressions through repl.eval to compiler', async () => {
+  const repl = await loadRepl()
+  const compiled = []
+  const originalWindow = global.window
+  global.window = {
+    hydraSynth: {
+      async compile(source) { compiled.push(source) }
+    }
+  }
+  const source = 'search hydra, synth\nlet x = from(synth, probe())\nrender(o0)'
+
+  try {
+    const info = await new Promise(resolve => repl.default.eval(source, resolve))
+
+    assert.deepEqual(compiled, [source])
+    assert.deepEqual(info, {
+      isError: false,
+      codeString: source,
+      errorMessage: ''
+    })
+  } finally {
+    global.window = originalWindow
+  }
+})
+
