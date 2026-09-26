@@ -47,7 +47,10 @@ if (ids.length !== 210) {
 // String/text/asset params keep their defaults.
 function variedValue (g) {
   if (g.choices && typeof g.choices === 'object') {
-    const entries = Object.entries(g.choices)
+    // null-valued keys are UI group headers ("Shapes:", "Misc:"), not
+    // selectable choices; exclude them or the DSL source gets a bare
+    // group-header name that the parser rejects.
+    const entries = Object.entries(g.choices).filter(([, v]) => v !== null && v !== undefined)
     if (!entries.length) return undefined
     entries.sort((a, b) => a[1] - b[1])
     const defaultName = entries.find(([name]) => name === g.default)
@@ -100,8 +103,12 @@ for (const id of ids) {
     const v = variedValue(g)
     if (v === undefined) continue
     const entry = { name: gname, value: v }
+    // Define-backed globals are ordinary DSL kwargs too: the engine re-bakes
+    // the define at program compile time. They MUST stay in paramsB so the
+    // varied caseB source actually exercises them; definesB records which
+    // kwargs are define-backed for evidence.
     if (g.define) definesB.push({ ...entry, define: g.define })
-    else paramsB.push(entry)
+    paramsB.push(entry)
   }
   const passes = def.passes || []
   const needsInput = Boolean(
@@ -113,7 +120,14 @@ for (const id of ids) {
   const isStarter = manifest[id].starter === true
   const chainSource = !isStarter && needsInput ? (needs3d ? 'noise3d()' : 'noise()') : ''
   const explicitTex = surfaceParams.filter(s => s.default !== 'inputTex').map(s => s.name)
-  const searchNs = `search ${ns}${chainSource === 'noise()' ? ', synth' : (needs3d ? ', synth3d' : '')}`
+  // The search line must resolve every effect invoked by either case: caseB
+  // always emits a `noise()` feeder for its o1 surface, so synth must be
+  // searched; synth3d is needed when the chain source is noise3d(). The
+  // case's own namespace is searched first, so its own effects win, and it
+  // is not duplicated.
+  const searchNs = `search ${ns}` +
+    (ns === 'synth' ? '' : ', synth') +
+    (needs3d && ns !== 'synth3d' ? ', synth3d' : '')
 
   const kw = (params) => params.map(p => formatKwarg(p.name, p.value, globals[p.name])).join(', ')
   const body = (params, texBound) => {

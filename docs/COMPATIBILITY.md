@@ -59,6 +59,26 @@ In-app help still describes ordinary JavaScript Hydra. It does not establish com
 
 ## 3. Parity coverage
 
+### Rendered parity gate, 2026-09-26
+
+A complete rendered gate now exists in the tree: `scripts/parity-gate.mjs` drives headless Chromium over the DevTools protocol through `test/parity-gate/authority.html` (raw published Noisemaker engine, pinned immutable CDN identity, default `CanvasRenderer` wiring) and `test/parity-gate/port.html` (the tracked companion bundle `public/_engine/hydra-synth.js` through the fork's `src/lib/noisemaker-runtime.mjs` wiring), rendering every case in `test/fixtures/parity-cases.json`. The case matrix is generated from the upstream effect definitions at the pinned commit `2f47612c29045c1b91af94887a8ff20106e980ef` by `scripts/generate-parity-cases.mjs`; fixture SHA-256 `5b43d8a2243ad55f0b4e668909a1ce0d27ca86f4423ea47ebf8d37fd15202a06`. Each of the 210 effect IDs carries two programs — a defaults program and a varied program (varied parameters, define-backed kwargs, explicit surface bindings via a `noise()` feeder, chains via `noise()`/`noise3d()`) — rendered at 32×24 (defaults at times 0, 0.37, 0.74; varied at 0, 0.37) and at 24×18 (defaults at time 0). The full denominator is 210 cases × 6 comparisons = 1260. The driver verifies the pinned identities before executing any case: engine bundle `e1a10dc9aa7c739b416ec546304326ad6f457eb3dc5d0ca2a601cee56b9d7f50`, manifest `05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e`, companion `5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded`. Comparison is exact-equality first; the legacy ±2 numerical contract is reported separately (zero cases fell into it).
+
+Result of the executed run: 1254 of 1260 comparisons executed and exact; 0 tolerance-level, 0 failed; 6 missing — all frames of `filter/octaveWarp`, authority side only. `filter/oilPaint` passed on retry. The port rendered every `filter/octaveWarp` frame; the pinned authority engine fails on the second render of the program under SwiftShader with `ERR_SHADER_COMPILE` and an empty ANGLE info log (raw log: `console.error [GLSL compile error] null`), reproduced in eight fresh-chromium slice attempts and isolated by probes (first render succeeds, second render fails, at any time value). The failures and missing case are preserved in `parity-evidence/slice-068.json` and the merged `parity-evidence/parity-gate-report.json`; the gate exits nonzero and `pass=false`. GAP-001 therefore remains open: its acceptance requires executing every case without missing comparisons, and the 6 missing frames are a pinned-authority engine limitation of this environment that no port-side change can remove.
+
+Literal execution: `CHROME=/usr/bin/chromium GATE_BATCH=1 GATE_SLICE_ATTEMPTS=2 node scripts/parity-gate.mjs parity-evidence` (final merged run; earlier attempts used `GATE_SLICE_ATTEMPTS=3` and `=8`), exit 1. Chromium 154.0.8037.57 (Debian GNU/Linux 12), SwiftShader WebGL2 (`WebGL 2.0 (OpenGL ES 3.0 Chromium)` / `WebKit WebGL`), Node v26.5.1, linux-x64. One fresh Chromium per case (batch 1) with a shared warm HTTP cache; each launch command is logged verbatim in `parity-evidence/gate-run.log`. Identity note recorded by the gate: the rolling `/1` core (`31b766091125742665bee4c5c8392048eaaa786748cc9570b1c94460029fbded`) no longer matches the pinned `1.0.182` bundle — upstream has published a newer engine under `/1` since the fixture was minted; the gate gates on the pinned identity and records the drift as informational.
+
+| Gate | Expected | Executed | Strict passes | Failures | Skips | Missing or unverified |
+|---|---|---|---|---|---|---|
+| Rendered parity gate (this section) | 1260 | 1254 | 1254 | 0 | 0 | 6 (filter/octaveWarp authority frames) |
+| Unit tests | 39 | 39 | not a render gate | 0 | 0 | Render coverage does not follow. |
+| Existing browser cases | 7 | 7 | not a render gate | 0 | 0 | Pixels were not compared. |
+| Independent published-reference probes | 2 | 2 | 2 | 0 | 0 | All broader cases remain unverified. |
+| Hydra solid WebGPU probe | 1 | 1 | 0 | 1 | 0 | Other WebGPU cases remain unverified. |
+| Complete current-authority effects | 210 effect IDs | 210 | 209 effect IDs exact | 0 | 0 | octaveWarp authority frames missing. |
+| Parameter, define, input, temporal matrix | 1260 (2 programs, 3 sizes/times per case) | 1254 | 1254 | 0 | 0 | 6 missing as above. |
+
+The 6 missing comparisons are retained in the denominator; no case was skipped, no tolerance applied, and no fixture or gate criterion was relaxed to reach the summary.
+
 ### Daily review, 2026-09-25
 
 48 unit tests and seven browser editor checks pass. The browser checks do not compare pixels. The retained WebGPU failure and two bounded WebGL2 comparisons remain relevant, but do not qualify all current authority inputs or the Hydra API. GAP-001, GAP-004, and the missing rendered CI gate remain open. [Raw evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json).

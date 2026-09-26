@@ -7,6 +7,30 @@
   RGBA8 readbacks of the o0 surface.
 -->
 <html><body><pre id="out">authority-boot</pre>
+<script>
+// Compile diagnostics: record the raw ANGLE/SwiftShader info log of every
+// failed shader compile so gate evidence can cite the true underlying error
+// instead of the engine's empty "detail" field.
+window.__shaderLogs = []
+;(function () {
+  const origGetContext = HTMLCanvasElement.prototype.getContext
+  HTMLCanvasElement.prototype.getContext = function (type) {
+    const gl = origGetContext.apply(this, arguments)
+    if (gl && !gl.__gatePatched) {
+      try {
+        const origCompile = gl.compileShader.bind(gl)
+        gl.compileShader = (s) => {
+          origCompile(s)
+          const ok = gl.getShaderParameter(s, gl.COMPILE_STATUS)
+          if (!ok) window.__shaderLogs.push(String(gl.getShaderInfoLog(s) || '(no info log returned)').slice(0, 2000))
+        }
+        gl.__gatePatched = true
+      } catch (_) {}
+    }
+    return gl
+  }
+})()
+</script>
 <script type="module">
 const CDN = 'https://shaders.noisedeck.app/1.0.182'
 const pre = document.getElementById('out')
@@ -24,6 +48,9 @@ await renderer.loadManifest()
 const effectIds = Object.keys(renderer.manifest)
 await renderer.loadEffects(effectIds)
 renderer.stop()
+// Diagnostic handle: lets gate diagnostics reach the module-scoped renderer
+// without changing any wiring.
+window.__authorityRenderer = renderer
 
 function currentSize () { return { width: canvas.width, height: canvas.height } }
 
@@ -60,6 +87,14 @@ window.addEventListener('message', async (ev) => {
     ev.source.postMessage({ type: 'authority-error', id: msg.id, error: detail }, '*')
   }
 })
+// The gate driver runs one page at a time (a single live WebGL context per
+// chromium) and calls this directly over the DevTools protocol; the boot
+// renderer (default CanvasRenderer wiring) serves every case.
+window.__gateRun = async (programs) => {
+  const frames = []
+  for (const spec of programs) frames.push(...await runProgram(spec))
+  return frames
+}
 pre.textContent = 'authority-ready:' + effectIds.length
 window.parent.postMessage({ type: 'ready', side: 'authority', effectIds: effectIds.length }, '*')
 </script></body></html>

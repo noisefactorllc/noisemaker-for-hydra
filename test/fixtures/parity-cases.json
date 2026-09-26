@@ -57,14 +57,22 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nbitEffects().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nbitEffects().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "bitMask"
+     },
+     {
       "name": "speed",
       "value": 77
+     },
+     {
+      "name": "formula",
+      "value": "sierpinski"
      },
      {
       "name": "n",
@@ -79,12 +87,28 @@
       "value": 97.2
      },
      {
+      "name": "colorScheme",
+      "value": "cyan"
+     },
+     {
+      "name": "interp",
+      "value": "linear"
+     },
+     {
+      "name": "maskFormula",
+      "value": "wideInvaders"
+     },
+     {
       "name": "tiles",
       "value": 31
      },
      {
       "name": "complexity",
       "value": 77.23
+     },
+     {
+      "name": "maskColorScheme",
+      "value": "hsv"
      },
      {
       "name": "baseHueRange",
@@ -136,7 +160,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\nbitEffects(speed: 77, n: 154, scale: 77.23, rotation: 97.2, tiles: 31, complexity: 77.23, baseHueRange: 77, hueRotation: 277.2, hueRange: 77, seed: 77).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nbitEffects(mode: bitMask, speed: 77, formula: sierpinski, n: 154, scale: 77.23, rotation: 97.2, colorScheme: cyan, interp: linear, maskFormula: wideInvaders, tiles: 31, complexity: 77.23, maskColorScheme: hsv, baseHueRange: 77, hueRotation: 277.2, hueRange: 77, seed: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -154,11 +178,15 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\ncaustic().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\ncaustic().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [
+     {
+      "name": "interp",
+      "value": "linear"
+     },
      {
       "name": "noiseScale",
       "value": 154.23
@@ -196,7 +224,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\ncaustic(noiseScale: 154.23, speed: 77, wrap: false, seed: 77, hueRotation: 277.2, hueRange: 77, intensity: 54).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\ncaustic(interp: linear, noiseScale: 154.23, speed: 77, wrap: false, seed: 77, hueRotation: 277.2, hueRange: 77, intensity: 54).write(o0)\nrender(o0)"
    }
   },
   {
@@ -215,7 +243,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\ncellNoise().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\ncellNoise().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -285,7 +313,7 @@
     "surfaceBindings": [
      "tex"
     ],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\ncellNoise(shape: diamond, scale: 77.23, cellScale: 77.23, smooth: 77, variation: 77, speed: 4, paletteMode: 4, seed: 77, colorMode: monoInverse, palette: seventiesShirt, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, texInfluence: add, texIntensity: 77, tex: read(o1)).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\ncellNoise(shape: diamond, scale: 77.23, cellScale: 77.23, smooth: 77, variation: 77, speed: 4, paletteMode: 4, seed: 77, colorMode: monoInverse, palette: seventiesShirt, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, texInfluence: add, texIntensity: 77, tex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -326,6 +354,10 @@
       "value": 4
      },
      {
+      "name": "shape",
+      "value": "diamond"
+     },
+     {
       "name": "scale",
       "value": 77.23
      },
@@ -346,6 +378,10 @@
       "value": 77
      },
      {
+      "name": "kernel",
+      "value": "blur"
+     },
+     {
       "name": "effectWidth",
       "value": 8
      }
@@ -363,7 +399,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().cellRefract(amount: 77, direction: 277.2, wrap: repeat, speed: 4, scale: 77.23, cellScale: 77.23, smooth: 77, variation: 77, seed: 77, effectWidth: 8).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().cellRefract(amount: 77, direction: 277.2, wrap: repeat, speed: 4, shape: diamond, scale: 77.23, cellScale: 77.23, smooth: 77, variation: 77, seed: 77, kernel: blur, effectWidth: 8).write(o0)\nrender(o0)"
    }
   },
   {
@@ -564,6 +600,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "effect",
+      "value": "blur"
+     },
+     {
       "name": "effectAmt",
       "value": 15
      },
@@ -584,6 +624,10 @@
       "value": 54
      },
      {
+      "name": "flip",
+      "value": "all"
+     },
+     {
       "name": "intensity",
       "value": 54
      },
@@ -600,12 +644,12 @@
      },
      {
       "name": "flip",
-      "value": "Flip:",
+      "value": "all",
       "define": "FLIP"
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().effects(effectAmt: 15, scaleAmt: 313.75, rotation: 97.2, offsetX: 54, offsetY: 54, intensity: 54, saturation: 54).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().effects(effect: blur, effectAmt: 15, scaleAmt: 313.75, rotation: 97.2, offsetX: 54, offsetY: 54, flip: all, intensity: 54, saturation: 54).write(o0)\nrender(o0)"
    }
   },
   {
@@ -623,7 +667,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nfractal().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nfractal().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -715,7 +759,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\nfractal(type: newton, symmetry: 0, zoomAmt: 100.1, rotation: 97.2, speed: 77, offsetX: 54, offsetY: 54, centerX: 54, centerY: 54, mode: z, iterations: 39, colorMode: palette, palette: seventiesShirt, paletteMode: 0, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, hueRange: 77.23, levels: 25, bgAlpha: 77, cutoff: 77).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nfractal(type: newton, symmetry: 0, zoomAmt: 100.1, rotation: 97.2, speed: 77, offsetX: 54, offsetY: 54, centerX: 54, centerY: 54, mode: z, iterations: 39, colorMode: palette, palette: seventiesShirt, paletteMode: 0, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, hueRange: 77.23, levels: 25, bgAlpha: 77, cutoff: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -811,6 +855,14 @@
       "value": 25
      },
      {
+      "name": "metric",
+      "value": "diamond"
+     },
+     {
+      "name": "loopOffset",
+      "value": "triangle"
+     },
+     {
       "name": "loopScale",
       "value": 77.23
      },
@@ -827,6 +879,14 @@
       "value": false
      },
      {
+      "name": "direction",
+      "value": "clockwise"
+     },
+     {
+      "name": "kernel",
+      "value": "blur"
+     },
+     {
       "name": "effectWidth",
       "value": 7.7
      }
@@ -839,7 +899,7 @@
      },
      {
       "name": "loopOffset",
-      "value": "Directional:",
+      "value": "triangle",
       "define": "LOOP_OFFSET"
      },
      {
@@ -854,7 +914,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().kaleido(sides: 25, loopScale: 77.23, speed: 54, seed: 77, wrap: false, effectWidth: 7.7).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().kaleido(sides: 25, metric: diamond, loopOffset: triangle, loopScale: 77.23, speed: 54, seed: 77, wrap: false, direction: clockwise, kernel: blur, effectWidth: 7.7).write(o0)\nrender(o0)"
    }
   },
   {
@@ -958,11 +1018,15 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nmoodscape().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nmoodscape().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [
+     {
+      "name": "interp",
+      "value": "linear"
+     },
      {
       "name": "noiseScale",
       "value": 154.23
@@ -986,6 +1050,10 @@
      {
       "name": "seed",
       "value": 77
+     },
+     {
+      "name": "colorMode",
+      "value": "rgb"
      },
      {
       "name": "hueRotation",
@@ -1013,7 +1081,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\nmoodscape(noiseScale: 154.23, speed: 77, refractAmt: 77, ridges: false, wrap: false, seed: 77, hueRotation: 277.2, hueRange: 77, intensity: 54).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nmoodscape(interp: linear, noiseScale: 154.23, speed: 77, refractAmt: 77, ridges: false, wrap: false, seed: 77, colorMode: rgb, hueRotation: 277.2, hueRange: 77, intensity: 54).write(o0)\nrender(o0)"
    }
   },
   {
@@ -1031,11 +1099,15 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [
+     {
+      "name": "type",
+      "value": "linear"
+     },
      {
       "name": "octaves",
       "value": 6
@@ -1061,8 +1133,16 @@
       "value": 77
      },
      {
+      "name": "refractMode",
+      "value": "topology"
+     },
+     {
       "name": "refractAmt",
       "value": 77
+     },
+     {
+      "name": "loopOffset",
+      "value": "triangle"
      },
      {
       "name": "loopScale",
@@ -1077,6 +1157,10 @@
       "value": 25
      },
      {
+      "name": "metric",
+      "value": "diamond"
+     },
+     {
       "name": "paletteMode",
       "value": 3
      },
@@ -1087,6 +1171,10 @@
      {
       "name": "hueRange",
       "value": 77
+     },
+     {
+      "name": "colorMode",
+      "value": "linearRgb"
      },
      {
       "name": "palette",
@@ -1118,7 +1206,7 @@
      },
      {
       "name": "loopOffset",
-      "value": "Directional:",
+      "value": "triangle",
       "define": "LOOP_OFFSET"
      },
      {
@@ -1133,7 +1221,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\nnoise(octaves: 6, xScale: 77.23, yScale: 77.23, ridges: true, wrap: false, seed: 77, refractAmt: 77, loopScale: 77.23, speed: 54, kaleido: 25, paletteMode: 3, hueRotation: 277.2, hueRange: 77, palette: seventiesShirt, cyclePalette: off, rotatePalette: 77, repeatPalette: 8).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise(type: linear, octaves: 6, xScale: 77.23, yScale: 77.23, ridges: true, wrap: false, seed: 77, refractMode: topology, refractAmt: 77, loopOffset: triangle, loopScale: 77.23, speed: 54, kaleido: 25, metric: diamond, paletteMode: 3, hueRotation: 277.2, hueRange: 77, colorMode: linearRgb, palette: seventiesShirt, cyclePalette: off, rotatePalette: 77, repeatPalette: 8).write(o0)\nrender(o0)"
    }
   },
   {
@@ -1152,11 +1240,15 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise3d().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [
+     {
+      "name": "type",
+      "value": "sine"
+     },
      {
       "name": "ridges",
       "value": true
@@ -1202,7 +1294,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\nnoise3d(ridges: true, seed: 77, speed: 5, scale: 77.23, offsetX: 54, offsetY: 54, colorMode: hsv, hueRotation: 277.2, hueRange: 77).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise3d(type: sine, ridges: true, seed: 77, speed: 5, scale: 77.23, offsetX: 54, offsetY: 54, colorMode: hsv, hueRotation: 277.2, hueRange: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -1281,6 +1373,10 @@
       "value": "divide"
      },
      {
+      "name": "loopOffset",
+      "value": "circle"
+     },
+     {
       "name": "loopScale",
       "value": 77.23
      },
@@ -1324,14 +1420,14 @@
     "defines": [
      {
       "name": "loopOffset",
-      "value": "Shapes:",
+      "value": "circle",
       "define": "LOOP_OFFSET"
      }
     ],
     "surfaceBindings": [
      "tex"
     ],
-    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().shapeMixer(blendMode: divide, loopScale: 77.23, wrap: false, seed: 77, animate: off, palette: seventiesShirt, paletteMode: 0, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, levels: 25, tex: read(o1)).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nnoise().shapeMixer(blendMode: divide, loopOffset: circle, loopScale: 77.23, wrap: false, seed: 77, animate: off, palette: seventiesShirt, paletteMode: 0, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, levels: 25, tex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -1349,11 +1445,19 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nshapes().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nshapes().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [
+     {
+      "name": "loopAOffset",
+      "value": "triangle"
+     },
+     {
+      "name": "loopBOffset",
+      "value": "triangle"
+     },
      {
       "name": "loopAScale",
       "value": 77.23
@@ -1402,17 +1506,17 @@
     "defines": [
      {
       "name": "loopAOffset",
-      "value": "Directional:",
+      "value": "triangle",
       "define": "LOOP_A_OFFSET"
      },
      {
       "name": "loopBOffset",
-      "value": "Directional:",
+      "value": "triangle",
       "define": "LOOP_B_OFFSET"
      }
     ],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\nshapes(loopAScale: 77.23, loopBScale: 77.23, speedA: 54, speedB: 54, seed: 77, wrap: false, palette: seventiesShirt, paletteMode: 0, cyclePalette: off, rotatePalette: 77, repeatPalette: 8).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nshapes(loopAOffset: triangle, loopBOffset: triangle, loopAScale: 77.23, loopBScale: 77.23, speedA: 54, speedB: 54, seed: 77, wrap: false, palette: seventiesShirt, paletteMode: 0, cyclePalette: off, rotatePalette: 77, repeatPalette: 8).write(o0)\nrender(o0)"
    }
   },
   {
@@ -1430,11 +1534,19 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search classicNoisedeck\nshapes3d().write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nshapes3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [
+     {
+      "name": "shapeA",
+      "value": "sphere"
+     },
+     {
+      "name": "shapeB",
+      "value": "sphere"
+     },
      {
       "name": "shapeAScale",
       "value": 77.23
@@ -1450,6 +1562,10 @@
      {
       "name": "shapeBThickness",
       "value": 38.73
+     },
+     {
+      "name": "blendMode",
+      "value": "smoothIntersect"
      },
      {
       "name": "smoothness",
@@ -1544,7 +1660,7 @@
     "surfaceBindings": [
      "tex"
     ],
-    "source": "search classicNoisedeck\nnoise(speed: 0).write(o1)\nshapes3d(shapeAScale: 77.23, shapeBScale: 77.23, shapeAThickness: 38.73, shapeBThickness: 38.73, smoothness: 77.23, repetition: true, animation: rotateShape, spacing: 17, flythroughSpeed: 5.4, spin: 97.2, spinSpeed: 5.4, flip: 97, flipSpeed: 5.4, cameraDist: 16.55, bgAlpha: 77, weight: 77, colorMode: diffuse, palette: seventiesShirt, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, paletteMode: 0, tex: read(o1)).write(o0)\nrender(o0)"
+    "source": "search classicNoisedeck, synth\nnoise(speed: 0).write(o1)\nshapes3d(shapeA: sphere, shapeB: sphere, shapeAScale: 77.23, shapeBScale: 77.23, shapeAThickness: 38.73, shapeBThickness: 38.73, blendMode: smoothIntersect, smoothness: 77.23, repetition: true, animation: rotateShape, spacing: 17, flythroughSpeed: 5.4, spin: 97.2, spinSpeed: 5.4, flip: 97, flipSpeed: 5.4, cameraDist: 16.55, bgAlpha: 77, weight: 77, colorMode: diffuse, palette: seventiesShirt, cyclePalette: off, rotatePalette: 77, repeatPalette: 8, paletteMode: 0, tex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -2530,6 +2646,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "style",
+      "value": "gray"
+     },
+     {
       "name": "amount",
       "value": 3.873
      },
@@ -2554,7 +2674,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().emboss(amount: 3.873, angle: 194.4, height: 7.93, colorAmount: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().emboss(style: gray, amount: 3.873, angle: 194.4, height: 7.93, colorAmount: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -2580,12 +2700,20 @@
     "label": "varied",
     "params": [
      {
+      "name": "type",
+      "value": "pyramids"
+     },
+     {
       "name": "size",
       "value": 99.48
      },
      {
       "name": "depth",
       "value": 77
+     },
+     {
+      "name": "depthSource",
+      "value": "random"
      },
      {
       "name": "solidFront",
@@ -2605,7 +2733,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().extrude(size: 99.48, depth: 77, solidFront: false).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().extrude(type: pyramids, size: 99.48, depth: 77, depthSource: random, solidFront: false).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3122,6 +3250,14 @@
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "mono"
+     },
+     {
+      "name": "pattern",
+      "value": "line"
+     },
+     {
       "name": "frequency",
       "value": 99.48
      },
@@ -3163,7 +3299,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().halftone(frequency: 99.48, cyanAngle: 97.2, magentaAngle: 97.2, yellowAngle: 97.2, blackAngle: 97.2, monoAngle: 97.2, sharpness: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().halftone(mode: mono, pattern: line, frequency: 99.48, cyanAngle: 97.2, magentaAngle: 97.2, yellowAngle: 97.2, blackAngle: 97.2, monoAngle: 97.2, sharpness: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3189,6 +3325,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "charcoal"
+     },
+     {
       "name": "strokeLength",
       "value": 77
      },
@@ -3213,7 +3353,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().hatch(strokeLength: 77, direction: horizontal, balance: 77, pressure: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().hatch(mode: charcoal, strokeLength: 77, direction: horizontal, balance: 77, pressure: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3403,6 +3543,10 @@
      {
       "name": "centerY",
       "value": 0.77
+     },
+     {
+      "name": "lensType",
+      "value": "prime35"
      }
     ],
     "defines": [
@@ -3413,7 +3557,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().lensFlare(brightness: 233.3, centerX: 0.77, centerY: 0.77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().lensFlare(brightness: 233.3, centerX: 0.77, centerY: 0.77, lensType: prime35).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3580,6 +3724,14 @@
       "value": 0.77
      },
      {
+      "name": "borderWidth",
+      "value": 77
+     },
+     {
+      "name": "lightIntensity",
+      "value": 77
+     },
+     {
       "name": "alpha",
       "value": 0.77
      },
@@ -3601,7 +3753,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().lowPoly(scale: 77, seed: 77, mode: edges, edgeStrength: 0.77, alpha: 0.77, speed: 4).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().lowPoly(scale: 77, seed: 77, mode: edges, edgeStrength: 0.77, borderWidth: 77, lightIntensity: 77, alpha: 0.77, speed: 4).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3626,6 +3778,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "radius",
+      "value": 3
+     },
+     {
       "name": "threshold",
       "value": 77
      }
@@ -3638,7 +3794,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().median(threshold: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().median(radius: 3, threshold: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3669,6 +3825,10 @@
      {
       "name": "radius",
       "value": 24.87
+     },
+     {
+      "name": "shape",
+      "value": "round"
      }
     ],
     "defines": [
@@ -3679,7 +3839,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().morphology(mode: erode, radius: 24.87).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().morphology(mode: erode, radius: 24.87, shape: round).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3704,6 +3864,10 @@
    "caseB": {
     "label": "varied",
     "params": [
+     {
+      "name": "mode",
+      "value": "shifted"
+     },
      {
       "name": "tileSize",
       "value": 99.48
@@ -3737,7 +3901,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().mosaicTiles(tileSize: 99.48, groutWidth: 77, relief: 77, maxOffset: 77, gapFill: inverse, seed: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().mosaicTiles(mode: shifted, tileSize: 99.48, groutWidth: 77, relief: 77, maxOffset: 77, gapFill: inverse, seed: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -3902,6 +4066,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "daubs"
+     },
+     {
       "name": "size",
       "value": 9.47
      },
@@ -3926,7 +4094,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().oilPaint(size: 9.47, detail: 77, texture: 77, seed: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().oilPaint(mode: daubs, size: 9.47, detail: 77, texture: 77, seed: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -4401,6 +4569,14 @@
       "value": 3
      },
      {
+      "name": "style",
+      "value": "outFromCenter"
+     },
+     {
+      "name": "wrap",
+      "value": "repeat"
+     },
+     {
       "name": "antialias",
       "value": false
      }
@@ -4418,7 +4594,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().pondRipples(amount: 77, ridges: 16, speed: 3, antialias: false).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().pondRipples(amount: 77, ridges: 16, speed: 3, style: outFromCenter, wrap: repeat, antialias: false).write(o0)\nrender(o0)"
    }
   },
   {
@@ -4563,6 +4739,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "plaster"
+     },
+     {
       "name": "smoothness",
       "value": 77
      },
@@ -4591,7 +4771,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().relief(smoothness: 77, detail: 77, lightAngle: 97.2, balance: 77, graininess: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().relief(mode: plaster, smoothness: 77, detail: 77, lightAngle: 97.2, balance: 77, graininess: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -4870,6 +5050,10 @@
       "value": 19.48
      },
      {
+      "name": "mode",
+      "value": "darkenOnly"
+     },
+     {
       "name": "smoothness",
       "value": 77
      },
@@ -4886,7 +5070,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().scatter(radius: 19.48, smoothness: 77, seed: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().scatter(radius: 19.48, mode: darkenOnly, smoothness: 77, seed: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -5568,6 +5752,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "mezzoDots"
+     },
+     {
       "name": "cellSize",
       "value": 49.97
      },
@@ -5592,7 +5780,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().stipple(cellSize: 49.97, grainSize: 12.435, density: 77, seed: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().stipple(mode: mezzoDots, cellSize: 49.97, grainSize: 12.435, density: 77, seed: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -5656,6 +5844,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "sprayed"
+     },
+     {
       "name": "length",
       "value": 77
      },
@@ -5680,7 +5872,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().strokes(length: 77, balance: 77, intensity: 77, sharpness: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().strokes(mode: sprayed, length: 77, balance: 77, intensity: 77, sharpness: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -5983,6 +6175,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "mode",
+      "value": "crosshatch"
+     },
+     {
       "name": "alpha",
       "value": 0.77
      },
@@ -6011,7 +6207,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().texture(alpha: 0.77, scale: 7.723, intensity: 77, contrast: 77, mono: false).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().texture(mode: crosshatch, alpha: 0.77, scale: 7.723, intensity: 77, contrast: 77, mono: false).write(o0)\nrender(o0)"
    }
   },
   {
@@ -6495,6 +6691,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "method",
+      "value": "blast"
+     },
+     {
       "name": "direction",
       "value": "fromRight"
      },
@@ -6515,7 +6715,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().wind(direction: fromRight, strength: 77, threshold: 77).write(o0)\nrender(o0)"
+    "source": "search filter, synth\nnoise(speed: 0).write(o1)\nnoise().wind(method: blast, direction: fromRight, strength: 77, threshold: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -6648,7 +6848,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search filter3d, synth3d\nnoise3d().flow3d().write(o0)\nrender(o0)"
+    "source": "search filter3d, synth, synth3d\nnoise3d().flow3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -6656,6 +6856,10 @@
      {
       "name": "volumeSize",
       "value": "x32"
+     },
+     {
+      "name": "behavior",
+      "value": "obedient"
      },
      {
       "name": "density",
@@ -6694,7 +6898,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search filter3d, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().flow3d(volumeSize: x32, density: 77.23, stride: 7.723, strideDeviation: 0.385, kink: 7.7, intensity: 77, inputIntensity: 77, lifetime: 46.2).write(o0)\nrender(o0)"
+    "source": "search filter3d, synth, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().flow3d(volumeSize: x32, behavior: obedient, density: 77.23, stride: 7.723, strideDeviation: 0.385, kink: 7.7, intensity: 77, inputIntensity: 77, lifetime: 46.2).write(o0)\nrender(o0)"
    }
   },
   {
@@ -6714,7 +6918,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search filter3d, synth3d\nnoise3d().palette3d().write(o0)\nrender(o0)"
+    "source": "search filter3d, synth, synth3d\nnoise3d().palette3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -6742,7 +6946,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search filter3d, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().palette3d(volumeSize: x32, rotation: none, offset: 77, repeat: 8, alpha: 0.77).write(o0)\nrender(o0)"
+    "source": "search filter3d, synth, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().palette3d(volumeSize: x32, rotation: none, offset: 77, repeat: 8, alpha: 0.77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -6966,7 +7170,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search mixer\nchannelCombine().write(o0)\nrender(o0)"
+    "source": "search mixer, synth\nchannelCombine().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -6990,7 +7194,7 @@
      "gTex",
      "bTex"
     ],
-    "source": "search mixer\nnoise(speed: 0).write(o1)\nchannelCombine(rLevel: 77, gLevel: 77, bLevel: 77, rTex: read(o1), gTex: read(o1), bTex: read(o1)).write(o0)\nrender(o0)"
+    "source": "search mixer, synth\nnoise(speed: 0).write(o1)\nchannelCombine(rLevel: 77, gLevel: 77, bLevel: 77, rTex: read(o1), gTex: read(o1), bTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -7110,7 +7314,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search mixer\nmashup().write(o0)\nrender(o0)"
+    "source": "search mixer, synth\nmashup().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -7136,7 +7340,7 @@
      "layer6_tex",
      "layer7_tex"
     ],
-    "source": "search mixer\nnoise(speed: 0).write(o1)\nmashup(layers: 7, smoothness: 0.385, source: read(o1), layer0_tex: read(o1), layer1_tex: read(o1), layer2_tex: read(o1), layer3_tex: read(o1), layer4_tex: read(o1), layer5_tex: read(o1), layer6_tex: read(o1), layer7_tex: read(o1)).write(o0)\nrender(o0)"
+    "source": "search mixer, synth\nnoise(speed: 0).write(o1)\nmashup(layers: 7, smoothness: 0.385, source: read(o1), layer0_tex: read(o1), layer1_tex: read(o1), layer2_tex: read(o1), layer3_tex: read(o1), layer4_tex: read(o1), layer5_tex: read(o1), layer6_tex: read(o1), layer7_tex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8159,14 +8363,14 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search render\nmeshLoader().write(o0)\nrender(o0)"
+    "source": "search render, synth\nmeshLoader().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
     "params": [],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search render\nnoise(speed: 0).write(o1)\nmeshLoader().write(o0)\nrender(o0)"
+    "source": "search render, synth\nnoise(speed: 0).write(o1)\nmeshLoader().write(o0)\nrender(o0)"
    }
   },
   {
@@ -8523,7 +8727,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise3d().render3d().write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise3d().render3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -8533,8 +8737,16 @@
       "value": "v32"
      },
      {
+      "name": "filtering",
+      "value": "voxel"
+     },
+     {
       "name": "threshold",
       "value": 0.77
+     },
+     {
+      "name": "invert",
+      "value": true
      },
      {
       "name": "orbitSpeed",
@@ -8558,7 +8770,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().render3d(volumeSize: v32, threshold: 0.77, orbitSpeed: 3, bgAlpha: 0.77).write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().render3d(volumeSize: v32, filtering: voxel, threshold: 0.77, invert: true, orbitSpeed: 3, bgAlpha: 0.77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8576,7 +8788,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise3d().renderCubemap3d().write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise3d().renderCubemap3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -8586,8 +8798,16 @@
       "value": "v32"
      },
      {
+      "name": "filtering",
+      "value": "voxel"
+     },
+     {
       "name": "threshold",
       "value": 0.77
+     },
+     {
+      "name": "invert",
+      "value": true
      },
      {
       "name": "bgAlpha",
@@ -8607,7 +8827,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderCubemap3d(volumeSize: v32, threshold: 0.77, bgAlpha: 0.77).write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderCubemap3d(volumeSize: v32, filtering: voxel, threshold: 0.77, invert: true, bgAlpha: 0.77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8625,7 +8845,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise3d().renderCubemapSurface().write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise3d().renderCubemapSurface().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -8653,7 +8873,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderCubemapSurface(volumeSize: v32, density: 15.4, absorption: 3.08, emission: 3.08, bgAlpha: 0.77).write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderCubemapSurface(volumeSize: v32, density: 15.4, absorption: 3.08, emission: 3.08, bgAlpha: 0.77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8671,7 +8891,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise3d().renderLandscape3d().write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise3d().renderLandscape3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -8717,6 +8937,10 @@
       "value": 0.77
      },
      {
+      "name": "viewMode",
+      "value": "perspective"
+     },
+     {
       "name": "rotateX",
       "value": 4.838052
      },
@@ -8747,6 +8971,10 @@
      {
       "name": "fieldOfView",
       "value": 117.8
+     },
+     {
+      "name": "filtering",
+      "value": "voxel"
      }
     ],
     "defines": [
@@ -8762,7 +8990,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderLandscape3d(volumeSize: 64, threshold: 0.77, zoom: 3.1375, panX: 0.54, panY: 0.54, lightDirection: 0.54, ambient: 0.77, diffuseIntensity: 1.54, specularIntensity: 0.77, bgAlpha: 0.77, rotateX: 4.838052, rotateY: 4.838052, rotateZ: 4.838052, viewScale: 7.723, posX: 27, posY: 27, posZ: 108, fieldOfView: 117.8).write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderLandscape3d(volumeSize: 64, threshold: 0.77, zoom: 3.1375, panX: 0.54, panY: 0.54, lightDirection: 0.54, ambient: 0.77, diffuseIntensity: 1.54, specularIntensity: 0.77, bgAlpha: 0.77, viewMode: perspective, rotateX: 4.838052, rotateY: 4.838052, rotateZ: 4.838052, viewScale: 7.723, posX: 27, posY: 27, posZ: 108, fieldOfView: 117.8, filtering: voxel).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8780,7 +9008,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise3d().renderLit3d().write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise3d().renderLit3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -8832,7 +9060,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search render, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderLit3d(volumeSize: v32, shape: sphere, threshold: 0.77, invert: true, orbitSpeed: 3, bgAlpha: 0.77, diffuseIntensity: 1.54, specularIntensity: 1.54, shininess: 197.35, rimIntensity: 0.77, rimPower: 6.275).write(o0)\nrender(o0)"
+    "source": "search render, synth, synth3d\nnoise(speed: 0).write(o1)\nnoise3d().renderLit3d(volumeSize: v32, shape: sphere, threshold: 0.77, invert: true, orbitSpeed: 3, bgAlpha: 0.77, diffuseIntensity: 1.54, specularIntensity: 1.54, shininess: 197.35, rimIntensity: 0.77, rimPower: 6.275).write(o0)\nrender(o0)"
    }
   },
   {
@@ -9042,8 +9270,16 @@
       "value": 15.515
      },
      {
+      "name": "octaves",
+      "value": 3
+     },
+     {
       "name": "seed",
       "value": 770
+     },
+     {
+      "name": "ridges",
+      "value": false
      },
      {
       "name": "intensity",
@@ -9052,6 +9288,10 @@
      {
       "name": "speed",
       "value": 4
+     },
+     {
+      "name": "outputMode",
+      "value": "flowY"
      }
     ],
     "defines": [
@@ -9072,7 +9312,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search synth\nnoise(speed: 0).write(o1)\ncurl(scale: 15.515, seed: 770, intensity: 1.54, speed: 4).write(o0)\nrender(o0)"
+    "source": "search synth\nnoise(speed: 0).write(o1)\ncurl(scale: 15.515, octaves: 3, seed: 770, ridges: false, intensity: 1.54, speed: 4, outputMode: flowY).write(o0)\nrender(o0)"
    }
   },
   {
@@ -9859,6 +10099,10 @@
     "label": "varied",
     "params": [
      {
+      "name": "type",
+      "value": "linear"
+     },
+     {
       "name": "octaves",
       "value": 6
      },
@@ -9883,6 +10127,10 @@
       "value": true
      },
      {
+      "name": "loopOffset",
+      "value": "triangle"
+     },
+     {
       "name": "loopScale",
       "value": 77.23
      },
@@ -9903,12 +10151,12 @@
      },
      {
       "name": "loopOffset",
-      "value": "Directional:",
+      "value": "triangle",
       "define": "LOOP_OFFSET"
      }
     ],
     "surfaceBindings": [],
-    "source": "search synth\nnoise(speed: 0).write(o1)\nnoise(octaves: 6, scaleX: 77.23, scaleY: 77.23, seed: 77, wrap: false, ridges: true, loopScale: 77.23, speed: 54, colorMode: rgb).write(o0)\nrender(o0)"
+    "source": "search synth\nnoise(speed: 0).write(o1)\nnoise(type: linear, octaves: 6, scaleX: 77.23, scaleY: 77.23, seed: 77, wrap: false, ridges: true, loopOffset: triangle, loopScale: 77.23, speed: 54, colorMode: rgb).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10045,6 +10293,10 @@
       "value": "rgb"
      },
      {
+      "name": "dimensions",
+      "value": 3
+     },
+     {
       "name": "ridges",
       "value": true
      },
@@ -10077,7 +10329,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search synth\nnoise(speed: 0).write(o1)\nperlin(scale: 77, octaves: 5, colorMode: rgb, ridges: true, warpIterations: 3, warpScale: 77, warpIntensity: 77, seed: 77, speed: 4).write(o0)\nrender(o0)"
+    "source": "search synth\nnoise(speed: 0).write(o1)\nperlin(scale: 77, octaves: 5, colorMode: rgb, dimensions: 3, ridges: true, warpIterations: 3, warpScale: 77, warpIntensity: 77, seed: 77, speed: 4).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10490,6 +10742,14 @@
     "label": "varied",
     "params": [
      {
+      "name": "loopAOffset",
+      "value": "triangle"
+     },
+     {
+      "name": "loopBOffset",
+      "value": "triangle"
+     },
+     {
       "name": "loopAScale",
       "value": 77.23
      },
@@ -10517,17 +10777,17 @@
     "defines": [
      {
       "name": "loopAOffset",
-      "value": "Directional:",
+      "value": "triangle",
       "define": "LOOP_A_OFFSET"
      },
      {
       "name": "loopBOffset",
-      "value": "Directional:",
+      "value": "triangle",
       "define": "LOOP_B_OFFSET"
      }
     ],
     "surfaceBindings": [],
-    "source": "search synth\nnoise(speed: 0).write(o1)\nshape(loopAScale: 77.23, loopBScale: 77.23, speedA: 54, speedB: 54, seed: 77, wrap: false).write(o0)\nrender(o0)"
+    "source": "search synth\nnoise(speed: 0).write(o1)\nshape(loopAOffset: triangle, loopBOffset: triangle, loopAScale: 77.23, loopBScale: 77.23, speedA: 54, speedB: 54, seed: 77, wrap: false).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10709,7 +10969,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\ncell3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\ncell3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -10741,7 +11001,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\ncell3d(volumeSize: x32, metric: octahedron, scale: 11.78, variation: 77, seed: 77, colorMode: rgb).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\ncell3d(volumeSize: x32, metric: octahedron, scale: 11.78, variation: 77, seed: 77, colorMode: rgb).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10760,7 +11020,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\ncellularAutomata3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\ncellularAutomata3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -10804,7 +11064,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\ncellularAutomata3d(volumeSize: x32, seed: 77, ruleIndex: rule678, neighborMode: vonNeumann, speed: 8, density: 77.23, colorMode: age, resetState: true, weight: 77).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\ncellularAutomata3d(volumeSize: x32, seed: 77, ruleIndex: rule678, neighborMode: vonNeumann, speed: 8, density: 77.23, colorMode: age, resetState: true, weight: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10823,7 +11083,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nflythrough3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nflythrough3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -10863,7 +11123,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\nflythrough3d(volumeSize: x32, type: mandelbox, power: 11.63, iterations: 19, bailout: 12.55, speed: 0.77, voiSize: 1.563, seed: 77).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\nflythrough3d(volumeSize: x32, type: mandelbox, power: 11.63, iterations: 19, bailout: 12.55, speed: 0.77, voiSize: 1.563, seed: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10881,7 +11141,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nfractal3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nfractal3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -10925,7 +11185,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\nfractal3d(volumeSize: x32, type: mandelcube, power: 12.78, iterations: 16, bailout: 6.39, juliaX: 54, juliaY: 54, juliaZ: 54, colorMode: orbitTrap).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\nfractal3d(volumeSize: x32, type: mandelcube, power: 12.78, iterations: 16, bailout: 6.39, juliaX: 54, juliaY: 54, juliaZ: 54, colorMode: orbitTrap).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10943,7 +11203,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nheightmap3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nheightmap3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -10966,7 +11226,7 @@
      "heightTex",
      "tex"
     ],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\nheightmap3d(volumeSize: x32, heightScale: 0.77, baseHeight: 0.77, heightTex: read(o1), tex: read(o1)).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\nheightmap3d(volumeSize: x32, heightScale: 0.77, baseHeight: 0.77, heightTex: read(o1), tex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -10985,7 +11245,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -10997,6 +11257,18 @@
      {
       "name": "scale",
       "value": 77
+     },
+     {
+      "name": "octaves",
+      "value": 5
+     },
+     {
+      "name": "colorMode",
+      "value": "rgb"
+     },
+     {
+      "name": "ridges",
+      "value": true
      },
      {
       "name": "seed",
@@ -11025,7 +11297,7 @@
      }
     ],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\nnoise3d(volumeSize: x32, scale: 77, seed: 77, speed: 4).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\nnoise3d(volumeSize: x32, scale: 77, octaves: 5, colorMode: rgb, ridges: true, seed: 77, speed: 4).write(o0)\nrender(o0)"
    }
   },
   {
@@ -11044,7 +11316,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nreactionDiffusion3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nreactionDiffusion3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -11096,7 +11368,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\nreactionDiffusion3d(volumeSize: x32, seed: 77, iterations: 25, feed: 87, kill: 64.25, rate1: 103.9, rate2: 66.2, speed: 156, colorMode: gradient, resetState: true, weight: 77).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\nreactionDiffusion3d(volumeSize: x32, seed: 77, iterations: 25, feed: 87, kill: 64.25, rate1: 103.9, rate2: 66.2, speed: 156, colorMode: gradient, resetState: true, weight: 77).write(o0)\nrender(o0)"
    }
   },
   {
@@ -11115,7 +11387,7 @@
     "label": "defaults",
     "params": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nshape3d().write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nshape3d().write(o0)\nrender(o0)"
    },
    "caseB": {
     "label": "varied",
@@ -11130,11 +11402,11 @@
      },
      {
       "name": "loopAOffset",
-      "value": "Other Primitives:"
+      "value": "cube"
      },
      {
       "name": "loopBOffset",
-      "value": "Other Primitives:"
+      "value": "cube"
      },
      {
       "name": "loopAScale",
@@ -11155,7 +11427,7 @@
     ],
     "defines": [],
     "surfaceBindings": [],
-    "source": "search synth3d\nnoise(speed: 0).write(o1)\nshape3d(volumeSize: x32, colorMode: rgb, loopAOffset: Other Primitives:, loopBOffset: Other Primitives:, loopAScale: 77.23, loopBScale: 77.23, speedA: 3, speedB: 3).write(o0)\nrender(o0)"
+    "source": "search synth3d, synth\nnoise(speed: 0).write(o1)\nshape3d(volumeSize: x32, colorMode: rgb, loopAOffset: cube, loopBOffset: cube, loopAScale: 77.23, loopBScale: 77.23, speedA: 3, speedB: 3).write(o0)\nrender(o0)"
    }
   }
  ]

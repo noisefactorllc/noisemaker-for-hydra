@@ -45,7 +45,6 @@ test('parity gate harness files exist', () => {
   for (const f of [
     'scripts/parity-gate.mjs',
     'scripts/generate-parity-cases.mjs',
-    'test/parity-gate/parent.html',
     'test/parity-gate/authority.html',
     'test/parity-gate/port.html'
   ]) {

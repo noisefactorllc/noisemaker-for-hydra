@@ -1,0 +1,136 @@
+{
+ "gate": "gap-001-rendered-parity",
+ "identityOk": true,
+ "slice": {
+  "start": 57,
+  "limit": 1
+ },
+ "pinned": {
+  "upstreamCommit": "2f47612c29045c1b91af94887a8ff20106e980ef",
+  "engineBundle": "https://shaders.noisedeck.app/1.0.182/noisemaker-shaders-core.esm.min.js",
+  "engineBundleSha256": "e1a10dc9aa7c739b416ec546304326ad6f457eb3dc5d0ca2a601cee56b9d7f50",
+  "manifest": "https://shaders.noisedeck.app/1.0.182/effects/manifest.json",
+  "manifestSha256": "05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e",
+  "rollingCore": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
+  "companion": "/_engine/hydra-synth.js",
+  "companionSha256": "5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded"
+ },
+ "identity": {
+  "engineBundle": {
+   "url": "https://shaders.noisedeck.app/1.0.182/noisemaker-shaders-core.esm.min.js",
+   "sha256": "e1a10dc9aa7c739b416ec546304326ad6f457eb3dc5d0ca2a601cee56b9d7f50",
+   "matchesPinned": true
+  },
+  "manifest": {
+   "url": "https://shaders.noisedeck.app/1.0.182/effects/manifest.json",
+   "sha256": "05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e",
+   "matchesPinned": true
+  },
+  "rollingCore": {
+   "url": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
+   "sha256": "31b766091125742665bee4c5c8392048eaaa786748cc9570b1c94460029fbded",
+   "matchesPinned": false
+  },
+  "companion": {
+   "url": "/_engine/hydra-synth.js",
+   "sha256": "5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded",
+   "matchesPinned": true
+  },
+  "rollingMatchesImmutable": false
+ },
+ "env": {
+  "node": "v26.5.1",
+  "platform": "linux-x64",
+  "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL"
+ },
+ "fixture": {
+  "cases": 210,
+  "upstreamCommit": "2f47612c29045c1b91af94887a8ff20106e980ef",
+  "generator": "scripts/generate-parity-cases.mjs",
+  "sha256": "5b43d8a2243ad55f0b4e668909a1ce0d27ca86f4423ea47ebf8d37fd15202a06"
+ },
+ "denominator": {
+  "cases": 1,
+  "expectedComparisons": 6,
+  "executedComparisons": 6,
+  "exact": 6,
+  "tolerance": 0,
+  "failed": 0,
+  "missing": 0
+ },
+ "pass": true,
+ "failures": [],
+ "caseStatus": [
+  {
+   "id": "filter/lensFlare",
+   "frames": 6,
+   "exact": 6,
+   "tolerance": 0,
+   "failed": 0,
+   "missing": 0,
+   "status": "EXACT"
+  }
+ ],
+ "perFrame": [
+  {
+   "case": "filter/lensFlare",
+   "group": "AB",
+   "key": "A",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 3072
+  },
+  {
+   "case": "filter/lensFlare",
+   "group": "AB",
+   "key": "A",
+   "t": 0.37,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 3072
+  },
+  {
+   "case": "filter/lensFlare",
+   "group": "AB",
+   "key": "A",
+   "t": 0.74,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 3072
+  },
+  {
+   "case": "filter/lensFlare",
+   "group": "AB",
+   "key": "B",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 3072
+  },
+  {
+   "case": "filter/lensFlare",
+   "group": "AB",
+   "key": "B",
+   "t": 0.37,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 3072
+  },
+  {
+   "case": "filter/lensFlare",
+   "group": "C",
+   "key": "C",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  }
+ ]
+}

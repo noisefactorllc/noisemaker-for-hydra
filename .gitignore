@@ -5,4 +5,5 @@ node_modules
 *~
 backend/certs
 
-parity-evidence/
+parity-evidence/chrome-http-cache/
+parity-evidence/chrome-profile-*/

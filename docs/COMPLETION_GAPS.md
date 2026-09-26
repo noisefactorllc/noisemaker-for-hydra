@@ -111,13 +111,13 @@ No prior gap closed during this audit.
 - Status: open. Priority: P1. Category: verification.
 - Affected scope: Runtime, companion bundle, authority inputs, and all rendered fixtures.
 - Expected behavior: Every applicable case has source-bound reference-versus-port output without missing or skipped cases.
-- Observed behavior: No complete rendered suite exists. All 210 current effect IDs lack a full current-authority fixture qualification. Two published-authority probes pass.
-- Evidence: [coverage-inventory.json](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/coverage-inventory.json) and section 3.
-- Next action: Add the complete rendered gate in the implementation job. Pin engine and companion authority identities.
-- Dependencies: Identify effect parameters, defines, external inputs, seeds, times, sizes, chains, and stateful frames.
+- Observed behavior: The complete rendered gate now exists in the tree (`scripts/parity-gate.mjs` with `test/parity-gate/authority.html` and `test/parity-gate/port.html`, matrix in `test/fixtures/parity-cases.json` generated from upstream `2f47612c29045c1b91af94887a8ff20106e980ef`, fixture SHA-256 `5b43d8a2243ad55f0b4e668909a1ce0d27ca86f4423ea47ebf8d37fd15202a06`). Executed run 2026-09-26: all 210 effect IDs and 1254 of 1260 case comparisons executed, 1254 exact, 0 tolerance-level, 0 failed, 6 missing — the six `filter/octaveWarp` frames on the authority side only, where the pinned `1.0.182` engine fails on the second render of the program under SwiftShader (`ERR_SHADER_COMPILE` with an empty ANGLE info log, reproduced across eight fresh-chromium attempts; the port rendered every frame). The gate exits nonzero and records `pass=false`; GAP-001 is not closed. The gate also verified the pinned authority identities in-run and recorded that the rolling `/1` engine (`31b766091125742665bee4c5c8392048eaaa786748cc9570b1c94460029fbded`) has drifted ahead of the pinned `1.0.182` bundle.
+- Evidence: in-repo raw execution log `parity-evidence/gate-run.log` (verbatim Chromium launch commands, versions, console output, exit codes), per-case reports `parity-evidence/slice-000.json` through `parity-evidence/slice-209.json`, merged denominator and failures in `parity-evidence/parity-gate-report.json`; report sections in `docs/COMPATIBILITY.md` section 3 ("Rendered parity gate, 2026-09-26"). Historical audit evidence: [coverage-inventory.json](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/coverage-inventory.json) and section 3.
+- Next action: Close the remaining 6 comparisons once a pinned-authority engine revision that renders `filter/octaveWarp` beyond its first render is available (a newer immutable published engine or a host whose GL stack compiles the failing program), then rerun the gate to `pass=true`.
+- Dependencies: Identify effect parameters, defines, external inputs, seeds, times, sizes, chains, and stateful frames. (Done: the matrix covers defaults and varied programs with define-backed kwargs, explicit surface bindings, chains, three sizes/times; the one remaining dependency is the pinned-authority engine limitation above.)
 - Acceptance criteria: Execute every inventoried case. Report exact equality separately from any existing numerical contract. Preserve failures and missing cases.
 - Required checks: Preserve raw commands, versions, source hashes, full denominators, output, and exit codes for the acceptance checks.
-- Last verification: 2026-09-24. No closure claimed.
+- Last verification: 2026-09-26 (rendered gate executed; 1254/1260 exact; 6 missing preserved; no closure claimed).
 
 ### GAP-002: installed developer workflow qualification
 
