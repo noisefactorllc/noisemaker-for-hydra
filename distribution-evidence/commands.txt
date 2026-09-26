@@ -20,8 +20,8 @@ for i in $(seq 1 10); do node node_modules/vite/bin/vite.js build >/dev/null 2>&
 
 # Exact-source served-byte binding (the only deployment this repository declares:
 # serving the dist tree; loopback http-server, then fetch every file and compare hashes)
-node node_modules/http-server/bin/http-server dist -p 8099 -s
-curl -s -o <file> -w "%{http_code}" "http://127.0.0.1:8099/<file>"   # 30/30 files HTTP 200
+node node_modules/http-server/bin/http-server dist -p 8100 -s
+curl -s -o <file> -w "%{http_code}" "http://127.0.0.1:8100/<file>"   # 30/30 files HTTP 200
 diff <(cd dist && find . -type f | sort | xargs sha256sum) <(cd <served-mirror> && find . -type f | sort | xargs sha256sum)
 # Result: all 30 served files match dist bytes exactly.
 
@@ -33,3 +33,14 @@ curl https://noisefactorllc.github.io/noisemaker-for-hydra/         # HTTP 404 (
 node --test test/*.test.mjs                        # exit 0, 80 pass / 0 fail (79 prior + 1 new saved-sketch upgrade test)
 CHROME=/usr/bin/chromium PORT=5177 node scripts/test.mjs   # exit 0, 11 PASS / 0 FAIL
 node node_modules/vite/bin/vite.js build           # exit 0
+
+# Saved-sketch scheme evidence at revision 626f37c (raw excerpt)
+git show 626f37c21170927e7c24429ca2c8f31cf38905ec:src/stores/gallery.js | sed -n '159,164p'
+# -> btoa(encodeURIComponent(source)) / decodeURIComponent(atob(...)); identical in the current tree.
+# See saved-sketch-scheme-626f37c.txt.
+
+# Bundle rebuild determinism probe (raw output in build-determinism.txt)
+for i in $(seq 1 10); do node node_modules/vite/bin/vite.js build >/dev/null 2>&1; sha256sum dist/assets/index-*.js; done
+# Result: 13ba4b5c... (index-aecb58b8.js) x6, 2f4bce39... (index-df962457.js) x3,
+#         9bfff69e... (index-c2ad0356.js) x1. A fresh build is not a byte-exact
+#         reproduction of the tracked artifact (chunk filename and hash vary).

@@ -1,0 +1,21 @@
+# Saved-sketch URL scheme evidence at revision 626f37c21170927e7c24429ca2c8f31cf38905ec
+# Command: git show 626f37c21170927e7c24429ca2c8f31cf38905ec:src/stores/gallery.js | sed -n '159,164p'
+# (verbatim output below; also present identically in the current tree, src/stores/gallery.js:159-164)
+
+  encodeBase64(text) {
+    return btoa(encodeURIComponent(text))
+  }
+  decodeBase64(base64Code) {
+    return decodeURIComponent(atob(base64Code))
+  }
+
+# The same lines in the current tree (git diff 626f37c..HEAD -- src/stores/gallery.js touches neither line):
+  encodeBase64(text) {
+    return btoa(encodeURIComponent(text))
+  }
+  decodeBase64(base64Code) {
+    return decodeURIComponent(atob(base64Code))
+  }
+
+# show-code parameter handling at 626f37c (line 52):
+    let showCode = searchParams.get('showCode') || searchParams.get('show-code') // backwards compatibility with earlier form of naming.

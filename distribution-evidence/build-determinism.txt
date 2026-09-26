@@ -1,10 +1,27 @@
+# Bundle rebuild determinism probe (GAP-003)
+# Tree: isolated `git archive` extract of the implementation commit, after
+# `npm ci --bin-links=false --ignore-scripts` (exit 0).
+# Command (run 10 consecutive times against the same tree):
+#   node node_modules/vite/bin/vite.js build >/dev/null 2>&1; sha256sum dist/assets/index-*.js
+# Raw output below, verbatim, in execution order.
+
+9bfff69e2a9f87437406fe4d5fca68b9cddb2faacbbd60a9dcccf3a0bafb16a7  dist/assets/index-c2ad0356.js
 2f4bce39c47d52e5fd223598482c8108b4291e42462629235864c678b029e751  dist/assets/index-df962457.js
 13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
 13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
 13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
 13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
 13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
-9bfff69e2a9f87437406fe4d5fca68b9cddb2faacbbd60a9dcccf3a0bafb16a7  dist/assets/index-c2ad0356.js
+2f4bce39c47d52e5fd223598482c8108b4291e42462629235864c678b029e751  dist/assets/index-df962457.js
+2f4bce39c47d52e5fd223598482c8108b4291e42462629235864c678b029e751  dist/assets/index-df962457.js
 13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
-13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
-13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  dist/assets/index-aecb58b8.js
+
+# Counts: 13ba4b5c... x6 (index-aecb58b8.js, the tracked bundle),
+#         2f4bce39... x3 (index-df962457.js),
+#         9bfff69e... x1 (index-c2ad0356.js).
+# Three distinct hashes AND three distinct emitted chunk filenames across ten
+# builds of the identical tree. A fresh build therefore does not reliably
+# reproduce the tracked dist file set: dist/index.html references
+# index-aecb58b8.js, which a rebuild only sometimes produces (6 of 10 runs
+# here). The tracked dist bytes are bound by hash to this exact commit; a
+# rebuild is not a byte-exact reproduction of the artifact.

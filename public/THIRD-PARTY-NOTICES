@@ -41,22 +41,30 @@ Bundled npm production dependencies
 -----------------------------------
 
 All production dependencies bundled into `/assets/*` are distributed
-under the MIT license. Installed versions for this artifact build:
+under the MIT license. Installed versions and required copyright
+notices for this artifact build (taken from each package's LICENSE file
+at the installed versions):
 
-- choo 7.1.0
-- choo-devtools 3.0.4
-- codemirror 6.0.1
-- @codemirror/lang-javascript 6.1.9
-- @codemirror/theme-one-dark 6.1.2
-- @lezer/highlight 1.1.6
-- @management/cm-evaluate 0.1.0
-- i18next 21.10.0
-- i18next-browser-languagedetector 6.1.8
-- js-beautify 1.14.8
-- shortid 2.2.16
-- simple-peer 9.11.1
-- socket.io-client 2.5.0
-- superagent 7.1.5
+- choo 7.1.0 — Copyright (c) 2016 Yoshua Wuyts
+- choo-devtools 3.0.4 — Copyright (c) 2016 Yoshua Wuyts
+- codemirror 6.0.1 — Copyright (C) 2018-2021 by Marijn Haverbeke
+  <marijnh@gmail.com> and others
+- @codemirror/lang-javascript 6.1.9 — Copyright (C) 2018-2021 by Marijn
+  Haverbeke <marijn@haverbeke.berlin> and others
+- @codemirror/theme-one-dark 6.1.2 — Copyright (C) 2018-2021 by Marijn
+  Haverbeke <marijn@haverbeke.berlin> and others
+- @lezer/highlight 1.1.6 — Copyright (C) 2018 by Marijn Haverbeke
+  <marijn@haverbeke.berlin> and others
+- @management/cm-evaluate 0.1.0 — Copyright 2022 Matthew Kaney
+- i18next 21.10.0 — Copyright (c) 2022 i18next
+- i18next-browser-languagedetector 6.1.8 — Copyright (c) 2022 i18next
+- js-beautify 1.14.8 — Copyright (c) 2007-2018 Einar Lielmanis, Liam
+  Newman, and contributors.
+- shortid 2.2.16 — Copyright (c) Dylan Greene
+- simple-peer 9.11.1 — Copyright (c) Feross Aboukhadijeh
+- socket.io-client 2.5.0 — Copyright (c) 2014 Guillermo Rauch
+- superagent 7.1.5 — Copyright (c) 2014-2016 TJ Holowaychuk
+  <tj@vision-media.ca>
 
 The MIT license text:
 

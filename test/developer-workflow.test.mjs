@@ -67,7 +67,7 @@ test('gallery restores the saved program from a URL code parameter (GAP-002 URL 
   assert.equal(gallery.code, source)
 })
 
-test('gallery restores a sketch URL saved by the previously served revision 626f37c (GAP-003 saved-sketch upgrade)', async () => {
+test('gallery restores a code parameter recorded from the scheme at revision 626f37c (GAP-003 saved-sketch upgrade)', async () => {
   const Gallery = (await loadGallery()).default
   const historyCalls = []
   const loaded = []
@@ -77,16 +77,18 @@ test('gallery restores a sketch URL saved by the previously served revision 626f
     loaded.push([code, sketchFromURL])
   }, { serverURL: null }, { emit: (name) => emitted.push(name) })
 
-  // The `code` parameter scheme is btoa(encodeURIComponent(source)); it is
-  // unchanged since commit 626f37c (the source recorded by the previously
-  // served demo), so URLs saved by that revision must restore here.
+  // Revision 626f37c (the source recorded by the previously served demo)
+  // encodes saved programs as btoa(encodeURIComponent(source)); the raw
+  // evidence is retained in distribution-evidence/saved-sketch-scheme-626f37c.txt.
+  // The parameter below is the recorded encoding of savedProgram under that
+  // scheme, fixed as a literal so this test restores recorded bytes rather
+  // than re-running the encoder under test.
   const savedProgram = 'search hydra, render\n\nnoise(scale: 5)\n  .write(o0)\n\nrender(o0)'
-  const codeParamFromRevision626f37c = Buffer.from(
-    encodeURIComponent(savedProgram)
-  ).toString('base64')
+  const codeParamRecordedFromRevision626f37cScheme =
+    'c2VhcmNoJTIwaHlkcmElMkMlMjByZW5kZXIlMEElMEFub2lzZShzY2FsZSUzQSUyMDUpJTBBJTIwJTIwLndyaXRlKG8wKSUwQSUwQXJlbmRlcihvMCk='
 
   gallery.setSketchFromURL(
-    `?code=${codeParamFromRevision626f37c}&show-code=false`,
+    `?code=${codeParamRecordedFromRevision626f37cScheme}&show-code=false`,
     (code, found) => { loaded.push([code, found]) }
   )
 

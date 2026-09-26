@@ -1,5 +1,5 @@
 7f8f48e4266aa8fd3033dfaa4bb7f6e83a60c6e099f82d4959b81de90e67cd8f  ./LICENSE
-c88f3030ea83c6f28343784caf47f01cc3bfbc2b58d7450cbf8175d0af08369f  ./THIRD-PARTY-NOTICES
+a637501101b1b3e31aa8040c1d0fe68cf59312bc4961a16d8cf5cdcb9ef993b5  ./THIRD-PARTY-NOTICES
 5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded  ./_engine/hydra-synth.js
 13ba4b5cf13f57e4a8531522c2381a37ee5e3001f05c39db02f85a3858797c14  ./assets/index-aecb58b8.js
 a3fbffe5f3a788f1cc030c3810021f441155d127a8aa4b0fad8d18ab9c7ec123  ./css/codemirror.css
@@ -28,7 +28,7 @@ e055d9c84dcb6ab8684f27e7ac6b48082b626b7c53639502fd05bf45cd43afe3  ./webfonts/fa-
 fb40493b8eef16464649aac61b965d53d95530418e89eae83bf3420842f8b7c2  ./webfonts/fa-solid-900.ttf
 1db42c7c64449bc217dc96b02b20a0728038b146d4f8dd61dabb27ed480f9312  ./webfonts/fa-solid-900.woff
 0fe6a4357505cb0d3ca8ba0671ad57df6b7410ca02cb8065eed58e2c0381e640  ./webfonts/fa-solid-900.woff2
-# All 30 files fetched from http://127.0.0.1:8099/ (http-server serving dist/) with HTTP 200.
+# All 30 files fetched from http://127.0.0.1:8100/ (http-server serving dist/) with HTTP 200.
 # The SHA-256 list above equals the tracked dist hash list (diff exit 0): served bytes == dist bytes == source tree.
 # External probes: git ls-remote origin -> 413d97acde311994fc9fc91b7b7706fbf186cd45 (refs/heads/main only, no gh-pages);
 # https://noisefactorllc.github.io/noisemaker-for-hydra/ -> HTTP 404. No repository-declared external deployment exists.
