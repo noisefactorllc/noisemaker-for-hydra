@@ -1,3 +1,0 @@
-# component-bind — no LICENSE file in the installed package; license statement from installed package metadata/readme
-package.json: no license field
-node_modules/component-bind/Readme.md:## License 

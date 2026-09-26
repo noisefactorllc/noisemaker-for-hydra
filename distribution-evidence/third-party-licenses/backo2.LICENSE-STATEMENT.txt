@@ -1,3 +1,0 @@
-# backo2 — no LICENSE file in the installed package; license statement from installed package metadata/readme
-"license": "MIT"
-node_modules/backo2/Readme.md:# License

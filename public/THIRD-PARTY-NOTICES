@@ -47,7 +47,7 @@ and transitive). Installed versions are stated for this artifact build;
 licenses are as declared by each installed package (or its LICENSE
 file). Per-package license copies and, where an installed package ships
 no license file, the package's own license statement are retained in the
-repository under `distribution-evidence/third-party-licenses/`.
+package repositories listed in this file.
 
 Packages under the MIT license
 ..............................

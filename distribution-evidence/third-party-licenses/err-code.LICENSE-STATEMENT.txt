@@ -1,4 +1,0 @@
-# err-code — no LICENSE file in the installed package; license statement from installed package metadata/readme
-"license": "MIT"
-node_modules/err-code/README.md:## License
-node_modules/err-code/README.md:Released under the [MIT License](http://www.opensource.org/licenses/mit-license.php).

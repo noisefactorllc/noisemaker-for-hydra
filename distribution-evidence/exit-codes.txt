@@ -1,6 +1,0 @@
-npm ci --bin-links=false --ignore-scripts            0
-node node_modules/vite/bin/vite.js build             0
-npm audit --omit=dev --json                          1 (advisories present; expected non-success)
-node --test test/*.test.mjs                          0
-CHROME=/usr/bin/chromium PORT=5177 node scripts/test.mjs   0
-loopback served-byte comparison (diff)               0
