@@ -102,6 +102,24 @@ transition: width 1s;
   font-size: 20px;
 }
 
+/* Toolbar controls are real buttons (GAP-005): reset the native button
+   chrome so the icon keeps its previous look, and show visible focus. */
+button.icon-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  margin: 0;
+}
+
+button.icon-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .icon:hover{
   color: #ccc;
 }

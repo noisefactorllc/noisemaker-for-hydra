@@ -3,8 +3,11 @@ import raw from 'choo/html/raw'
 
 const d = (eventName, e, emit) => () => emit(eventName, e)
 
+// Each extension control is a real <button type="button"> so it is reachable
+// with Tab and activated with Enter or Space (GAP-005). The decorative
+// fontawesome <i> inside stays aria-hidden; the button carries the name.
 const icon = (id, className, title, event) => html`
-<i id="${id}-icon" class="fas ${className} extension-icon" title="${title}" onclick=${event} aria-hidden="true"></i>`
+<button type="button" id="${id}-button" class="icon-button extension-icon" title="${title}" aria-label="${title}" onclick=${event}><i id="${id}-icon" class="fas ${className}" aria-hidden="true"></i></button>`
 //      onclick="${() => emit('extensions: select extension', index)}" 
 
 const detailedInfo = (ext, index, emit, t) => {
@@ -22,7 +25,7 @@ const detailedInfo = (ext, index, emit, t) => {
       ${icon('show-documentation', "fa-book-open", t('extensions.show-docs', {'extension-name': ext.name}), () => {  window.open(ext.documentation, '_blank') })}
       </div>
       <div style="font-size: 0.8rem;/*font-family: monospace*/">
-        ${ext.examples.map((path, i) => html`<div class="extension-icon example-icon" title="${t('extensions.show-example', {'extension-name': ext.name})}" onclick=${() => { emit('extensions: load example', index, i)}}>${i+1}</div>`)}
+        ${ext.examples.map((path, i) => html`<button type="button" class="extension-icon example-icon" title="${t('extensions.show-example', {'extension-name': ext.name})}" aria-label="${t('extensions.show-example', {'extension-name': ext.name})}" onclick=${() => { emit('extensions: load example', index, i)}}>${i+1}</button>`)}
       </div>
      </div>`
  }

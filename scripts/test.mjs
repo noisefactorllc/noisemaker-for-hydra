@@ -108,6 +108,23 @@ const cases = [
     expectErrorLog: true
   },
   {
+    name: 'accessibility semantics (GAP-005)',
+    path: '/',
+    expected: ['search hydra', '.write(o0)'],
+    expectedDom: [
+      '<button type="button" id="run-button"',
+      'aria-label="Run all code (ctrl+shift+enter)"',
+      'aria-label="clear all"',
+      'aria-label="load library or extension"',
+      'aria-label="show random sketch"',
+      'aria-label="make random change"',
+      'aria-label="hide info window"',
+      '<textarea aria-label="Hydra program editor"',
+      'role="textbox" aria-label="Hydra program editor"',
+      'role="log" aria-label="Editor diagnostics" aria-live="polite"'
+    ]
+  },
+  {
     name: 'resized window DSL',
     path: `/?code=${encodeURIComponent(encodeSource(SOURCE))}`,
     expected: ['search hydra', 'gradient(speed: 0).write(o0)'],
@@ -124,6 +141,8 @@ const cases = [
       .replace(/&lt;/g, '<')
       .replace(/&amp;/g, '&')
     const sourceLoaded = testCase.expected.every(part => text.includes(part))
+    const expectedDom = testCase.expectedDom || []
+    const expectedDomPresent = expectedDom.every(part => dom.includes(part))
     const expectedDiagnostics = testCase.expectedDiagnostics || []
     const expectedDiagnosticsPresent = expectedDiagnostics.every(message => text.includes(message))
     const errorLogPresent = dom.includes('log-error')
@@ -145,9 +164,10 @@ const cases = [
       failures.push('log-error')
     }
 
-    if (!sourceLoaded || failures.length > 0 || result.status !== 0) {
+    if (!sourceLoaded || failures.length > 0 || !expectedDomPresent || result.status !== 0) {
       console.error(`[editor-test] FAIL ${testCase.name}`)
       if (!sourceLoaded) console.error('[editor-test] expected DSL did not load')
+      if (!expectedDomPresent) console.error(`[editor-test] expected DOM missing: ${expectedDom.filter(part => !dom.includes(part)).join(' | ')}`)
       if (failures.length > 0) console.error(`[editor-test] diagnostics: ${failures.join(', ')}`)
       if (result.stderr) console.error(result.stderr.trim())
       exitCode = 1

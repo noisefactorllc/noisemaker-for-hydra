@@ -22,6 +22,16 @@ export default class Editor extends Component {
    })
    // hacky, maybe not necessary
    this.innerText = document.getElementsByClassName('CodeMirror')[0]
+   // The CodeMirror wrapper is the visible editable surface; expose it to
+   // assistive technology (GAP-005 editor labeling).
+   this.innerText.setAttribute('role', 'textbox')
+   this.innerText.setAttribute('aria-label', 'Hydra program editor')
+   this.innerText.setAttribute('aria-multiline', 'true')
+   // CodeMirror 5 hides the original textarea and edits through its own
+   // hidden input field; label that field so keyboard and screen-reader
+   // users get a name for the editor (GAP-005).
+   const cmInput = this.editor.cm.getInputField()
+   if (cmInput) cmInput.setAttribute('aria-label', 'Hydra program editor')
    this.innerText.style.transition = 'opacity 0.5s'
   }
 
@@ -49,8 +59,8 @@ export default class Editor extends Component {
   }
 
   createElement ({ width = window.innerWidth, height = window.innerHeight} = {}) {
-    this.textEl = html` <textarea></textarea>`
-    this.logElement = html`<div class="console cm-s-tomorrow-night-eighties"></div>`
+    this.textEl = html` <textarea aria-label="Hydra program editor"></textarea>`
+    this.logElement = html`<div class="console cm-s-tomorrow-night-eighties" role="log" aria-label="Editor diagnostics" aria-live="polite"></div>`
     return html`<div id="editor-container" style="display:flex;flex-direction:column;">
        <div style="position:relative;flex:auto;padding:15px">${this.textEl}</div>
        ${this.logElement}

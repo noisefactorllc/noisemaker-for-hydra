@@ -7,14 +7,18 @@ export default function toolbar(state, emit) {
 
     const dispatch = (eventName) => (e) => emit(eventName, e)
 
+    // Each control is a real <button type="button"> so it is reachable with
+    // Tab and activated with Enter or Space by default (GAP-005). The
+    // decorative fontawesome <i> inside stays aria-hidden; the button itself
+    // carries the accessible name through aria-label.
     const icon = (id, className, title, event) => html`
-        <i id="${id}-icon" class="fas icon ${className}" title="${title}" onclick=${dispatch(event)} aria-hidden="true"></i>`
+        <button type="button" id="${id}-button" class="icon-button" title="${title}" aria-label="${title}" onclick=${dispatch(event)}>
+            <i id="${id}-icon" class="fas icon ${className}" aria-hidden="true"></i>
+        </button>`
 
-    
+    const toggleInfo = state.showInfo ? icon("close", "fa-times", t('toolbar.hide-info'), 'ui: toggle info') : icon("close", "fa-question-circle", t('toolbar.show-info'), 'ui: toggle info')
 
-    const toggleInfo = state.showInfo ? icon("close", "fa-times", t('toolbar.hide-info'), 'ui: toggle info') : icon("close", "fa-question-circle", t('toolbar.show-info'), 'ui: toggle info') 
-    
-    const toggleExtensions = !state.showExtensions ? icon("add", "fa-solid fa-puzzle-piece", t('toolbar.load-extension'), 'ui: show extensions') : icon("close", "fa-question-circle", t('toolbar.show-info'), 'ui: hide extensions')  
+    const toggleExtensions = !state.showExtensions ? icon("add", "fa-solid fa-puzzle-piece", t('toolbar.load-extension'), 'ui: show extensions') : icon("close", "fa-question-circle", t('toolbar.show-info'), 'ui: hide extensions')
 
     return html`<div id="toolbar-container">
         ${icon("run", `fa-play-circle ${hidden}`, t('toolbar.run'), 'editor: eval all')}
@@ -25,7 +29,4 @@ export default function toolbar(state, emit) {
         ${state.serverURL === null ? '' : icon("share", `fa-upload ${hidden}`, t('toolbar.upload'), 'gallery:shareSketch')}
         ${toggleInfo}
     </div>`
-
-    //        ${icon("share", `fa-upload ${hidden}`, t('toolbar.upload'), 'gallery:shareSketch')}
-
 }
