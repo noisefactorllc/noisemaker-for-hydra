@@ -78,11 +78,11 @@ test('gallery restores a code parameter recorded from the scheme at revision 626
   }, { serverURL: null }, { emit: (name) => emitted.push(name) })
 
   // Revision 626f37c (the source recorded by the previously served demo)
-  // encodes saved programs as btoa(encodeURIComponent(source)); the raw
-  // evidence is retained in distribution-evidence/saved-sketch-scheme-626f37c.txt.
-  // The parameter below is the recorded encoding of savedProgram under that
-  // scheme, fixed as a literal so this test restores recorded bytes rather
-  // than re-running the encoder under test.
+  // encodes saved programs as btoa(encodeURIComponent(source)), verified by
+  // `git show 626f37c21170927e7c24429ca2c8f31cf38905ec:src/stores/gallery.js`
+  // (lines 159-164 there; identical lines in the current tree).
+  // The parameter below is that encoding of savedProgram, fixed as a literal
+  // so this test restores recorded bytes rather than re-running the encoder.
   const savedProgram = 'search hydra, render\n\nnoise(scale: 5)\n  .write(o0)\n\nrender(o0)'
   const codeParamRecordedFromRevision626f37cScheme =
     'c2VhcmNoJTIwaHlkcmElMkMlMjByZW5kZXIlMEElMEFub2lzZShzY2FsZSUzQSUyMDUpJTBBJTIwJTIwLndyaXRlKG8wKSUwQSUwQXJlbmRlcihvMCk='

@@ -1,108 +1,92 @@
-Noisemaker for Hydra — third-party notices for the built distribution
-=====================================================================
-
-This file lists the third-party material bundled in the distributed
-artifact of noisemaker-for-hydra. The artifact as a whole is licensed
-under the GNU Affero General Public License v3 (see the LICENSE file
-distributed alongside this notice).
-
-Upstream base
--------------
-
-This editor is an experimental demo fork of the Hydra web editor
-(https://github.com/hydra-synth/hydra) by Olivia Jack and contributors.
-The fork retains Hydra's AGPL license and attribution history. The
-companion engine bundle `/_engine/hydra-synth.js` is generated from this
-repository's own sources (the Noisemaker-powered replacement for Hydra's
-renderer) and carries the repository's AGPL license.
-
-Vendored third-party files shipped in this artifact
----------------------------------------------------
-
-- p5.js v1.6.0 (`/p5.min.js`) — p5.js contributors. GNU Lesser General
-  Public License, version 2.1. The license notice is embedded in the
-  distributed minified file.
-- Font Awesome Free 5.2.0 (`/css/fontawesome.css`, `/webfonts/*`) by
-  @fontawesome — https://fontawesome.com. Icons: CC BY 4.0. Fonts:
-  SIL OFL 1.1. Code: MIT License. The license header is embedded in
-  `/css/fontawesome.css`.
-- normalize.css v3.0.2 (`/css/normalize.css`) — Nicolas Gallagher and
-  Jonathan Neal. MIT License (stated in the file header).
-- Skeleton V2.0.4 (`/css/skeleton.css`) — Copyright 2014, Dave Gamache,
-  www.getskeleton.com. MIT License (stated in the file header).
-- Tomorrow Night Eighties editor theme (`/css/tomorrow-night-eighties.css`)
-  by Chris Kempson, CodeMirror template by Jan T. Sott
-  (https://github.com/idleberg/base16-codemirror, derived from
-  https://github.com/chriskempson/base16). Both upstream repositories
-  are MIT-licensed; the distributed file carries no embedded license
-  header.
-
-Bundled npm production dependencies
------------------------------------
-
-The bundled set below is the complete list of npm packages that the
-production build resolves into `/assets/index-aecb58b8.js`, determined
-from the bundler's module-graph input listing (all 82 packages, direct
-and transitive). Installed versions are stated for this artifact build;
-licenses are as declared by each installed package (or its LICENSE
-file). Per-package license copies and, where an installed package ships
-no license file, the package's own license statement are retained in the
-package repositories listed in this file.
-
-Packages under the MIT license
+Packages under the MIT license (69)
 ..............................
 
+@babel/runtime 7.22.5 — Copyright (c) 2014-present Sebastian McKenzie and other contributors
+after 0.8.2 — Copyright (c) 2011 Raynos.
+arraybuffer.slice 0.0.7 — Copyright (C) 2013 Rase-
+assert 1.5.0 — Copyright Joyent, Inc. and other Node contributors. All rights reserved.
+backo2 1.0.2 — MIT per package.json; upstream repository https://github.com/mokesmokes/backo
+base64-js 1.5.1 — Copyright (c) 2014 Jameson Little
+blob 0.0.5 — Copyright (C) 2014 Rase-
+buffer 5.2.1 — Copyright (c) Feross Aboukhadijeh, and other contributors.
+call-bind 1.0.2 — Copyright (c) 2020 Jordan Harband
 choo 7.1.0 — Copyright (c) 2016 Yoshua Wuyts
 choo-devtools 3.0.4 — Copyright (c) 2016 Yoshua Wuyts
-choo-hooks 1.1.3
-codemirror-minified 5.65.9 (CodeMirror 5 by Marijn Haverbeke and others)
-nanorouter 4.0.0 — Copyright (c) 2016 Yoshua Wuyts
-base64-arraybuffer 0.1.4 — Copyright (c) 2012 Niklas von Hertzen
-to-array 0.1.4 — Copyright (c) 2012 Raynos.
-component-bind 1.0.0 (component/bind; MIT per package README)
-component-inherit 0.0.3 (component/inherit; MIT per package README)
-indexof 0.0.1 (MIT per package README)
+choo-hooks 1.1.3 — Copyright (c) 2016 Yoshua Wuyts
+clipboard-copy 3.2.0 — Copyright (c) Feross Aboukhadijeh
+clone 2.1.2 — Copyright © 2011-2015 Paul Vorbach <paul@vorba.ch>
+codemirror-minified 5.65.9 — Copyright (c) 2016 Marijn Haverbeke <marijnh@gmail.com> and others
+component-emitter 1.3.0 — Copyright (c) 2014 Component contributors <dev@component.io>
 document-ready 2.0.2 — Ben Drucker
-err-code 3.0.1 — IndigoUnited
-get-browser-rtc 1.1.0 — substack (James Halliday)
-has-cors 1.1.0 — Nathan Rajlich
-object-assign 4.1.1 — Sindre Sorhus
-on-load 4.0.2 — Kyle Robinson Young
-state-copy 1.0.5
+engine.io-client 3.5.3 — Copyright (c) 2014-2015 Automattic <dev@cloudup.com>
+engine.io-parser 2.2.1 — Copyright (c) 2016 Guillermo Rauch (@rauchg)
+err-code 3.0.1 — IndigoUnited <hello@indigounited.com> (http://indigounited.com)
+events 3.3.0 — Copyright Joyent, Inc. and other Node contributors.
+fast-safe-stringify 2.1.1 — Copyright (c) 2016 David Mark Clements
+function-bind 1.1.1 — Copyright (c) 2013 Raynos.
+get-browser-rtc 1.1.0 — Copyright (c) substack (James Halliday)
+get-intrinsic 1.2.1 — Copyright (c) 2020 Jordan Harband
+global 4.4.0 — Copyright (c) 2012 Colingo.
+has 1.0.3 — Copyright (c) 2013 Thiago de Arruda
+has-binary2 1.0.3 — Copyright (c) 2014 Kevin Roark
+has-cors 1.1.0 — Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)
+has-proto 1.0.1 — Copyright (c) 2022 Inspect JS
+has-symbols 1.0.3 — Copyright (c) 2016 Jordan Harband
+hyperscript-attribute-to-property 1.0.2 — Copyright (c) Feross Aboukhadijeh
 i18next 21.10.0 — Copyright (c) 2022 i18next
 i18next-browser-languagedetector 6.1.8 — Copyright (c) 2022 i18next
+nanobus 4.5.0 — Copyright (c) 2016 Yoshua Wuyts
+nanocomponent 6.6.0 — Copyright (c) 2017 Yoshua Wuyts
+nanohref 3.1.0 — Copyright (c) 2016 Yoshua Wuyts
+nanohtml 1.10.0 — Copyright 2018 Choo Contributors
+nanoid 2.1.11 — Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>
+nanologger 2.0.0 — Copyright (c) 2016 Yoshua Wuyts
+nanolru 1.0.0 — Copyright (c) 2016 Chris O'Hara <cohara87@gmail.com>
+nanomorph 5.4.3 — Copyright (c) 2016 Yoshua Wuyts
+nanoquery 1.3.0 — Copyright (c) 2016 Yoshua Wuyts
+nanoraf 3.1.0 — Copyright (c) 2016 Yoshua Wuyts
+nanotiming 7.3.1 — Copyright (c) 2016 Yoshua Wuyts
+object-assign 4.1.1 — Sindre Sorhus
+object-change-callsite 1.0.5 — Copyright (c) 2016 Yoshua Wuyts
+object-inspect 1.12.3 — Copyright (c) 2013 James Halliday
+on-load 4.0.2 — Kyle Robinson Young <kyle@dontkry.com> (http://dontkry.com)
+on-performance 1.2.2 — Copyright (c) 2016 Yoshua Wuyts
+parseqs 0.0.6 — Copyright (c) 2015 Gal Koren
+parseuri 0.0.6 — Copyright (c) 2014 Gal Koren
+plucker 0.0.0 — Copyright (c) 2014 Hugh Kennedy
+queue-microtask 1.2.3 — Copyright (c) Feross Aboukhadijeh
+randombytes 2.1.0 — Copyright (c) 2017 crypto-browserify
+remove-array-items 2.0.1 — Copyright (c) 2017 Mike Reinstein
+safe-buffer 5.2.1 — Copyright (c) Feross Aboukhadijeh
+scroll-to-anchor 1.1.0 — Copyright (c) 2016 Yoshua Wuyts
+shortid 2.2.16 — Copyright (c) Dylan Greene
+side-channel 1.0.4 — Copyright (c) 2019 Jordan Harband
 simple-peer 9.11.1 — Copyright (c) Feross Aboukhadijeh
 socket.io-client 2.5.0 — Copyright (c) 2014 Guillermo Rauch
-superagent 7.1.5 — Copyright (c) 2014-2016 TJ Holowaychuk
-shortid 2.2.16 — Copyright (c) Dylan Greene
-@babel/runtime 7.22.5 — Copyright (c) Meta Platforms, Inc. and affiliates
-plus the following MIT packages (per-package license files retained in
-this repository's evidence directory): after, arraybuffer.slice, assert,
-base64-js, blob, buffer, call-bind, clone, component-emitter,
-engine.io-client, engine.io-parser, events, fast-safe-stringify,
-function-bind, get-intrinsic, global, has, has-binary2,
-has-proto, has-symbols, hyperscript-attribute-to-property, nanobus,
-nanocomponent, nanohref, nanohtml, nanoid, nanologger, nanolru,
-nanomorph, nanoquery, nanoraf, nanotiming, object-change-callsite,
-object-inspect, on-load, on-performance, parseqs, parseuri, plucker,
-queue-microtask, randombytes, remove-array-items, safe-buffer,
-scroll-to-anchor, side-channel, socket.io-parser, string_decoder,
-util-deprecate, wayfarer, yeast.
+socket.io-parser 3.3.3 — Copyright (c) 2014 Guillermo Rauch <guillermo@learnboost.com>
+state-copy 1.0.5 — Copyright (c) Jake Rusch (jekrb/state-copy)
+string_decoder 1.3.0 — Copyright Node.js contributors. All rights reserved.
+superagent 7.1.5 — Copyright (c) 2014-2016 TJ Holowaychuk <tj@vision-media.ca>
+util-deprecate 1.0.2 — Copyright (c) 2014 Nathan Rajlich <nathan@tootallnate.net>
+wayfarer 7.0.1 — Copyright (c) 2014 Yoshua Wuyts
+yeast 0.1.2 — Copyright (c) 2015 Unshift.io, Arnout Kazemier, the Contributors.
 
-Packages under other licenses
-.............................
+Packages under other licenses (13)
+..............................
 
-- hyperx 2.5.4 — BSD-2-Clause. Copyright (c) 2015, James Halliday.
+- base64-arraybuffer 0.1.4 — MIT (per its LICENSE-MIT file; metadata omits the field). Copyright (c) 2012 Niklas von Hertzen
+- component-bind 1.0.0 — MIT (stated in the package README; component/bind).
+- component-inherit 0.0.3 — MIT (stated in the package README; component/inherit).
+- hyperx 2.5.4 — BSD-2-Clause. Copyright (c) 2015, James Halliday
 - ieee754 1.2.1 — BSD-3-Clause. Copyright 2008 Fair Oaks Labs, Inc.
-- qs 6.11.2 — BSD-3-Clause. Copyright (c) 2014, Nathan LaFreniere and
-  other contributors (https://github.com/ljharb/qs/graphs/contributors).
-- inherits 2.0.4 — ISC License. Copyright (c) Isaac Z. Schlueter.
-- nanoassert 1.1.0 — ISC License. Copyright (c) 2017, Emil Bay
-  <github@tixz.dk>.
-- prettier-bytes 1.0.4 — ISC License. Copyright (c) 2016, Dan Flettre
-  <dan.flettre@bestbuy.com>.
-- nanoscheduler 1.0.3 — Apache License 2.0
-  (https://github.com/choojs/nanoscheduler).
+- indexof 0.0.1 — MIT (stated in the package README).
+- inherits 2.0.4 — ISC License. Copyright (c) Isaac Z. Schlueter
+- nanoassert 1.1.0 — ISC License. Copyright (c) 2017, Emil Bay <github@tixz.dk>
+- nanorouter 4.0.0 — MIT (per its LICENSE file; metadata omits the field). Copyright (c) 2016 Yoshua Wuyts
+- nanoscheduler 1.0.3 — Apache License 2.0. choojs/nanoscheduler.
+- prettier-bytes 1.0.4 — ISC License. Copyright (c) 2016, Dan Flettre <dan.flettre@bestbuy.com>
+- qs 6.11.2 — BSD-3-Clause. Copyright (c) 2014, Nathan LaFreniere and other contributors
+- to-array 0.1.4 — MIT (per its LICENCE file; metadata omits the field). Copyright (c) 2012 Raynos.
 
 License texts
 .............
@@ -199,6 +183,6 @@ BSD-3-Clause (ieee754, qs):
   WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 
-Apache License 2.0 (nanoscheduler): the full license text is retained in
-this repository's evidence tree; the package is used unmodified as
-installed.
+Apache License 2.0 (nanoscheduler): the package is used unmodified as
+installed; the full license text is available at
+https://www.apache.org/licenses/LICENSE-2.0 and in the installed package.
