@@ -1,0 +1,7 @@
+engine exports: 91
+device acquired
+companion registered; namespaces now include hydra
+wgsl attached to 0 hydra definitions; compile hook: 0
+manifest effects: 210
+backend: wgsl pipeline backend: null
+solid FAIL: {"code":"ERR_NO_WGSL_SOURCE","detail":"No WGSL shader source found for program 'node_0_solid'. Available keys: glsl, uniformLayout, defines","program":"node_0_solid"}

@@ -1,0 +1,7 @@
+engine exports: 91
+device acquired
+companion registered; namespaces now include hydra
+wgsl attached to 51 hydra definitions; compile hook: true
+manifest effects: 210
+backend: wgsl pipeline backend: null
+solid OK len=3072 head=255,0,0,255,255,0,0,255,255,0,0,255,255,0,0,255

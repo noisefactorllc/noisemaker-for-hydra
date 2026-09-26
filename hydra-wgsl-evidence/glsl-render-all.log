@@ -1,0 +1,3 @@
+[glsl-ref] console: Recompilation failed: Unknown effect: 'osc'; write() requires an input - cannot be first in chain: '[Write]' (line 2, col 9)
+[glsl-ref] glsl results: 96 errors: 1
+[glsl-ref] ERR osc defaults {"code":"ERR_COMPILATION_FAILED","diagnostics":[{"code":"S001","message":"Unknown effect: 'osc'","severity":"error","identifier":"osc"},{"code":"S005","message":"write() requires an input - cannot be first in chain: '[Write]'","severity":"error","location":{"line":2,"column":9},"identifier":"[Write]"}]}

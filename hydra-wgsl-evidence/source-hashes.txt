@@ -1,0 +1,8 @@
+pinned inputs:
+engine https://shaders.noisedeck.app/1.0.182/noisemaker-shaders-core.esm.min.js e1a10dc9aa7c739b416ec546304326ad6f457eb3dc5d0ca2a601cee56b9d7f50
+companion public/_engine/hydra-synth.js 5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded
+candidate sources (this commit):
+fe7b2f49f78b44074ecd704dc7c251279eaff7ab28d376f393268ec174d40ca8  ../src/lib/hydra-wgsl.mjs
+b2d3d22cd4edfa1a010673cb61ed9c73d5d8c7ce53409377572879bd6ba6fd90  ../src/lib/noisemaker-runtime.mjs
+d2a0864f2c0e2a6dd8ba7a96158df34902bd9924524c6794057f29b2381ff82a  ../test/hydra-wgsl.test.mjs
+5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded  ../public/_engine/hydra-synth.js
