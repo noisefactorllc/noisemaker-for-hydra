@@ -1,3 +1,62 @@
+Noisemaker for Hydra — third-party notices for the built distribution
+=====================================================================
+
+This file lists the third-party material bundled in the distributed
+artifact of noisemaker-for-hydra. The artifact as a whole is licensed
+under the GNU Affero General Public License v3 (see the LICENSE file
+distributed alongside this notice).
+
+Upstream base
+-------------
+
+This editor is an experimental demo fork of the Hydra web editor
+(https://github.com/hydra-synth/hydra) by Olivia Jack and contributors.
+The fork retains Hydra's AGPL license and attribution history. The
+companion engine bundle `/_engine/hydra-synth.js` is generated from this
+repository's own sources (the Noisemaker-powered replacement for Hydra's
+renderer) and carries the repository's AGPL license.
+
+Also served from third-party origins at runtime (not bundled here)
+------------------------------------------------------------------
+
+- p5.js 1.4.0, loaded from cdnjs.cloudflare.com by `/index.html` —
+  p5.js contributors. GNU Lesser General Public License, version 2.1.
+- Google Fonts "Chivo" (fonts.googleapis.com), requested by
+  `/index.html` — Google. SIL Open Font License 1.1.
+- A favicon from cdn.glitch.com, requested by `/index.html`.
+
+Vendored third-party files shipped in this artifact
+---------------------------------------------------
+
+- p5.js v1.6.0 (`/p5.min.js`; served locally but not referenced by the
+  default page, which loads p5.js 1.4.0 from cdnjs as noted above) —
+  p5.js contributors. GNU Lesser General Public License, version 2.1.
+  The license notice is embedded in the distributed minified file.
+- Font Awesome Free 5.2.0 (`/css/fontawesome.css`, `/webfonts/*`) by
+  @fontawesome — https://fontawesome.com. Icons: CC BY 4.0. Fonts:
+  SIL OFL 1.1. Code: MIT License. The license header is embedded in
+  `/css/fontawesome.css`.
+- normalize.css v3.0.2 (`/css/normalize.css`) — Nicolas Gallagher and
+  Jonathan Neal. MIT License (stated in the file header).
+- Skeleton V2.0.4 (`/css/skeleton.css`) — Copyright 2014, Dave Gamache,
+  www.getskeleton.com. MIT License (stated in the file header).
+- Tomorrow Night Eighties editor theme (`/css/tomorrow-night-eighties.css`)
+  by Chris Kempson, CodeMirror template by Jan T. Sott
+  (https://github.com/idleberg/base16-codemirror, derived from
+  https://github.com/chriskempson/base16). Both upstream repositories
+  are MIT-licensed; the distributed file carries no embedded license
+  header.
+
+Bundled npm production dependencies
+-----------------------------------
+
+The list below covers every npm package that the production build
+resolves into `/assets/index-aecb58b8.js` — 82 packages, direct and
+transitive, determined from the bundler's module-graph input listing for
+the production entry point. Installed versions and license declarations
+are taken from each installed package at the versions listed.
+
+
 Packages under the MIT license (69)
 ..............................
 
