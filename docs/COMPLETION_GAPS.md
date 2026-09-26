@@ -176,13 +176,13 @@ No prior gap closed during this audit.
 - Status: open. Priority: P1. Category: release.
 - Affected scope: Default-branch source updates and distribution qualification.
 - Expected behavior: Existing CI enforces exact-source rendered parity before a source update qualifies for release.
-- Observed behavior: A source-bound CI workflow now exists in the tree (`.github/workflows/tests.yml`): on every push to main and pull request it installs dependencies without binary links or lifecycle scripts (`npm ci --bin-links=false --ignore-scripts`), runs the unit and compiler suite (`node --test test/*.test.mjs`), builds the distribution (`node node_modules/vite/bin/vite.js build`), and executes the 11-case headless browser editor suite (`scripts/test.mjs` with a Chrome stable install from `@puppeteer/browsers`). The workflow does not execute the rendered parity gate, does not compare pixels, and does not reject missing fixtures, skipped cases, or rendered mismatches, so the required exact-source rendered-parity enforcement demonstrated for GAP-006 is not yet met and the gap remains open. Earlier state: no workflow existed in the reviewed tree and exact-source Actions returned zero runs.
-- Evidence: `.github/workflows/tests.yml` (tracked source); executed local equivalents at this record commit in `workflow-evidence/` (`unit.log` 79 pass / 0 fail, exit 0; `browser.log` 11 PASS / 0 fail, exit 0); [remote-ci.json](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/remote-ci.json) for the earlier zero-run state and section 3.
-- Next action: Demonstrate the exact-source run executing the rendered parity gate (all 1260 comparisons) and rejecting a missing fixture, skipped case, or rendered mismatch; resolve GAP-001's 6 missing authority frames first.
+- Observed behavior: No workflow exists in the reviewed tree. Exact-source Actions returns zero runs. Browser tests inspect DOM text only.
+- Evidence: [remote-ci.json](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/remote-ci.json) and section 3.
+- Next action: Add source-bound compiler and rendered checks through the implementation job and existing CI systems.
 - Dependencies: Resolve authority and fixture requirements in GAP-001. Preserve normal publication protections.
 - Acceptance criteria: Demonstrate an exact-source run that executes all cases and rejects a missing fixture, skipped case, or rendered mismatch.
 - Required checks: Preserve raw commands, versions, source hashes, full denominators, output, and exit codes for the acceptance checks.
-- Last verification: 2026-09-26 (source-bound unit/build/browser CI workflow added and locally executed; rendered enforcement remains open).
+- Last verification: 2026-09-24. No closure claimed.
 
 ## 5. Ordered next actions
 
@@ -206,7 +206,6 @@ Implementation remains with the separate job. This audit does not port effects o
 | 2026-09-24, initial register | `2691007f48acc5342c6a10478373094fff6fd697` | Created register and README link. No closures. | 36 unit tests passed. | Browser, parity, distribution, and platform qualification remained open. |
 | 2026-09-24, selected audit | `d75412d12e27d8a338f635ed6a05e0e5c5b2d57e` | Updated both reports. Added GAP-004 through GAP-006. No closures. | 39 unit tests, seven browser checks, installed workflows, two exact reference comparisons, actual served output. | Full parity, current upstream, WebGPU Hydra, accessibility, release requirements, and other platforms remain unqualified. |
 | 2026-09-26, GAP-002 workflow qualification | this candidate (implementation and record commit) | No closure claimed. GAP-002 acceptance checks executed; GAP-001, GAP-004, GAP-005, GAP-006, GAP-003 unchanged. | 79 unit tests, 11 browser checks (both README examples, invalid-input diagnostic, 640×480 resize, seven retained cases), gallery URL save/remove/restore unit tests, extended lifecycle cleanup checks. Raw logs in `workflow-evidence/`. | External media unsupported (documented), upgrades and non-listed browsers/operating systems unverified, pixels not compared, rendered parity gate unchanged (6 missing authority frames). |
-| 2026-09-26, CI boundary addition | this candidate (workflow, vite launch path, and record commit) | No closure claimed. GAP-006 remains open: the workflow runs unit, build, and browser checks but not the rendered parity gate. | Same local suites as the prior row, regenerated at this commit (79/79 unit, 11/11 browser, build exit 0); `scripts/test.mjs` now launches vite through `node node_modules/vite/bin/vite.js` under the no-symbolic-links install contract. | Exact-source rendered-parity enforcement, missing-fixture/skipped-case rejection, and the GAP-001 authority frames remain open. |
 
 [Initial register and evidence](https://github.com/noisefactorllc/noisemaker-for-hydra/blob/ea7795f20b4fcb157f6acabbe02935612babc32a/docs/COMPLETION_GAPS.md).
 Run ID: `audit-20260924-090235`. [Result and publication checkpoint](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/result.json).
