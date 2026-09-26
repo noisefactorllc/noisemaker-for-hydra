@@ -1,0 +1,30 @@
+# Reachability of the 16 production advisories (npm audit --omit=dev at the implementation commit)
+
+Bundled-artifact grep of dist/assets/index-aecb58b8.js (case-insensitive fixed strings),
+plus source-level import analysis. exit-code column is grep -c count.
+socket.io-client           2
+engine.io-client           2
+socket.io-parser           1
+parseuri                   0
+superagent                 3
+qs                         2
+shortid                    1
+i18next                    1
+i18next-http-backend       0
+choo                       1
+min-document               0
+form-data                  1
+hexoid                     0
+combined-stream            0
+formidable                 0
+minimatch                  0
+brace-expansion            0
+semver                     0
+@babel/runtime             0
+
+serverURL gating: src/stores/store.js:13 sets state.serverURL = SERVER_URL !== undefined ? SERVER_URL : null
+with SERVER_URL = import.meta.env.VITE_SERVER_URL; the distributed build defines no VITE_SERVER_URL, so patch-bay (socket.io-client, simple-peer, shortid)
+and the gallery server endpoints (superagent) are unreachable in the default artifact.
+The form-data hit above is superagent's MIME-type string ('form-data':'application/x-www-form-urlencoded'), not the form-data module:
+hexoid and combined-stream (form-data's dependencies) are absent, so the module is not bundled.
+i18next-http-backend is imported nowhere (src/stores/language-store.js:3 commented out) and does not appear in the bundle.

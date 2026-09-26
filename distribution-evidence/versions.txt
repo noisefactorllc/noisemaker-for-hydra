@@ -1,0 +1,6 @@
+v26.5.1
+11.17.0
+Linux 6.8.0-134-generic x86_64 GNU/Linux
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+NAME="Debian GNU/Linux"
+Chromium 154.0.8037.57 built on Debian GNU/Linux 12 (bookworm)

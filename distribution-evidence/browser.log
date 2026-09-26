@@ -1,0 +1,11 @@
+[editor-test] PASS encoded DSL
+[editor-test] PASS default DSL
+[editor-test] PASS chained variable alias DSL
+[editor-test] PASS midi note mode DSL
+[editor-test] PASS adjust filter DSL
+[editor-test] PASS output surface boundary DSL
+[editor-test] PASS synth noise DSL
+[editor-test] PASS README noise example
+[editor-test] PASS README chained points example
+[editor-test] PASS invalid effect diagnostic
+[editor-test] PASS resized window DSL

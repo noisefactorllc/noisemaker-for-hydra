@@ -1,0 +1,81 @@
+Noisemaker for Hydra — third-party notices for the built distribution
+=====================================================================
+
+This file lists the third-party material bundled in the distributed
+artifact of noisemaker-for-hydra. The artifact as a whole is licensed
+under the GNU Affero General Public License v3 (see the LICENSE file
+distributed alongside this notice).
+
+Upstream base
+-------------
+
+This editor is an experimental demo fork of the Hydra web editor
+(https://github.com/hydra-synth/hydra) by Olivia Jack and contributors.
+The fork retains Hydra's AGPL license and attribution history. The
+companion engine bundle `/_engine/hydra-synth.js` is generated from this
+repository's own sources (the Noisemaker-powered replacement for Hydra's
+renderer) and carries the repository's AGPL license.
+
+Vendored third-party files shipped in this artifact
+---------------------------------------------------
+
+- p5.js v1.6.0 (`/p5.min.js`) — p5.js contributors. GNU Lesser General
+  Public License, version 2.1. The license notice is embedded in the
+  distributed minified file.
+- Font Awesome Free 5.2.0 (`/css/fontawesome.css`, `/webfonts/*`) by
+  @fontawesome — https://fontawesome.com. Icons: CC BY 4.0. Fonts:
+  SIL OFL 1.1. Code: MIT License. The license header is embedded in
+  `/css/fontawesome.css`.
+- normalize.css v3.0.2 (`/css/normalize.css`) — Nicolas Gallagher and
+  Jonathan Neal. MIT License (stated in the file header).
+- Skeleton V2.0.4 (`/css/skeleton.css`) — Copyright 2014, Dave Gamache,
+  www.getskeleton.com. MIT License (stated in the file header).
+- Tomorrow Night Eighties editor theme (`/css/tomorrow-night-eighties.css`)
+  by Chris Kempson, CodeMirror template by Jan T. Sott
+  (https://github.com/idleberg/base16-codemirror, derived from
+  https://github.com/chriskempson/base16). Both upstream repositories
+  are MIT-licensed; the distributed file carries no embedded license
+  header.
+
+Bundled npm production dependencies
+-----------------------------------
+
+All production dependencies bundled into `/assets/*` are distributed
+under the MIT license. Installed versions for this artifact build:
+
+- choo 7.1.0
+- choo-devtools 3.0.4
+- codemirror 6.0.1
+- @codemirror/lang-javascript 6.1.9
+- @codemirror/theme-one-dark 6.1.2
+- @lezer/highlight 1.1.6
+- @management/cm-evaluate 0.1.0
+- i18next 21.10.0
+- i18next-browser-languagedetector 6.1.8
+- js-beautify 1.14.8
+- shortid 2.2.16
+- simple-peer 9.11.1
+- socket.io-client 2.5.0
+- superagent 7.1.5
+
+The MIT license text:
+
+  Permission is hereby granted, free of charge, to any person obtaining
+  a copy of this software and associated documentation files (the
+  "Software"), to deal in the Software without restriction, including
+  without limitation the rights to use, copy, modify, merge, publish,
+  distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so, subject to
+  the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
