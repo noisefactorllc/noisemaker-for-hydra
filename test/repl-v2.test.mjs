@@ -1376,3 +1376,43 @@ test('repl.eval formats compiler errors carrying texture policy validation failu
     global.window = originalWindow
   }
 })
+
+test('formatError handles pass property validation errors in errors array (GAP-005)', async () => {
+  const { formatError } = await loadRepl()
+  const passPolicyErr = {
+    errors: [
+      "Pass 0 property 'viewport' must be an object with numeric x, y, width, height",
+      "Pass 0 property 'samplerTypes' must be an object mapping sampler names to sampler type strings"
+    ]
+  }
+  assert.equal(
+    formatError(passPolicyErr),
+    "Pass 0 property 'viewport' must be an object with numeric x, y, width, height; Pass 0 property 'samplerTypes' must be an object mapping sampler names to sampler type strings"
+  )
+})
+
+test('repl.eval formats compiler errors carrying GAP-005 pass property validation failures', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const validationErr = new Error("Invalid effect definition contract")
+  validationErr.errors = [
+    "Pass 0 property 'name' must be a non-empty string",
+    "Pass 0 property 'clear' must be a boolean"
+  ]
+  global.window = {
+    hydraSynth: {
+      async compile() { throw validationErr }
+    }
+  }
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search hydra\nnoise().write(o0)\nrender(o0)', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(
+      info.errorMessage,
+      "Pass 0 property 'name' must be a non-empty string; Pass 0 property 'clear' must be a boolean"
+    )
+  } finally {
+    global.window = originalWindow
+  }
+})
+

@@ -105,3 +105,63 @@ test('runtime preserves CanvasRenderer pipeline sink deferral and deferredFrameC
   assert.equal(deferredChecks, 1)
   assert.equal(renderer.deferredFrameCount, 3)
 })
+
+test('runtime preserves CanvasRenderer texture and pass contracts (GAP-004, GAP-005)', async () => {
+  assert.equal(typeof runtimeModule?.createNoisemakerRuntime, 'function')
+
+  class MockPipeline {
+    constructor() {
+      this.textures = {
+        tex2d: { width: 128, height: 128, format: 'rgba8', mipmaps: true, persistent: true },
+        vol3d: { width: 32, height: 32, depth: 32, is3D: true, filter: 'linear' }
+      }
+      this.graph = {
+        passes: [
+          {
+            name: 'render_pass',
+            type: 'render',
+            clear: true,
+            viewport: { x: 0, y: 0, width: 640, height: 360 },
+            samplerTypes: { noiseTex: 'sampler3D' }
+          }
+        ]
+      }
+    }
+    shouldDeferRender() { return false }
+  }
+
+  class CanvasRenderer {
+    constructor(options) {
+      this.options = options
+      this.manifest = {}
+      this.pipeline = new MockPipeline()
+      this._deferredFrameCount = 0
+    }
+    async loadManifest() {}
+    async loadEffects() {}
+    start() {}
+    get deferredFrameCount() { return this._deferredFrameCount }
+  }
+
+  const engine = { CanvasRenderer }
+  const extension = {
+    async loadHydraEffects() { return engine }
+  }
+  const canvas = { width: 640, height: 360 }
+
+  const renderer = await runtimeModule.createNoisemakerRuntime({
+    canvas,
+    extension,
+    cdn: 'https://example.invalid/noisemaker/1.2.3'
+  })
+
+  assert.equal(renderer.pipeline.textures.tex2d.mipmaps, true)
+  assert.equal(renderer.pipeline.textures.tex2d.persistent, true)
+  assert.equal(renderer.pipeline.textures.vol3d.filter, 'linear')
+  assert.equal(renderer.pipeline.textures.vol3d.is3D, true)
+  assert.equal(renderer.pipeline.graph.passes[0].name, 'render_pass')
+  assert.equal(renderer.pipeline.graph.passes[0].clear, true)
+  assert.deepEqual(renderer.pipeline.graph.passes[0].viewport, { x: 0, y: 0, width: 640, height: 360 })
+  assert.deepEqual(renderer.pipeline.graph.passes[0].samplerTypes, { noiseTex: 'sampler3D' })
+})
+
