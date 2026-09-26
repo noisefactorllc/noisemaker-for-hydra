@@ -1,0 +1,126 @@
+# Upstream audit, noisefactorllc/noisemaker, generated for noisemaker-for-hydra delivery (force-push/non-contiguity audit of fca611fd8f91424661d4e531d39313d24ea21134..6a0af04d3c4f345ffab5e9f8e54e532216b4cdaa)
+
+$ git rev-parse HEAD
+a651c075bb2848b584b2bf2484f5f8a0db754b0c
+
+$ git merge-base --is-ancestor fca611fd8f91424661d4e531d39313d24ea21134 6a0af04d3c4f345ffab5e9f8e54e532216b4cdaa && echo ancestor
+ancestor
+
+$ git merge-base --is-ancestor fca611fd8f91424661d4e531d39313d24ea21134 2f47612c29045c1b91af94887a8ff20106e980ef && echo ancestor
+ancestor
+
+$ git merge-base --is-ancestor 2f47612c29045c1b91af94887a8ff20106e980ef 6a0af04d3c4f345ffab5e9f8e54e532216b4cdaa && echo ancestor
+ancestor
+
+$ git rev-list --count fca611fd8f91..6a0af04d3c4f  /  2f47612c..6a0af04d3c4f
+40
+18
+
+$ observed sub-range endpoints
+428ea29bf8fb635fe567a9c5efe221f33478349c docs: advance Documentation checkpoint through 6c3f9a26
+95743621696483b91968992ef6ee0d87b2089fa8 fix(shaders): treat viewport passes without clear as partially written for texture pooling
+
+$ git log --oneline 2f47612c..6a0af04d3c4f -- shaders/  (via rev-list + diff-tree path filter; this clone is complete)
+f83a427e fix(shaders): normalize backend shader/compiler failures to one structured diagnostic union
+95743621 fix(shaders): treat viewport passes without clear as partially written for texture pooling
+6113da00 feat(shaders): consume the resource allocation plan behind texturePooling opt-in with a queryable runtime plan (GAP-006)
+fa83eeab feat(shaders): copy name/viewport/clear/samplerTypes/type onto expanded passes (GAP-005)
+
+$ git diff --name-only 2f47612c 6a0af04d3c4f -- shaders/effects/  (empty = effect catalog unchanged)
+(end effects delta)
+
+$ git diff --stat 2f47612c 6a0af04d3c4f -- shaders/ package.json
+ package.json                                |   2 +-
+ shaders/src/runtime/backends/diagnostics.js | 185 +++++++++++
+ shaders/src/runtime/backends/webgl2.js      |  45 ++-
+ shaders/src/runtime/backends/webgpu.js      | 103 +++---
+ shaders/src/runtime/expander.js             |  12 +
+ shaders/src/runtime/pipeline.js             | 279 +++++++++++++++-
+ shaders/tests/test_backend_diagnostics.js   | 338 +++++++++++++++++++
+ shaders/tests/test_pass_fields.js           | 323 +++++++++++++++++++
+ shaders/tests/test_resource_pooling.js      | 483 ++++++++++++++++++++++++++++
+ 9 files changed, 1720 insertions(+), 50 deletions(-)
+
+$ git tag --contains 6a0af04d3c4f345ffab5e9f8e54e532216b4cdaa
+v1.0.185
+
+$ git show --stat 428ea29bf8fb 957436216964 6a0af04d3c4f | grep -E '^(commit|    )'
+commit 428ea29bf8fb635fe567a9c5efe221f33478349c
+Author: Alex Ayars <aayars@gmail.com>
+Date:   Fri Sep 25 17:27:39 2026 -0600
+
+    docs: advance Documentation checkpoint through 6c3f9a26
+
+commit 95743621696483b91968992ef6ee0d87b2089fa8
+Author: noisefactor-worker-elves[bot] <333530362+noisefactor-worker-elves[bot]@users.noreply.github.com>
+Date:   Sat Sep 26 00:56:32 2026 +0000
+
+    fix(shaders): treat viewport passes without clear as partially written for texture pooling
+
+commit 6a0af04d3c4f345ffab5e9f8e54e532216b4cdaa
+Author: noisefactor-worker-elves[bot] <333530362+noisefactor-worker-elves[bot]@users.noreply.github.com>
+Date:   Sat Sep 26 01:36:41 2026 +0000
+
+    docs: narrow GAP-007 register row to state what remains unstructured
+
+$ ShaderDiagnostic contract at 6a0af04d3c4f (shaders/src/runtime/backends/diagnostics.js, head)
+/**
+ * One structured diagnostic union for backend shader/compiler failures.
+ *
+ * Before this module the WebGL2 and WebGPU backends threw ad-hoc plain
+ * object literals (`{ code, detail, ... }`) from their compile/link paths
+ * and the WebGPU bind-group retry re-parsed raw browser error strings with
+ * inline regexes. Every backend shader/compiler failure is now a
+ * `ShaderDiagnostic` (a real `Error`) carrying:
+ *
+ *   - `code`     legacy machine code ('ERR_SHADER_COMPILE', 'ERR_SHADER_LINK',
+ *                'ERR_SHADER_MISSING', 'ERR_NO_WGSL_SOURCE');
+ *   - `backend`  'webgl2' | 'webgpu';
+ *   - `stage`    'compile' | 'link' | 'missing-source' | 'bind';
+ *   - `program`  program/pass id, when known;
+ *   - `detail`   the raw browser/compiler string, byte-identical to the
+ *                legacy thrown shape so `err.detail || err.message`
+ *                consumers keep their output;
+ *   - `messages` the parsed diagnostic union — one entry per compiler
+ *                message with `severity` ('error' | 'warning' | 'info'),
+ *                `line`, `column` (when the browser reports one) and
+ *                `message` — so retry logic and tooling never re-parse the
+ *                browser string themselves;
+ *   - `source`   the offending shader source for compile diagnostics;
+ *   - `bindingIndex` the parsed problem binding for bind-stage diagnostics.
+ *
+ * The legacy observable surface (`code`, `detail`, `program`, `source` as
+ * enumerable own properties) is preserved, so existing consumers —
+ * `formatError()` in compiler.js, the `err.detail || err.message ||
+ * JSON.stringify(err)` fallbacks in pipeline.js/canvas.js, and the Shade
+ * browser tool wrappers — keep working unchanged.
+ */
+
+export const DIAGNOSTIC_CODES = Object.freeze({
+    COMPILE: 'ERR_SHADER_COMPILE',
+    LINK: 'ERR_SHADER_LINK',
+    MISSING_SOURCE: 'ERR_SHADER_MISSING',
+    NO_SOURCE: 'ERR_NO_WGSL_SOURCE'
+})
+
+/**
+ * A single normalized compiler message.
+ * @typedef {Object} DiagnosticMessage
+ * @property {'error'|'warning'|'info'} severity
+ * @property {number|undefined} line
+ * @property {number|undefined} column
+ * @property {string} message
+ */
+
+/**
+ * A structured diagnostic thrown by backend compile/link/bind paths.
+ * `code`, `detail`, `program` and `source` stay enumerable own properties
+ * to preserve the legacy thrown-object serialization shape.
+ */
+export class ShaderDiagnostic extends Error {
+    /**
+     * @param {Object} spec
+     * @param {string} spec.code legacy machine code (see DIAGNOSTIC_CODES)
+     * @param {string} spec.backend 'webgl2' | 'webgpu'
+     * @param {string} spec.stage 'compile' | 'link' | 'missing-source' | 'bind'
+     * @param {string} [spec.detail] raw browser/compiler string
