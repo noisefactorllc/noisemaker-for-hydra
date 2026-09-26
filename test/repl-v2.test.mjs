@@ -1447,3 +1447,55 @@ test('repl.eval formats compiler errors carrying GAP-005 pass property validatio
   }
 })
 
+test('formatError handles ShaderDiagnostic backend errors preserving legacy detail (noisemaker 6a0af04d)', async () => {
+  const { formatError } = await loadRepl()
+  const diagnostic = new Error("GLSL compile error: 'foo' : undeclared identifier")
+  diagnostic.name = 'ShaderDiagnostic'
+  diagnostic.code = 'ERR_SHADER_COMPILE'
+  diagnostic.backend = 'webgl2'
+  diagnostic.stage = 'compile'
+  diagnostic.detail = "GLSL compile error: 'foo' : undeclared identifier"
+  diagnostic.messages = [
+    { severity: 'error', line: 12, column: 9, message: "'foo' : undeclared identifier" }
+  ]
+  diagnostic.program = 'filter/oilPaint'
+  assert.equal(
+    formatError(diagnostic),
+    "GLSL compile error: 'foo' : undeclared identifier"
+  )
+
+  const link = new Error('program link failed')
+  link.name = 'ShaderDiagnostic'
+  link.code = 'ERR_SHADER_LINK'
+  link.backend = 'webgpu'
+  link.stage = 'link'
+  link.detail = 'program link failed'
+  link.messages = []
+  assert.equal(formatError(link), 'program link failed')
+})
+
+test('repl.eval formats compiler errors carrying ShaderDiagnostic failures (noisemaker 6a0af04d)', async () => {
+  const repl = await loadRepl()
+  const originalWindow = global.window
+  const diagnostic = new Error("GLSL compile error: shader source is empty")
+  diagnostic.name = 'ShaderDiagnostic'
+  diagnostic.code = 'ERR_SHADER_MISSING'
+  diagnostic.backend = 'webgl2'
+  diagnostic.stage = 'missing-source'
+  diagnostic.detail = "GLSL compile error: shader source is empty"
+  diagnostic.messages = []
+  diagnostic.program = 'filter/octaveWarp'
+  global.window = {
+    hydraSynth: {
+      async compile() { throw diagnostic }
+    }
+  }
+  try {
+    const info = await new Promise(resolve => repl.default.eval('search hydra\nnoise().write(o0)\nrender(o0)', resolve))
+    assert.equal(info.isError, true)
+    assert.equal(info.errorMessage, "GLSL compile error: shader source is empty")
+  } finally {
+    global.window = originalWindow
+  }
+})
+
