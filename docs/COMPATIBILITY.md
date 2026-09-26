@@ -99,6 +99,8 @@ The browser denominator is now 11 cases: the original seven DOM/compiler cases r
 
 Remaining limits: external media, audio/MIDI hardware, browser upgrades, and non-listed browsers or operating systems remain unverified; no pixels were compared; the parity gate's 6 missing authority frames are unchanged.
 
+CI boundary (2026-09-26): a source-bound workflow (`.github/workflows/tests.yml`) now runs the unit/compiler suite, the distribution build, and the 11-case headless browser suite on every push to main and pull request. It does not execute the rendered parity gate, so it does not enforce rendered parity; GAP-006 remains open and GAP-001's 6 missing authority frames are unchanged. The local raw evidence in `workflow-evidence/` was regenerated for the CI-workflow candidate (scripts/test.mjs now launches vite through `node node_modules/vite/bin/vite.js`, keeping the no-symbolic-links install contract intact).
+
 ### Daily review, 2026-09-25
 
 48 unit tests and seven browser editor checks pass. The browser checks do not compare pixels. The retained WebGPU failure and two bounded WebGL2 comparisons remain relevant, but do not qualify all current authority inputs or the Hydra API. GAP-001, GAP-004, and the missing rendered CI gate remain open. [Raw evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json).

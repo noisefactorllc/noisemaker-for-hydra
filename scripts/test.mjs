@@ -7,7 +7,12 @@ const PORT = process.env.PORT || 5173
 const SOURCE = 'search hydra\ngradient(speed: 0).write(o0)'
 
 function startServer() {
-  return spawn('npm', ['run', 'dev', '--', '--port', String(PORT)], {
+  return spawn(process.execPath, [
+    'node_modules/vite/bin/vite.js',
+    '.',
+    '--host',
+    '--port', String(PORT)
+  ], {
     stdio: ['ignore', 'pipe', 'pipe']
   })
 }

@@ -7,3 +7,5 @@ backend/certs
 
 parity-evidence/chrome-http-cache/
 parity-evidence/chrome-profile-*/
+
+.browsers/
