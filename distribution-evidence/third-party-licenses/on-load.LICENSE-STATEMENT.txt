@@ -1,0 +1,4 @@
+# on-load — no LICENSE file in the installed package; license statement from installed package metadata/readme
+"license": "MIT"
+node_modules/on-load/README.md:# license
+node_modules/on-load/README.md:(c) 2018 Kyle Robinson Young. MIT License

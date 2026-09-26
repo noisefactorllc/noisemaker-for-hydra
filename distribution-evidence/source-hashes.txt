@@ -1,4 +1,10 @@
-8c14f4d25c1cda1e2f815f66b9ec9608e017d1f5
+# Candidate/implementation source revision (this commit):
+5ba3d7e41a758ca61f6f2ecd341e7e9358359613
+# Isolated-build reproduction archives this revision (see commands.txt):
+#   git archive 5ba3d7e41a758ca61f6f2ecd341e7e9358359613
+# Prior audited parent revision (28-file dist, before notices existed):
+#   413d97acde311994fc9fc91b7b7706fbf186cd45
+# SHA-256 of key evidence-source files in the tree above:
 7f8f48e4266aa8fd3033dfaa4bb7f6e83a60c6e099f82d4959b81de90e67cd8f  public/LICENSE
-a637501101b1b3e31aa8040c1d0fe68cf59312bc4961a16d8cf5cdcb9ef993b5  public/THIRD-PARTY-NOTICES
+3c4b54ac95796a4e9fbdd94efa5501d978a0bf64be47c73874aad83df444c7e7  public/THIRD-PARTY-NOTICES
 e2d40db4d03a3e349d65928a6c6e1109199e01f32e16776bd8f85e1937ff81e6  test/developer-workflow.test.mjs

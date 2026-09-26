@@ -1,0 +1,2 @@
+# get-browser-rtc — no LICENSE file in the installed package; license statement from installed package metadata/readme
+"license": "MIT"

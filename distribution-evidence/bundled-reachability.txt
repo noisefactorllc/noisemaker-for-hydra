@@ -1,30 +1,51 @@
-# Reachability of the 16 production advisories (npm audit --omit=dev at the implementation commit)
-
-Bundled-artifact grep of dist/assets/index-aecb58b8.js (case-insensitive fixed strings),
-plus source-level import analysis. exit-code column is grep -c count.
-socket.io-client           2
-engine.io-client           2
-socket.io-parser           1
-parseuri                   0
-superagent                 3
-qs                         2
-shortid                    1
-i18next                    1
-i18next-http-backend       0
-choo                       1
-min-document               0
-form-data                  1
-hexoid                     0
-combined-stream            0
-formidable                 0
-minimatch                  0
-brace-expansion            0
-semver                     0
-@babel/runtime             0
-
-serverURL gating: src/stores/store.js:13 sets state.serverURL = SERVER_URL !== undefined ? SERVER_URL : null
-with SERVER_URL = import.meta.env.VITE_SERVER_URL; the distributed build defines no VITE_SERVER_URL, so patch-bay (socket.io-client, simple-peer, shortid)
-and the gallery server endpoints (superagent) are unreachable in the default artifact.
-The form-data hit above is superagent's MIME-type string ('form-data':'application/x-www-form-urlencoded'), not the form-data module:
-hexoid and combined-stream (form-data's dependencies) are absent, so the module is not bundled.
-i18next-http-backend is imported nowhere (src/stores/language-store.js:3 commented out) and does not appear in the bundle.
+# Reachability of the 16 production advisories (npm audit --omit=dev)
+# Tree: isolated build at the implementation commit (see commands.txt).
+#
+# Bundling evidence: esbuild metafile input listing for the production entry
+# (index.js, bundle=true, platform=browser), mirroring the vite production
+# build's dependency resolution. The full list of 82 bundled node_modules
+# packages with installed versions is retained in bundled-packages.txt, and
+# per-package LICENSE copies (or, where the installed package ships none, the
+# package's own license statement) are retained in third-party-licenses/.
+#
+# Advisory module -> bundled? (esbuild metafile) -> reachable in default artifact?
+#
+# i18next-http-backend (moderate): NOT bundled (absent from metafile; import
+#   commented out at src/stores/language-store.js:3). Not reachable.
+# form-data (critical) via superagent: NOT bundled as a module (absent from
+#   metafile). The single 'form-data' string in dist/assets/index-aecb58b8.js
+#   is superagent's MIME-type constant ('form-data':'application/x-www-form-urlencoded');
+#   form-data's own dependencies hexoid and combined-stream are absent from the
+#   metafile. Not reachable.
+# qs (moderate) via superagent: BUNDLED (esbuild metafile; 'arrayLimit' present
+#   in dist/assets/index-aecb58b8.js). Dormant: the superagent request calls in
+#   src/stores/gallery.js execute only when state.serverURL is set from
+#   VITE_SERVER_URL (src/stores/store.js:13); the distributed build defines no
+#   VITE_SERVER_URL, so serverURL is null and these paths are unreachable.
+# socket.io-client / engine.io-client / socket.io-parser / parseuri (high/
+#   moderate): BUNDLED (all four present in the esbuild metafile for the
+#   patch-bay import chain). Note: the plain-text grep of the minified bundle
+#   shows 0 hits for 'parseuri' because the minifier renamed it; the metafile
+#   is the authoritative bundling evidence. Dormant: PatchBay is constructed
+#   only under the same null serverURL guard (src/views/Hydra.js:32).
+# shortid (moderate, via nanoid): BUNDLED (metafile; shortid and nanoid both
+#   listed). Dormant: only executed inside patch-bay peer-id generation.
+# ws (high): NOT bundled (server-side; absent from metafile). Not reachable.
+# formidable (low): NOT bundled (absent from metafile). Not reachable.
+# min-document (low): NOT bundled as a module (absent from metafile; choo's
+#   'global' shim is bundled but min-document itself is not). Not reachable.
+# minimatch / brace-expansion (high): NOT bundled (js-beautify Node CLI
+#   dependency chain; absent from metafile). Not reachable.
+# semver (high): NOT bundled (absent from metafile). Not reachable.
+# @babel/runtime (moderate, via i18next): BUNDLED (metafile lists
+#   @babel/runtime 7.22.5). The advisory's vulnerable RegExp path applies to
+#   generated .replace() code paths not exercised by the bundled i18next
+#   usage; the artifact is a static demo page with no attacker-controlled
+#   regular-expression input. Assessed: no known reachable path in this
+#   artifact; recorded, not eliminated.
+#
+# Decision: no dependency upgrade in this round (shortid->nanoid and
+# socket.io-client 2->4 change public APIs used by the vendored patch-bay
+# code and would alter behavior without rendered qualification). Advisories
+# are assessed with bundling evidence above; dormant bundled chains are
+# re-assessable if a server-integrated build (VITE_SERVER_URL set) is produced.

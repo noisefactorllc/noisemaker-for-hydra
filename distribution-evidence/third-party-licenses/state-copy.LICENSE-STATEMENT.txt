@@ -1,0 +1,3 @@
+# state-copy — no LICENSE file in the installed package; license statement from installed package metadata/readme
+"license": "MIT"
+node_modules/state-copy/README.md:## License
