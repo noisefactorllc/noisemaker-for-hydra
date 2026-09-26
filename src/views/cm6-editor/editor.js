@@ -21,7 +21,7 @@ export default class Editor extends EventEmitter {
       extensions: [
         hydraSetup,
         javascript(),
-        placeholder('//\n// Type some code on a new line (such as "osc().out()"), and press CTRL+shift+enter'),
+        placeholder('//\n// Start with a search line (such as "search hydra, synth"), and press CTRL+shift+enter'),
         flashCode((code, shouldUpdateURL = false) => {
           emit('repl: eval', code)
           if (shouldUpdateURL) emit('gallery: save to URL', code)

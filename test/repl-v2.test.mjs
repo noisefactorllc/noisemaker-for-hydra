@@ -144,6 +144,37 @@ test('repl.eval formats compiler errors containing diagnostics', async () => {
   assert.equal(info.errorMessage, "Unknown effect: 'solid' (line 2, col 5)")
 })
 
+test('repl.eval recovers after a failed compilation', async () => {
+  const repl = await loadRepl()
+  const err = new Error('Compilation failed with 1 error(s)')
+  err.diagnostics = [{ message: "Unknown effect: 'solid'", location: { line: 1, column: 1 } }]
+  const compiled = []
+  let failNext = true
+  global.window = {
+    hydraSynth: {
+      async compile(source) {
+        compiled.push(source)
+        if (failNext) {
+          failNext = false
+          throw err
+        }
+      }
+    }
+  }
+  const bad = 'solid().write(o0)'
+  const good = 'search hydra, synth\ngradient(speed: 0).write(o0)'
+
+  const failure = await new Promise(resolve => repl.default.eval(bad, resolve))
+  assert.equal(failure.isError, true)
+  assert.equal(failure.errorMessage, "Unknown effect: 'solid' (line 1, col 1)")
+
+  const success = await new Promise(resolve => repl.default.eval(good, resolve))
+  assert.equal(success.isError, false)
+  assert.equal(success.codeString, good)
+  assert.equal(success.errorMessage, '')
+  assert.deepEqual(compiled, [bad, good])
+})
+
 test('repl.eval formats compiler syntax errors for out-of-range output surfaces', async () => {
   const repl = await loadRepl()
   const err = new SyntaxError("Output surface reference 'o8' is out of range; expected o0-o7 at line 1 col 15")

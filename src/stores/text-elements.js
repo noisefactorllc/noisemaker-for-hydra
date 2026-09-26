@@ -14,23 +14,21 @@ export default {
             },
             info: {
                 title: 'hydra',
-                subtitle: 'live coding video synth',
-                description: 'Hydra is live code-able video synth and coding environment that runs directly in the browser. It is free and open-source and made for beginners and experts alike.',
+                subtitle: 'live coding video synth (Noisemaker edition)',
+                description: 'Noisemaker for Hydra is an experimental fork of the Hydra web editor. It runs in your browser and renders programs written in Polymorphic DSL with the Noisemaker shader engine.',
                 'get-started-title': 'To get started:',
                 'get-started-list': [
-                    'Close this window',
-                    'Change some numbers',
-                    'Type Ctrl + Shift + Enter'
+                    'Start your program with a search line listing the namespaces you use, for example: search hydra, synth',
+                    'Change some numbers or effect names',
+                    'Type Ctrl + Shift + Enter to evaluate. The program is saved into the page URL'
                 ],
-                'description-detailed': 'Hydra is written in JavaScript and compiles to WebGL under the hood. The syntax is inspired by analog modular synthesis, in which chaining or patching a set of transformations together generates a visual result.',
-                'uses': 'Hydra can be used:',
+                'description-detailed': 'Programs here are written in Polymorphic DSL, not ordinary Hydra JavaScript. The first line is a search directive such as search hydra, synth that lists the namespaces the program uses. Chain generators and effects, write to an output with .write(o0), and show it with render(o0). A first program is: search hydra on the first line, then noise(scale: 5).write(o0) and render(o0), each on its own line. Hydra-style sketches such as osc().out() do not compile in this editor.',
+                'uses': 'In this demo you can:',
                 'uses-list': [
-                    'to mix and add effects to camera feeds, screenshares, live streams, and videos',
-                    'to create generative and audio-reactive visuals, and share them online with others',
-                    'in combination with other javascript libraries such as P5.js, Tone.js, THREE.js, or gibber',
-                    'to add interactive video effects to a website',
-                    'to experiment with and learn about video feedback, fractals, and pixel operations',
-                    'to stream video between browsers and live-jam with others online'
+                    'create generative visuals with Hydra generators and the Noisemaker effect library',
+                    'evaluate your program in the browser with Ctrl + Shift + Enter',
+                    'preserve your work: every evaluation stores the program in the page URL for restoration and sharing',
+                    'experiment with procedural and stateful effects such as particle flows',
                 ],
                 'author': 'Created by <a {{author}}>olivia.</a>',
                 'more-info': 'For more information and instructions, see: <a {{docs}}>the interactive documentation</a>, <a {{functions}}>a list of hydra functions</a>, <a {{garden}}>the community database of projects and tutorials</a>, <a {{gallery}}>a gallery of user-generated sketches</a>, and <a {{repo}}>the source code on github</a>,',

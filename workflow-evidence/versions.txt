@@ -1,0 +1,5 @@
+v26.5.1
+11.17.0
+Chromium 154.0.8037.57 built on Debian GNU/Linux 12 (bookworm)
+60b0b213f9ce731ba2116eaea7969419ab672860
+Linux ea790d5b5cea 6.8.0-134-generic #134-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 26 18:43:11 UTC 2026 x86_64 GNU/Linux

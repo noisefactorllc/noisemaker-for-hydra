@@ -33,6 +33,14 @@ test('canvas component stops and disposes its Noisemaker renderer', () => {
   assert.match(source, /return Promise\.resolve\(renderer\.dispose\(\)\)\.then\(\(\) => renderer\)/)
 })
 
+test('canvas component cleanup stops capture tracks and patch bay (GAP-002 resource cleanup)', () => {
+  const source = readFileSync('src/views/Hydra.js', 'utf8')
+
+  assert.match(source, /for \(const track of this\.captureStream\.getTracks\(\)\) track\.stop\(\)/)
+  assert.match(source, /this\.pb\._destroy\(\)/)
+  assert.match(source, /window\.hydraSynth === renderer\) window\.hydraSynth = null/)
+})
+
 function sourceFiles(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
     const path = join(directory, entry.name)

@@ -79,6 +79,26 @@ Literal execution: `CHROME=/usr/bin/chromium GATE_BATCH=1 GATE_SLICE_ATTEMPTS=2 
 
 The 6 missing comparisons are retained in the denominator; no case was skipped, no tolerance applied, and no fixture or gate criterion was relaxed to reach the summary.
 
+### Installed developer workflow checks, 2026-09-26 (GAP-002)
+
+Scope of this qualification round: the browser editor, its in-app guidance, saved-work controls, invalid-input diagnostics and recovery, URL restoration and removal, and component resource cleanup. No rendered pixels were compared; the rendered parity gate above remains the authority for output correctness.
+
+Supported platforms defined by this record (dependency of GAP-002): the developer workflow is supported on Chromium-based desktop browsers with WebGL2 — verified here on Chromium 154.0.8037.57, Debian GNU/Linux 12 (bookworm), linux-x64, Node v26.5.1, npm 11.17.0 (retained prior evidence: Chrome 153.0.8010.53, macOS 26.5 arm64). Firefox, Safari, Windows, Android, and other versions remain unmeasured and are not claimed.
+
+Implementation changes in this round: the in-app help (`src/stores/text-elements.js`) now describes Polymorphic DSL (search directive, `.write(oN)`, `render(oN)`, Ctrl+Shift+Enter, URL-preserved programs) and no longer claims camera/screen/stream/audio inputs, external JS libraries, or cross-browser streaming, which this fork does not provide (`getUserMedia`/`mediaDevices` are absent from `dist/assets/index-aecb58b8.js` and `public/_engine/hydra-synth.js`). The editor placeholder (`src/views/cm6-editor/editor.js`, unused by the active CodeMirror 5 editor) was corrected from `osc().out()` to a search-directive example.
+
+Checks executed (raw output and exit codes in `workflow-evidence/`):
+
+| Command | Expected | Executed | Pass | Fail | Exit |
+|---|---|---|---|---|---|
+| `node --test test/*.test.mjs` | 79 tests | 79 | 79 | 0 | 0 (`workflow-evidence/unit.log`) |
+| `CHROME=/usr/bin/chromium PORT=5197 node scripts/test.mjs` | 11 browser checks | 11 | 11 | 0 | 0 (`workflow-evidence/browser.log`) |
+| `node node_modules/vite/bin/vite.js build` | 28 tracked dist files | 28 | tracked, count unchanged | 0 | 0 |
+
+The browser denominator is now 11 cases: the original seven DOM/compiler cases retained unchanged plus four new ones — README noise example (`search hydra\nnoise(scale: 5).write(o0)\n\nrender(o0)`), README chained points example (`search hydra, points, render` with `pointsEmit/flow/pointsRender`), invalid-effect diagnostic case (`bogusEffect()` must surface `Unknown effect` with `log-error` in the console element), a 640×480 resized-window case, and the original seven retained unchanged. These cover, through public URL controls: documented examples, invalid input, URL restoration (encoded and default), and the defined resize dimension. Recovery is covered by `repl.eval` unit test 'repl.eval recovers after a failed compilation' (failed compile, then a corrected program compiles cleanly through the same public path); prior rendered recovery evidence (corrected solid producing opaque red) is retained in section 3 history. Saved-work input removal and URL restoration are covered by `test/developer-workflow.test.mjs` (gallery `saveLocally` writes the program into the URL, `clear()` removes the `code` parameter and nulls the sketch, and a `?code=` URL decodes back to the exact program). Resource cleanup is covered by the extended lifecycle source checks (`test/no-legacy-runtime.test.mjs`: renderer stop/dispose, capture-track stop, patch-bay destroy, `window.hydraSynth` release) and by the retained prior probe evidence that renderer disposal stops execution and clears its pipeline.
+
+Remaining limits: external media, audio/MIDI hardware, browser upgrades, and non-listed browsers or operating systems remain unverified; no pixels were compared; the parity gate's 6 missing authority frames are unchanged.
+
 ### Daily review, 2026-09-25
 
 48 unit tests and seven browser editor checks pass. The browser checks do not compare pixels. The retained WebGPU failure and two bounded WebGL2 comparisons remain relevant, but do not qualify all current authority inputs or the Hydra API. GAP-001, GAP-004, and the missing rendered CI gate remain open. [Raw evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json).
