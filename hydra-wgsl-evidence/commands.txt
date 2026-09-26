@@ -23,3 +23,5 @@ Reproduction (deno-harness-driver.mjs):
     solid OK len=3072 head=255,0,0,255 (opaque red)
 
 node --test test/*.test.mjs  # raw output in unit.log
+
+node node_modules/vite/bin/vite.js build  # raw output in build.log
