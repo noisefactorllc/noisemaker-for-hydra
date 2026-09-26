@@ -1,0 +1,44 @@
+<!doctype html>
+<html><body>
+<iframe id="auth" src="./authority.html" style="width:64px;height:48px"></iframe>
+<iframe id="port" src="./port.html" style="width:64px;height:48px"></iframe>
+<pre id="out">diag3-boot</pre>
+<script type="module">
+const pre = document.getElementById('out')
+const ready = {}
+const pending = new Map()
+let nextId = 0
+window.addEventListener('message', (ev) => {
+  const msg = ev.data || {}
+  if (msg.type === 'ready') { ready[msg.side] = true; return }
+  const r = pending.get(msg.id)
+  if (r) { pending.delete(msg.id); r(msg) }
+})
+function ask (side, payload) {
+  const id = `m${nextId++}`
+  return new Promise(res => {
+    let t = setTimeout(() => { if (pending.has(id)) { pending.delete(id); res({ type: 'timeout' }) } }, 300000)
+    pending.set(id, m => { clearTimeout(t); res(msg) })
+    document.getElementById(side).contentWindow.postMessage({ ...payload, id }, '*')
+  })
+}
+async function waitForReady () {
+  const s = Date.now()
+  while ((!ready.authority || !ready.port) && Date.now() - s < 300000) await new Promise(r => setTimeout(r, 100))
+}
+await waitForReady()
+const fixture = await (await fetch('/test/fixtures/parity-cases.json')).json()
+const ids = ['filter/octaveWarp']
+const results = []
+for (const id of ids) {
+  const c = fixture.cases.find(x => x.id === id)
+  const programs = [
+    { key: 'A', source: c.caseA.source, size: { width: 32, height: 24 }, times: [0] }
+  ]
+  const ar = await ask('auth', { type: 'authority-run', programs })
+  if (ar.type !== 'authority-frames') { results.push({ id, stage: 'AB', type: ar.type, error: (ar.error || '').slice(0, 150) }); continue }
+  const pr = await ask('port', { type: 'port-run', programs, authorityFrames: ar.frames })
+  results.push({ id, stage: 'A', cmp: pr.type === 'port-comparisons' ? pr.comparisons.map(c => c.status) : (pr.error || pr.type).slice(0, 150) })
+}
+pre.textContent = JSON.stringify(results)
+</script></body></html>

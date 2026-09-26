@@ -1,0 +1,179 @@
+<!doctype html>
+<!--
+  GAP-001 rendered-parity gate: PARENT orchestrator.
+  Pins authority identities (engine bundle, manifest, companion), drives the
+  authority and port iframes through every case in
+  test/fixtures/parity-cases.json, and writes the final JSON report into
+  <pre id="out"> for the harness to capture.
+-->
+<html><body>
+<iframe id="auth" src="./authority.html" style="width:64px;height:48px"></iframe>
+<iframe id="port" src="./port.html" style="width:64px;height:48px"></iframe>
+<pre id="out">parent-boot</pre>
+<script type="module">
+const pre = document.getElementById('out')
+const fixture = await (await fetch('/test/fixtures/parity-cases.json')).json()
+
+async function sha256Hex (buf) {
+  const d = await crypto.subtle.digest('SHA-256', buf)
+  return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+const pinned = fixture.authorities
+const identity = {}
+for (const [name, url, expected] of [
+  ['engineBundle', pinned.engineBundle, pinned.engineBundleSha256],
+  ['manifest', pinned.manifest, pinned.manifestSha256],
+  ['rollingCore', pinned.rollingCore, pinned.engineBundleSha256],
+  ['companion', pinned.companion, pinned.companionSha256]
+]) {
+  try {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const buf = await res.arrayBuffer()
+    const got = await sha256Hex(buf)
+    identity[name] = { url, sha256: got, matchesPinned: got === expected }
+  } catch (err) {
+    identity[name] = { url, error: String(err && err.message || err) }
+  }
+}
+identity.rollingMatchesImmutable = identity.rollingCore && identity.rollingCore.sha256 === identity.engineBundle && identity.engineBundle.sha256
+const identityOk = ['engineBundle', 'manifest', 'companion'].every(n => identity[n] && identity[n].matchesPinned)
+
+function frame (id) {
+  return document.getElementById(id).contentWindow
+}
+const ready = {}
+const pending = new Map()
+let nextId = 0
+window.addEventListener('message', (ev) => {
+  const msg = ev.data || {}
+  if (msg.type === 'ready') { ready[msg.side] = true; return }
+  const resolve = pending.get(msg.id)
+  if (!resolve) return
+  pending.delete(msg.id)
+  resolve(msg)
+})
+function ask (side, payload) {
+  const id = `m${nextId++}`
+  return new Promise(resolve => {
+    let timer = setTimeout(() => {
+      if (pending.has(id)) {
+        pending.delete(id)
+        resolve({ type: 'timeout', id })
+      }
+    }, 60000)
+    pending.set(id, msg => { clearTimeout(timer); resolve(msg) })
+    frame(side).postMessage({ ...payload, id }, '*')
+  })
+}
+async function waitForReady () {
+  const started = Date.now()
+  while ((!ready.authority || !ready.port) && Date.now() - started < 600000) {
+    await new Promise(r => setTimeout(r, 100))
+  }
+  if (!ready.authority || !ready.port) throw new Error(`gate iframes not ready: authority=${!!ready.authority} port=${!!ready.port}`)
+}
+
+const S32 = { width: 32, height: 24 }
+const S18 = { width: 24, height: 18 }
+const perFrame = []
+const caseStatus = []
+const env = {
+  userAgent: navigator.userAgent,
+  webgl: (() => {
+    const c = document.createElement('canvas')
+    const gl = c.getContext('webgl2')
+    return gl ? { version: gl.getParameter(gl.VERSION), renderer: gl.getParameter(gl.RENDERER) } : null
+  })()
+}
+
+let executedComparisons = 0
+let exactCount = 0; let toleranceCount = 0; let failCount = 0; let missingCount = 0
+const failures = []
+const params = new URLSearchParams(location.search)
+const sliceStart = Math.max(0, Number(params.get('start') || 0))
+const sliceLimit = Math.min(fixture.cases.length - sliceStart, Math.max(1, Number(params.get('limit') || fixture.cases.length)))
+const sliceCases = fixture.cases.slice(sliceStart, sliceStart + sliceLimit)
+try {
+  await waitForReady()
+  for (let i = 0; i < sliceCases.length; i++) {
+    const c = sliceCases[i]
+    const abPrograms = [
+      { key: 'A', source: c.caseA.source, size: S32, times: [0, 0.37, 0.74] },
+      { key: 'B', source: c.caseB.source, size: S32, times: [0, 0.37] }
+    ]
+    const cProgram = [{ key: 'C', source: c.caseA.source, size: S18, times: [0] }]
+    const groups = [
+      { label: 'AB', programs: abPrograms },
+      { label: 'C', programs: cProgram }
+    ]
+    for (const g of groups) {
+      const ar = await ask('auth', { type: 'authority-run', programs: g.programs })
+      if (ar.type !== 'authority-frames') {
+        for (const p of g.programs) for (const t of p.times) {
+          perFrame.push({ case: c.id, group: g.label, key: p.key, t, status: 'MISSING', reason: `authority: ${ar.error || ar.type}` })
+          missingCount++
+        }
+        failures.push({ case: c.id, group: g.label, side: 'authority', error: ar.error || ar.type })
+        continue
+      }
+      const pr = await ask('port', { type: 'port-run', programs: g.programs, authorityFrames: ar.frames })
+      if (pr.type !== 'port-comparisons') {
+        for (const p of g.programs) for (const t of p.times) {
+          perFrame.push({ case: c.id, group: g.label, key: p.key, t, status: 'MISSING', reason: `port: ${pr.error || pr.type}` })
+          missingCount++
+        }
+        failures.push({ case: c.id, group: g.label, side: 'port', error: pr.error || pr.type })
+        continue
+      }
+      for (const cmp of pr.comparisons) {
+        perFrame.push({ case: c.id, group: g.label, key: cmp.key, t: cmp.t, status: cmp.status, maxDiff: cmp.maxDiff, unequalChannels: cmp.unequalChannels, channels: cmp.channels })
+        executedComparisons++
+        if (cmp.status === 'EXACT') exactCount++
+        else if (cmp.status === 'TOLERANCE') toleranceCount++
+        else { failCount++; failures.push({ case: c.id, group: g.label, key: cmp.key, t: cmp.t, ...cmp }) }
+      }
+    }
+    const frameStatuses = perFrame.filter(f => f.case === c.id).map(f => f.status)
+    console.log(`executed so far: ${i + 1}/${fixture.cases.length} ${c.id}`)
+    caseStatus.push({
+      id: c.id,
+      frames: frameStatuses.length,
+      exact: frameStatuses.filter(s => s === 'EXACT').length,
+      tolerance: frameStatuses.filter(s => s === 'TOLERANCE').length,
+      failed: frameStatuses.filter(s => s === 'FAIL').length,
+      missing: frameStatuses.filter(s => s === 'MISSING').length,
+      status: frameStatuses.length === 6 && frameStatuses.every(s => s === 'EXACT')
+        ? 'EXACT' : (frameStatuses.some(s => s === 'FAIL') ? 'FAIL' : (frameStatuses.length < 6 ? 'MISSING' : 'TOLERANCE'))
+    })
+  }
+} catch (err) {
+  failures.push({ fatal: true, error: String(err && err.stack || err) })
+}
+
+const expectedComparisons = sliceCases.length * 6
+const report = {
+  gate: 'gap-001-rendered-parity',
+  identityOk,
+  slice: { start: sliceStart, limit: sliceLimit },
+  pinned,
+  identity,
+  env,
+  fixture: { cases: fixture.cases.length, upstreamCommit: fixture.upstreamCommit, generator: fixture.generator },
+  denominator: {
+    cases: sliceCases.length,
+    expectedComparisons,
+    executedComparisons,
+    exact: exactCount,
+    tolerance: toleranceCount,
+    failed: failCount,
+    missing: missingCount
+  },
+  pass: identityOk && executedComparisons === expectedComparisons && failCount === 0 && missingCount === 0,
+  failures,
+  caseStatus,
+  perFrame
+}
+pre.textContent = JSON.stringify(report)
+</script></body></html>

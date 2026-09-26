@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+  GAP-001 rendered-parity gate: PORT side.
+  Exercises the fork's actual render wiring end to end: the tracked companion
+  bundle (/_engine/hydra-synth.js), window.HydraEffects.loadHydraEffects(), and
+  src/lib/noisemaker-runtime.mjs (createNoisemakerRuntime). Renders the same
+  case programs as the authority side, compares the port's RGBA8 readbacks
+  against the authority readbacks frame by frame, and reports exact equality
+  separately from the legacy +-2 numerical contract.
+-->
+<html><body><pre id="out">port-boot</pre>
+<script src="/_engine/hydra-synth.js"></script>
+<script type="module">
+import { createNoisemakerRuntime } from '/src/lib/noisemaker-runtime.mjs'
+const pre = document.getElementById('out')
+const canvas = document.createElement('canvas')
+canvas.width = 32; canvas.height = 24
+const renderer = await createNoisemakerRuntime({
+  canvas,
+  extension: window.HydraEffects,
+  cdn: 'https://shaders.noisedeck.app/1.0.182',
+  preferWebGPU: false
+})
+renderer.stop()
+
+async function renderFrames (spec) {
+  const { width, height } = spec.size
+  if (canvas.width !== width || canvas.height !== height) renderer.resize(width, height)
+  await renderer.compile(spec.source)
+  const frames = []
+  for (const t of spec.times) {
+    renderer.syncTime(t)
+    renderer.render(t)
+    const pipeline = renderer.pipeline
+    const surface = pipeline.surfaces.get('o0')
+    if (!surface) throw new Error(`o0 surface missing after render (t=${t})`)
+    const px = await pipeline.backend.readPixels(surface.read)
+    frames.push({
+      key: spec.key, t,
+      width: px.width ?? width, height: px.height ?? height,
+      data: Array.from(px.data ?? px)
+    })
+  }
+  return frames
+}
+
+function compare (a, p) {
+  if (a.width !== p.width || a.height !== p.height) {
+    return { status: 'FAIL', reason: `size mismatch authority ${a.width}x${a.height} vs port ${p.width}x${p.height}` }
+  }
+  const ad = a.data; const pd = p.data
+  if (ad.length !== pd.length) {
+    return { status: 'FAIL', reason: `channel count mismatch ${ad.length} vs ${pd.length}` }
+  }
+  let maxDiff = 0; let unequal = 0
+  for (let i = 0; i < ad.length; i++) {
+    const d = Math.abs(ad[i] - pd[i])
+    if (d !== 0) { unequal++; if (d > maxDiff) maxDiff = d }
+  }
+  const exact = unequal === 0
+  return {
+    status: exact ? 'EXACT' : (maxDiff <= 2 ? 'TOLERANCE' : 'FAIL'),
+    exact, maxDiff, unequalChannels: unequal,
+    channels: ad.length
+  }
+}
+
+window.addEventListener('message', async (ev) => {
+  const msg = ev.data || {}
+  if (msg.type !== 'port-run') return
+  try {
+    const portFrames = []
+    for (const spec of msg.programs) portFrames.push(...await renderFrames(spec))
+    const comparisons = []
+    if (msg.authorityFrames.length !== portFrames.length) {
+      throw new Error(`frame count mismatch authority ${msg.authorityFrames.length} vs port ${portFrames.length}`)
+    }
+    for (let i = 0; i < msg.authorityFrames.length; i++) {
+      const a = msg.authorityFrames[i]; const p = portFrames[i]
+      const c = compare(a, p)
+      comparisons.push({ key: a.key, t: a.t, ...c, authorityChannels: a.data.length, portChannels: p.data.length })
+    }
+    ev.source.postMessage({ type: 'port-comparisons', id: msg.id, comparisons }, '*')
+  } catch (err) {
+    const detail = typeof err?.message === 'string' ? err.message : JSON.stringify(err?.message ?? err)
+    ev.source.postMessage({ type: 'port-error', id: msg.id, error: detail }, '*')
+  }
+})
+pre.textContent = 'port-ready'
+window.parent.postMessage({ type: 'ready', side: 'port' }, '*')
+</script></body></html>

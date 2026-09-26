@@ -1,0 +1,53 @@
+<!doctype html>
+<html><body>
+<iframe id="auth" src="./authority.html" style="width:64px;height:48px"></iframe>
+<iframe id="port" src="./port.html" style="width:64px;height:48px"></iframe>
+<pre id="out">diag-boot</pre>
+<script type="module">
+const pre = document.getElementById('out')
+const ready = {}
+const pending = new Map()
+let nextId = 0
+window.addEventListener('message', (ev) => {
+  const msg = ev.data || {}
+  if (msg.type === 'ready') { ready[msg.side] = true; return }
+  const r = pending.get(msg.id)
+  if (r) { pending.delete(msg.id); r(msg) }
+})
+function ask (side, payload) {
+  const id = `m${nextId++}`
+  return new Promise(res => {
+    let t = setTimeout(() => { if (pending.has(id)) { pending.delete(id); res({ type: 'timeout' }) } }, 120000)
+    pending.set(id, m => { clearTimeout(t); res(msg) })
+    document.getElementById(side).contentWindow.postMessage({ ...payload, id }, '*')
+  })
+}
+async function waitForReady () {
+  const s = Date.now()
+  while ((!ready.authority || !ready.port) && Date.now() - s < 300000) await new Promise(r => setTimeout(r, 100))
+}
+await waitForReady()
+const CASES = [
+  ['synth3d/noise3d', 'search synth3d\nnoise3d().write(o0)\nrender(o0)', 'synth3d/noise3d'],
+  ['render/pointsRender', 'search render, synth\nnoise().pointsRender().write(o0)\nrender(o0)', 'render/pointsRender'],
+  ['filter3d/flow3d', 'search filter3d, synth3d, synth\nnoise(speed: 0).write(o1)\nnoise3d().flow3d().write(o0)\nrender(o0)', 'filter3d/flow3d']
+]
+const results = []
+for (const [label, source, cid] of CASES) {
+  for (const mode of ['fresh', 'after-ab']) {
+    if (mode === 'after-ab') {
+      // render the 32x24 AB sequence first (A frames) to reproduce gate order
+      await ask('auth', { type: 'authority-run', programs: [{ key: 'A', source, size: { width: 32, height: 24 }, times: [0, 0.37, 0.74] }] })
+      await ask('port', { type: 'port-run', programs: [{ key: 'A', source, size: { width: 32, height: 24 }, times: [0, 0.37, 0.74] }], authorityFrames: [{ data: new Array(3072).fill(0), width: 32, height: 24 }, {}, {}] })
+    }
+    const size = { width: 24, height: 18 }
+    const ar = await ask('auth', { type: 'authority-run', programs: [{ key: 'C', source, size, times: [0] }] })
+    if (ar.type !== 'authority-frames') { results.push({ label, mode, error: 'auth:' + (ar.error || ar.type) }); continue }
+    const pr = await ask('port', { type: 'port-run', programs: [{ key: 'C', source, size, times: [0] }], authorityFrames: ar.frames })
+    if (pr.type !== 'port-comparisons') { results.push({ label, mode, error: pr.error || pr.type }); continue }
+    const c = pr.comparisons[0]
+    results.push({ label, mode, status: c.status, maxDiff: c.maxDiff, unequal: c.unequalChannels })
+  }
+}
+pre.textContent = JSON.stringify(results)
+</script></body></html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  GAP-001 rendered-parity gate: AUTHORITY side.
+  Raw published Noisemaker engine (pinned immutable 1.0.182 CDN identity),
+  default CanvasRenderer wiring only. No companion, no fork runtime code.
+  Receives per-case render requests from the parent gate page and returns
+  RGBA8 readbacks of the o0 surface.
+-->
+<html><body><pre id="out">authority-boot</pre>
+<script type="module">
+const CDN = 'https://shaders.noisedeck.app/1.0.182'
+const pre = document.getElementById('out')
+const engine = await import(`${CDN}/noisemaker-shaders-core.esm.min.js`)
+const canvas = document.createElement('canvas')
+canvas.width = 32; canvas.height = 24
+const renderer = new engine.CanvasRenderer({
+  canvas, width: 32, height: 24,
+  basePath: CDN,
+  bundlePath: `${CDN}/effects`,
+  useBundles: true,
+  preferWebGPU: false
+})
+await renderer.loadManifest()
+const effectIds = Object.keys(renderer.manifest)
+await renderer.loadEffects(effectIds)
+renderer.stop()
+
+function currentSize () { return { width: canvas.width, height: canvas.height } }
+
+async function runProgram (spec) {
+  const { width, height } = spec.size
+  if (canvas.width !== width || canvas.height !== height) renderer.resize(width, height)
+  await renderer.compile(spec.source)
+  const frames = []
+  for (const t of spec.times) {
+    renderer.syncTime(t)
+    renderer.render(t)
+    const pipeline = renderer.pipeline
+    const surface = pipeline.surfaces.get('o0')
+    if (!surface) throw new Error(`o0 surface missing after render (t=${t})`)
+    const px = await pipeline.backend.readPixels(surface.read)
+    frames.push({
+      key: spec.key, t,
+      width: px.width ?? width, height: px.height ?? height,
+      data: Array.from(px.data ?? px)
+    })
+  }
+  return frames
+}
+
+window.addEventListener('message', async (ev) => {
+  const msg = ev.data || {}
+  if (msg.type !== 'authority-run') return
+  try {
+    const frames = []
+    for (const spec of msg.programs) frames.push(...await runProgram(spec))
+    ev.source.postMessage({ type: 'authority-frames', id: msg.id, frames }, '*')
+  } catch (err) {
+    const detail = typeof err?.message === 'string' ? err.message : JSON.stringify(err?.message ?? err)
+    ev.source.postMessage({ type: 'authority-error', id: msg.id, error: detail }, '*')
+  }
+})
+pre.textContent = 'authority-ready:' + effectIds.length
+window.parent.postMessage({ type: 'ready', side: 'authority', effectIds: effectIds.length }, '*')
+</script></body></html>
