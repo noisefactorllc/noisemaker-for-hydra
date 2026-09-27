@@ -33,6 +33,8 @@ import { fileURLToPath } from 'node:url'
 
 import { createHash } from 'node:crypto'
 
+import { sliceCacheReusable } from './parity-gate-cache.mjs'
+
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const PORT = Number(process.env.PORT || 5199)
@@ -415,9 +417,9 @@ try {
     const sliceFile = join(OUTDIR, `slice-${String(sliceStart).padStart(3, '0')}.json`)
     let cached = null
     try { cached = JSON.parse(readFileSync(sliceFile, 'utf8')) } catch (_) {}
-    if (cached && cached.fixture && cached.fixture.sha256 === fixtureSha256) {
+    if (cached && sliceCacheReusable(cached, fixtureSha256, limit)) {
       reports.push({ report: cached, chromeExit: 0 })
-      log(`slice ${sliceStart}: reusing cached slice report ${sliceFile} (fixture sha matches)`)
+      log(`slice ${sliceStart}: reusing cached slice report ${sliceFile} (fixture sha and slice limit match)`)
       continue
     }
     if (cached) log(`slice ${sliceStart}: cached slice report fixture sha mismatch, re-running`)

@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node --test test/*.test.mjs && node scripts/test.mjs",
+    "test:parity": "CHROME=${CHROME:-/usr/bin/chromium} node scripts/parity-gate.mjs parity-evidence",
     "build": "vite build",
     "dev": "vite . --host",
     "publish": "git subtree push --prefix=dist origin gh-pages"
