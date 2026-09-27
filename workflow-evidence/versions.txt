@@ -1,5 +1,5 @@
 v26.5.1
 11.17.0
 Chromium 154.0.8037.57 built on Debian GNU/Linux 12 (bookworm)
-2dcca33c9d9fedae98496d7e13de5921916f6081
+delivered candidate tree (file identities pinned by workflow-evidence/source-hashes.txt; the published CDN/companion bytes are bound by the identity block in parity-evidence/parity-gate-report.json and parity-evidence/gate-run.log)
 Linux e3f886a881fe 6.8.0-134-generic #134-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 26 18:43:11 UTC 2026 x86_64 GNU/Linux
