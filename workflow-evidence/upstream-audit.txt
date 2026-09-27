@@ -196,3 +196,55 @@ a651c075 docs: record CI and deployment evidence for the 01e9d62 docs pass
 3968f6c4 docs: advance Documentation checkpoint to 01e9d62
 01e9d620 docs: catch Sphinx docs up to 6a0af04d (texture pooling opt-in, structured shader diagnostics)
 (end declared range)
+
+# Upstream audit addendum, noisefactorllc/noisemaker, generated for noisemaker-for-hydra delivery (vendor audit of 93229933b102ba82e713402be19db57207698850..296e0138c4744ed485b2e95de3eeb466c17629ee, delivered in the noisemaker clone at the upstream tip; the pinned published authority remains 1.0.194 at 93229933b102)
+
+$ git rev-parse HEAD
+296e0138c4744ed485b2e95de3eeb466c17629ee
+
+$ containment: the previously audited/delivered pin 93229933b102 within the audited tip 296e0138c474 (exit 0 = ancestor)
+ancestor 93229933b102 (exit 0)
+ancestor 7c5f1765 docs: advance AI development contract checkpoint through 9322993 (GAP-017 verified pair audit)
+ancestor a912749f feat(harness): true input-passthrough probe with a live write-blit control (GAP-019)
+ancestor 11d7c699 docs: narrow GAP-020 — shared MCP domain error envelope lives in the Shade repository, which noisemaker cannot write; nothing of the tool-result wrapper is vendored and no noisemaker module consumes the MCP envelope, so no repository-side surface exists
+ancestor 296e0138 feat(harness): report requested-vs-returned frame resolution on every renderEffectFrame result (GAP-021)
+
+$ git log --oneline 93229933b102..296e0138c474 (the job's declared range, verbatim)
+296e0138 feat(harness): report requested-vs-returned frame resolution on every renderEffectFrame result (GAP-021)
+11d7c699 docs: narrow GAP-020 — shared MCP domain error envelope lives in the Shade repository, which noisemaker cannot write; nothing of the tool-result wrapper is vendored and no noisemaker module consumes the MCP envelope, so no repository-side surface exists
+a912749f feat(harness): true input-passthrough probe with a live write-blit control (GAP-019)
+7c5f1765 docs: advance AI development contract checkpoint through 9322993 (GAP-017 verified pair audit)
+(end declared range)
+
+$ git log --oneline 93229933b102..296e0138c474 -- shaders/
+296e0138 feat(harness): report requested-vs-returned frame resolution on every renderEffectFrame result (GAP-021)
+a912749f feat(harness): true input-passthrough probe with a live write-blit control (GAP-019)
+(end shaders log)
+
+$ git diff --name-only 93229933b102 296e0138c474 -- shaders/effects/  (empty = effect catalog unchanged)
+(end effects delta)
+
+$ effect-catalog manifest sha256 at 296e0138c474 (identical to the pin 93229933b102 and to 1.0.182)
+05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e
+
+$ effect count at 296e0138c474
+210 (unchanged; the shaders/effects delta is empty across the range)
+
+$ git diff --name-only 93229933b102 296e0138c474 -- shaders/src (empty = engine source unchanged)
+(end src delta)
+
+$ git diff --name-only 93229933b102 296e0138c474 -- package.json (empty)
+(package.json delta end)
+
+$ git diff --stat 93229933b102 296e0138c474 -- shaders/src shaders/tests
+ shaders/tests/frame-resolution.js       |  95 ++++++++
+ shaders/tests/passthrough-input.js      | 489 ++++++++++++++++++++++++
+ shaders/tests/test-harness.js           | 104 +++++-
+ shaders/tests/test_frame_resolution.js  | 189 ++++++++++++
+ shaders/tests/test_passthrough_input.js | 259 +++++++++++++++++
+ 5 files changed, 1135 insertions(+), 1 deletion(-)
+
+$ git tag --contains 296e0138c4744ed485b2e95de3eeb466c17629ee
+v1.0.196
+
+$ newest published release: 1.0.196 (upstream 296e0138c474). Its delta since the pinned 1.0.194 (upstream 93229933b102) is harness-only — shaders/tests modules only; shaders/src, shaders/effects/, and package.json are unchanged across the range, so the pinned published authority bundle (1.0.194, engine sha256 f7145e234f785ef00905242a3893a0e3e029140998f84d48010bd820694c802c) and the effect-catalog manifest (identical sha256 since 1.0.182) remain the newest published identities carrying engine or catalog changes. Port-facing surface of the range: upstream-harness renderEffectFrame viewport/resolution semantics (GAP-021) and the true input-passthrough probe (GAP-019) — harness-side, no engine module, no effect parameter contract; this port consumes the published engine and has no upstream harness dependency, so no port code change follows.
