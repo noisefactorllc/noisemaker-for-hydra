@@ -8,4 +8,5 @@
 [editor-test] PASS README noise example
 [editor-test] PASS README chained points example
 [editor-test] PASS invalid effect diagnostic
+[editor-test] PASS accessibility semantics (GAP-005)
 [editor-test] PASS resized window DSL

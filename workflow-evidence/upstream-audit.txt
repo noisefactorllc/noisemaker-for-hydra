@@ -124,3 +124,75 @@ export class ShaderDiagnostic extends Error {
      * @param {string} spec.backend 'webgl2' | 'webgpu'
      * @param {string} spec.stage 'compile' | 'link' | 'missing-source' | 'bind'
      * @param {string} [spec.detail] raw browser/compiler string
+
+
+# Upstream audit addendum, noisefactorllc/noisemaker, generated for noisemaker-for-hydra delivery (force-push/non-contiguity audit of 6a0af04d3c4f345ffab5e9f8e54e532216b4cdaa..403c2a4bf2cb56307448ea2fc1d6fa3cd74b7d6e, repinned authority 1.0.194 at 93229933b102ba82e713402be19db57207698850)
+
+$ git rev-parse HEAD
+93229933b102ba82e713402be19db57207698850
+
+$ containment: every declared/observed range endpoint within the audited tip 93229933b102 (exit 0 = ancestor)
+ancestor 6a0af04d docs: narrow GAP-007 register row to state what remains unstructured
+ancestor 403c2a4b feat(lang): predict replaceEffect compatibility before mutation (GAP-008)
+ancestor 19fdcb56 docs: close GAP-009 with temporal no-animation and low-variety metric evidence for b35361e0
+ancestor 9f85687d feat(tests): truthful uniform-responsiveness aggregation behind --strict-uniforms (GAP-010)
+ancestor 7dc0f564 feat(tests): auditable measured uniform deltas in the harness uniforms report (GAP-011)
+ancestor 7443f6e6 test(docs): pin the harness WebGPU render-surface readback and narrow GAP-012
+ancestor c2252f0c test(metrics): auditable GAP-015 metric interchangeability mirror
+ancestor e73a44a3 test(harness): warm up frames before pausing for explicit-time render requests (GAP-014)
+ancestor 12b4d74f feat(runtime): static effect preflight for per-backend authorability and device-limit format changes (GAP-016)
+ancestor 2f47612c fix(shaders): stop double-creating global surfaces on allocation change
+
+$ git log --oneline 6a0af04d3c4f..93229933b102 -- shaders/
+93229933 feat(harness): complete, lossless definition-schema introspection with an upstream-loss audit (GAP-017)
+12b4d74f feat(runtime): static effect preflight for per-backend authorability and device-limit format changes (GAP-016)
+e73a44a3 test(harness): warm up frames before pausing for explicit-time render requests (GAP-014)
+c2252f0c test(metrics): auditable GAP-015 metric interchangeability mirror
+7443f6e6 test(docs): pin the harness WebGPU render-surface readback and narrow GAP-012
+7dc0f564 feat(tests): auditable measured uniform deltas in the harness uniforms report (GAP-011)
+9f85687d feat(tests): truthful uniform-responsiveness aggregation behind --strict-uniforms (GAP-010)
+403c2a4b feat(lang): predict replaceEffect compatibility before mutation (GAP-008)
+b35361e0 feat(shaders): temporal no-animation and universal low-variety metrics from renderEffectFrame (GAP-009)
+(end shaders log)
+
+$ git diff --name-only 6a0af04d3c4f 93229933b102 -- shaders/effects/  (empty = effect catalog unchanged)
+(end effects delta)
+
+$ effect count at 93229933b102
+210
+
+$ git diff --stat 6a0af04d3c4f 93229933b102 -- shaders/src shaders/tests
+ shaders/src/index.js                    |   2 +-
+ shaders/src/lang/index.js               |   4 +-
+ shaders/src/lang/paramAliases.js        |  11 +
+ shaders/src/lang/transform.js           | 377 +++++++++++++++++++++++++++++++-
+ shaders/src/runtime/pipeline.js         |  40 +++-
+ shaders/src/runtime/preflight.js        | 191 ++++++++++++++++
+ shaders/tests/definition-schema.js      | 220 +++++++++++++++++++
+ shaders/tests/frame-metrics.js          |  80 +++++++
+ shaders/tests/frame-readback.js         |  83 +++++++
+ shaders/tests/frame-warmup.js           |  61 ++++++
+ shaders/tests/image-metrics.js          | 283 ++++++++++++++++++++++++
+ shaders/tests/test-harness.js           | 319 +++++++++++++++++++++++++--
+ shaders/tests/test_definition_schema.js | 161 ++++++++++++++
+ shaders/tests/test_frame_metrics.js     |  71 ++++++
+ shaders/tests/test_frame_readback.js    | 183 ++++++++++++++++
+ shaders/tests/test_frame_warmup.js      | 144 ++++++++++++
+ shaders/tests/test_image_metrics.js     | 164 ++++++++++++++
+ shaders/tests/test_preflight.js         | 267 ++++++++++++++++++++++
+ shaders/tests/test_transform.js         | 200 +++++++++++++++++
+ shaders/tests/test_uniform_deltas.js    | 122 +++++++++++
+ shaders/tests/test_uniform_status.js    | 116 ++++++++++
+ shaders/tests/uniform-deltas.js         | 282 ++++++++++++++++++++++++
+ shaders/tests/uniform-status.js         |  78 +++++++
+ 23 files changed, 3422 insertions(+), 37 deletions(-)
+
+$ git log --oneline 6a0af04d3c4f..403c2a4bf2cb (the job declared range, verbatim)
+403c2a4b feat(lang): predict replaceEffect compatibility before mutation (GAP-008)
+19fdcb56 docs: close GAP-009 with temporal no-animation and low-variety metric evidence for b35361e0
+b35361e0 feat(shaders): temporal no-animation and universal low-variety metrics from renderEffectFrame (GAP-009)
+66b8ce7d docs: advance AI development contract checkpoint through a651c075 (GAP-005/006/007 verified pair audit)
+a651c075 docs: record CI and deployment evidence for the 01e9d62 docs pass
+3968f6c4 docs: advance Documentation checkpoint to 01e9d62
+01e9d620 docs: catch Sphinx docs up to 6a0af04d (texture pooling opt-in, structured shader diagnostics)
+(end declared range)

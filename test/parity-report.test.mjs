@@ -22,8 +22,8 @@ test('committed merged parity report keeps the full denominator with missing pre
     readFileSync(join(ROOT, 'parity-evidence/parity-gate-report.json'), 'utf8')
   )
   const d = report.denominator
-  assert.equal(report.batch.size, 1)
-  assert.equal(report.batch.slices, 210)
+  assert.equal(report.batch.size, 5)
+  assert.equal(report.batch.slices, 42)
   assert.equal(d.cases, 210)
   assert.equal(d.expectedComparisons, 1260)
   assert.equal(report.caseStatus.length, 210)
@@ -31,14 +31,20 @@ test('committed merged parity report keeps the full denominator with missing pre
   // Merged arithmetic must account for every comparison; nothing dropped.
   assert.equal(d.executedComparisons + d.missing, d.expectedComparisons)
   assert.equal(d.exact + d.tolerance + d.failed + d.missing, d.expectedComparisons)
-  // GAP-001: the six filter/octaveWarp authority-side comparisons are the
-  // preserved missing entries; they must never be silently zeroed.
-  assert.equal(d.missing, 6)
-  assert.equal(report.failures.length, 2)
+  // GAP-001: the twelve filter/octaveWarp and filter/oilPaint authority-side
+  // comparisons are the preserved missing entries; they must never be
+  // silently zeroed.
+  assert.equal(d.missing, 12)
+  assert.equal(d.failed, 0)
+  assert.equal(report.failures.length, 4)
+  const failedCases = new Set(report.failures.map(f => f.case))
+  assert.ok(failedCases.has('filter/octaveWarp'))
+  assert.ok(failedCases.has('filter/oilPaint'))
   for (const f of report.failures) {
-    assert.equal(f.case, 'filter/octaveWarp')
     assert.equal(f.side, 'authority')
+    assert.match(f.error, /ShaderDiagnostic/)
   }
+  assert.equal(report.identity.rollingMatchesImmutable, true)
   assert.equal(report.pass, false)
 })
 

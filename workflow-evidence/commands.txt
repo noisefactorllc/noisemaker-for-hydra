@@ -1,3 +1,4 @@
 node --test test/*.test.mjs
 CHROME=/usr/bin/chromium PORT=5197 node scripts/test.mjs
 node node_modules/vite/bin/vite.js build
+CHROME=/usr/bin/chromium GATE_BATCH=5 node scripts/parity-gate.mjs parity-evidence

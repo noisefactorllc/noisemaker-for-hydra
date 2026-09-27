@@ -3,13 +3,13 @@
  "identityOk": true,
  "slice": {
   "start": 65,
-  "limit": 1
+  "limit": 5
  },
  "pinned": {
-  "upstreamCommit": "2f47612c29045c1b91af94887a8ff20106e980ef",
-  "engineBundle": "https://shaders.noisedeck.app/1.0.182/noisemaker-shaders-core.esm.min.js",
-  "engineBundleSha256": "e1a10dc9aa7c739b416ec546304326ad6f457eb3dc5d0ca2a601cee56b9d7f50",
-  "manifest": "https://shaders.noisedeck.app/1.0.182/effects/manifest.json",
+  "upstreamCommit": "93229933b102ba82e713402be19db57207698850",
+  "engineBundle": "https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js",
+  "engineBundleSha256": "f7145e234f785ef00905242a3893a0e3e029140998f84d48010bd820694c802c",
+  "manifest": "https://shaders.noisedeck.app/1.0.194/effects/manifest.json",
   "manifestSha256": "05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e",
   "rollingCore": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
   "companion": "/_engine/hydra-synth.js",
@@ -17,26 +17,26 @@
  },
  "identity": {
   "engineBundle": {
-   "url": "https://shaders.noisedeck.app/1.0.182/noisemaker-shaders-core.esm.min.js",
-   "sha256": "e1a10dc9aa7c739b416ec546304326ad6f457eb3dc5d0ca2a601cee56b9d7f50",
+   "url": "https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js",
+   "sha256": "f7145e234f785ef00905242a3893a0e3e029140998f84d48010bd820694c802c",
    "matchesPinned": true
   },
   "manifest": {
-   "url": "https://shaders.noisedeck.app/1.0.182/effects/manifest.json",
+   "url": "https://shaders.noisedeck.app/1.0.194/effects/manifest.json",
    "sha256": "05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e",
    "matchesPinned": true
   },
   "rollingCore": {
    "url": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
-   "sha256": "31b766091125742665bee4c5c8392048eaaa786748cc9570b1c94460029fbded",
-   "matchesPinned": false
+   "sha256": "f7145e234f785ef00905242a3893a0e3e029140998f84d48010bd820694c802c",
+   "matchesPinned": true
   },
   "companion": {
    "url": "/_engine/hydra-synth.js",
    "sha256": "5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded",
    "matchesPinned": true
   },
-  "rollingMatchesImmutable": false
+  "rollingMatchesImmutable": true
  },
  "env": {
   "node": "v26.5.1",
@@ -45,21 +45,46 @@
  },
  "fixture": {
   "cases": 210,
-  "upstreamCommit": "2f47612c29045c1b91af94887a8ff20106e980ef",
+  "upstreamCommit": "93229933b102ba82e713402be19db57207698850",
   "generator": "scripts/generate-parity-cases.mjs",
-  "sha256": "5b43d8a2243ad55f0b4e668909a1ce0d27ca86f4423ea47ebf8d37fd15202a06"
+  "sha256": "9192a6d64fdbf474369d1ed9e83c6fdba0422b8efbcd6296658142d7fc377adf"
  },
  "denominator": {
-  "cases": 1,
-  "expectedComparisons": 6,
-  "executedComparisons": 6,
-  "exact": 6,
+  "cases": 5,
+  "expectedComparisons": 30,
+  "executedComparisons": 18,
+  "exact": 18,
   "tolerance": 0,
   "failed": 0,
-  "missing": 0
+  "missing": 12
  },
- "pass": true,
- "failures": [],
+ "pass": false,
+ "failures": [
+  {
+   "case": "filter/octaveWarp",
+   "group": "AB",
+   "side": "authority",
+   "error": "evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/octaveWarp",
+   "group": "C",
+   "side": "authority",
+   "error": "evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "AB",
+   "side": "authority",
+   "error": "evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "C",
+   "side": "authority",
+   "error": "evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
+  }
+ ],
  "caseStatus": [
   {
    "id": "filter/motionBlur",
@@ -69,6 +94,42 @@
    "failed": 0,
    "missing": 0,
    "status": "EXACT"
+  },
+  {
+   "id": "filter/normalMap",
+   "frames": 6,
+   "exact": 6,
+   "tolerance": 0,
+   "failed": 0,
+   "missing": 0,
+   "status": "EXACT"
+  },
+  {
+   "id": "filter/normalize",
+   "frames": 6,
+   "exact": 6,
+   "tolerance": 0,
+   "failed": 0,
+   "missing": 0,
+   "status": "EXACT"
+  },
+  {
+   "id": "filter/octaveWarp",
+   "frames": 6,
+   "exact": 0,
+   "tolerance": 0,
+   "failed": 0,
+   "missing": 6,
+   "status": "TOLERANCE"
+  },
+  {
+   "id": "filter/oilPaint",
+   "frames": 6,
+   "exact": 0,
+   "tolerance": 0,
+   "failed": 0,
+   "missing": 6,
+   "status": "TOLERANCE"
   }
  ],
  "perFrame": [
@@ -131,6 +192,198 @@
    "maxDiff": 0,
    "unequalChannels": 0,
    "channels": 1728
+  },
+  {
+   "case": "filter/normalMap",
+   "group": "AB",
+   "key": "A",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalMap",
+   "group": "AB",
+   "key": "A",
+   "t": 0.37,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalMap",
+   "group": "AB",
+   "key": "A",
+   "t": 0.74,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalMap",
+   "group": "AB",
+   "key": "B",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalMap",
+   "group": "AB",
+   "key": "B",
+   "t": 0.37,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalMap",
+   "group": "C",
+   "key": "C",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalize",
+   "group": "AB",
+   "key": "A",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalize",
+   "group": "AB",
+   "key": "A",
+   "t": 0.37,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalize",
+   "group": "AB",
+   "key": "A",
+   "t": 0.74,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalize",
+   "group": "AB",
+   "key": "B",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalize",
+   "group": "AB",
+   "key": "B",
+   "t": 0.37,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/normalize",
+   "group": "C",
+   "key": "C",
+   "t": 0,
+   "status": "EXACT",
+   "maxDiff": 0,
+   "unequalChannels": 0,
+   "channels": 1728
+  },
+  {
+   "case": "filter/octaveWarp",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/octaveWarp",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/octaveWarp",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/octaveWarp",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/octaveWarp",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/octaveWarp",
+   "group": "C",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "AB",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
+  },
+  {
+   "case": "filter/oilPaint",
+   "group": "C",
+   "status": "MISSING",
+   "reason": "authority: evaluate failed: Uncaught (in promise) ShaderDiagnostic ShaderDiagnostic\n    at s.compileShader (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:12689)\n    at s.compileProgram (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:115:11723)\n    at kt.compilePrograms (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:17547)\n    at Tn._compile (https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js:292:79 shaderLogs=[\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\",\"(no info log returned)\"]"
   }
  ]
 }

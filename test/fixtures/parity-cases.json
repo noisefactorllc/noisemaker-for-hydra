@@ -1,6 +1,6 @@
 {
  "generator": "scripts/generate-parity-cases.mjs",
- "upstreamCommit": "2f47612c29045c1b91af94887a8ff20106e980ef",
+ "upstreamCommit": "93229933b102ba82e713402be19db57207698850",
  "generatedFrom": {
   "manifest": 210,
   "cases": 210,
@@ -31,10 +31,10 @@
   }
  },
  "authorities": {
-  "upstreamCommit": "2f47612c29045c1b91af94887a8ff20106e980ef",
-  "engineBundle": "https://shaders.noisedeck.app/1.0.182/noisemaker-shaders-core.esm.min.js",
-  "engineBundleSha256": "e1a10dc9aa7c739b416ec546304326ad6f457eb3dc5d0ca2a601cee56b9d7f50",
-  "manifest": "https://shaders.noisedeck.app/1.0.182/effects/manifest.json",
+  "upstreamCommit": "93229933b102ba82e713402be19db57207698850",
+  "engineBundle": "https://shaders.noisedeck.app/1.0.194/noisemaker-shaders-core.esm.min.js",
+  "engineBundleSha256": "f7145e234f785ef00905242a3893a0e3e029140998f84d48010bd820694c802c",
+  "manifest": "https://shaders.noisedeck.app/1.0.194/effects/manifest.json",
   "manifestSha256": "05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e",
   "rollingCore": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
   "companion": "/_engine/hydra-synth.js",
