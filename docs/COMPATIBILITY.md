@@ -142,6 +142,23 @@ The browser denominator is now 11 cases: the original seven DOM/compiler cases r
 
 Remaining limits: external media, audio/MIDI hardware, browser upgrades, and non-listed browsers or operating systems remain unverified; no pixels were compared; the parity gate's 6 missing authority frames are unchanged.
 
+### Installed developer workflow checks, 2026-09-28 (GAP-002 closure round)
+
+Scope of this qualification round: the two remaining open items of GAP-002 — saved-sketch upgrades across the previously served revision, and non-listed browsers or operating systems.
+
+Saved-sketch upgrade (browser-level): the `?code=` scheme at the previously served revision `626f37c` is `btoa(encodeURIComponent(source))` (identical to the current `encodeBase64`); a URL recorded under that scheme, both plain and with the legacy `show-code=false` parameter, restores the exact program into the current editor, compiles with no diagnostics, and renders (measured on-screen color diversity 223/224 distinct sampled colors versus a uniform blank page, 1024×768 viewport). Executed with a Playwright driver through the public URL control and the public editor + Run control (CodeMirror `setValue` + `#run-button`), 4 cases, both browsers listed below, 0 failures each: upgrade URL with `show-code=false`, plain upgrade URL, invalid input (`bogusEffect()` surfaces `Unknown effect` with the `log-error` diagnostic class), and recovery (corrected program compiles cleanly and renders, 8091/8092 distinct sampled colors). Raw driver output and screenshots: archived with this job's evidence archive (Worker Elves job evidence, `firefox-check.log`, `firefox-upgrade-showcode-false.png`, `chromium-upgrade-showcode-false.png`, `browser-versions.log`); the command and exit 0 are recorded in `workflow-evidence/commands.txt` and `workflow-evidence/exit-codes.txt`. This complements the unit-level saved-sketch upgrade test recorded under GAP-003 (`test/developer-workflow.test.mjs`), and the retained prior browser checks for invalid input and URL restoration.
+
+| Command (driver: scratch `firefox-check.mjs` / `chromium-check.mjs`) | Browser | Cases | Pass | Fail | Exit |
+|---|---|---|---|---|---|
+| `DISPLAY=:99 … node firefox-check.mjs` | Playwright Firefox 155.0 (rv:155.0), WebGL2 `llvmpipe` | 4 | 4 | 0 | 0 (evidence archive `firefox-check.log`) |
+| `DISPLAY=:99 … node chromium-check.mjs` | Playwright Chromium 153.0.8010.12, WebGL2 SwiftShader | 4 | 4 | 0 | 0 |
+
+Environment: Debian GNU/Linux 12 (bookworm), linux-x64, Node v26.5.1, npm 11.17.0; no system X server — Xvfb 2:21.1.7-3+deb12u13 (extracted from .deb without root) on DISPLAY=:99, Mesa 22.3.6-1 `llvmpipe` software WebGL2 for Firefox, SwiftShader WebGL2 for Playwright Chromium; full identities in `workflow-evidence/versions.txt`.
+
+Supported platforms extended: Firefox on desktop with WebGL2 is now a verified baseline (Firefox 155.0, Debian GNU/Linux 12), alongside the existing Chromium-based baseline (Chromium 154.0.8037.57, Debian GNU/Linux 12; retained prior evidence Chrome 153.0.8010.53, macOS 26.5 arm64). Permanently out of scope for this record: Safari, mobile browsers (Android/iOS), and Windows — this harness's automated verification surface (Linux container with software GL, plus the retained macOS host evidence) cannot execute them, and no claim is made for them. The supported claim remains limited to the verified baselines; newer browser versions and other host platforms are not claimed until re-qualified. External media remains unsupported by the DSL and documented as such.
+
+Remaining limits: browser upgrades beyond the verified baselines are unverified and not claimed; no pixels were compared in the rendered-parity sense for these cases (on-screen color diversity only); the parity gate record is unchanged.
+
 ### Distribution and release checks, 2026-09-26 (GAP-003)
 
 Scope of this qualification round: the tracked distribution artifact, its notices, the 16 production dependency advisories, served-byte binding, and installation/upgrade/removal. GAP-003 is not closed: its blockers GAP-001 and GAP-004 remain open, and full release qualification (including the non-deterministic bundle build recorded below) stays contingent. (Superseded the same day, 2026-09-26: GAP-004 closed with the "Hydra WebGPU (WGSL) delivery" section above and the gap register entry; the remaining blocker is GAP-001.)

@@ -10,3 +10,6 @@ e922d016cf02925e84910d20e7409dfc26be705923146ea915431a51462b1e21  dist/assets/in
 e05dedb4b221f4108baecd95f159a3fd3d91f7093758a016a5c74c9ebc8cb79f  scripts/parity-gate.mjs
 9192a6d64fdbf474369d1ed9e83c6fdba0422b8efbcd6296658142d7fc377adf  test/fixtures/parity-cases.json
 153fc455e2af06cc1406c1a17a00fb8fbb03854ec32eb000e0721a1109d11222  parity-evidence/parity-gate-report.json
+# 2026-09-28 GAP-002 closure round: record and evidence identities at this commit
+3dede43de46617a1f63e9e60e230386dfb3038a9188330054853850b232e8760  docs/COMPATIBILITY.md
+b16c6c695facd8f18124fd1f5305944999fcba36f502d07839c0d60688965161  docs/COMPLETION_GAPS.md
