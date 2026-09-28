@@ -1,9 +1,22 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 
+// Explicit CHROME wins; otherwise resolve the first installed browser so a
+// Linux runner without CHROME set does not silently ENOENT every case
+// (empty DOM, 'expected DSL did not load' across the board, no stderr).
 const CHROME = process.env.CHROME ||
+  [
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/usr/bin/chrome'
+  ].find(existsSync) ||
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-const PORT = process.env.PORT || 5173
+const HOST = '127.0.0.1'
+const REQUESTED_PORT = Number(process.env.PORT) || 0 // 0 = bind an OS-assigned free port (a collision on the fixed dev port makes Chrome load a foreign blank page while waitForServer passes)
 const SOURCE = 'search hydra\ngradient(speed: 0).write(o0)'
 
 function startServer() {
@@ -11,29 +24,57 @@ function startServer() {
     'node_modules/vite/bin/vite.js',
     '.',
     '--host',
-    '--port', String(PORT)
+    '--port', String(REQUESTED_PORT),
+    '--strictPort'
   ], {
     stdio: ['ignore', 'pipe', 'pipe']
   })
 }
 
-async function waitForServer(timeoutMs = 10000) {
+// Read the actually-bound port from vite's startup banner so the driver and
+// headless Chrome always target the same server instance.
+function resolveBoundPort(server, timeoutMs = 15000) {
+  const PORT = REQUESTED_PORT
+  if (PORT) return Promise.resolve(PORT)
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('vite startup banner not seen in time')), timeoutMs)
+    let buf = ''
+    const onData = d => {
+      buf += String(d)
+      const m = buf.match(/:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)\//)
+      if (m) {
+        clearTimeout(timer)
+        server.stdout.off('data', onData)
+        resolve(Number(m[1]))
+      }
+    }
+    server.stdout.on('data', onData)
+  })
+}
+
+async function waitForServer(port, timeoutMs = 10000) {
   const started = Date.now()
   while (Date.now() - started < timeoutMs) {
     try {
-      const response = await fetch(`http://localhost:${PORT}/`)
+      const response = await fetch(`http://${HOST}:${port}/`)
       if (response.ok) return
     } catch (_) {}
     await new Promise(resolve => setTimeout(resolve, 200))
   }
-  throw new Error(`Vite did not start on port ${PORT}`)
+  throw new Error(`Vite did not start on port ${port}`)
 }
 
+let BOUND_PORT = 0
+
 function runEditor(path, windowSize = '1024,768') {
-  const url = `http://localhost:${PORT}${path}`
+  const url = `http://${HOST}:${BOUND_PORT}${path}`
   return spawnSync(CHROME, [
-    '--headless',
+    '--headless=new',
     '--no-sandbox',
+    // Ambient proxy env must not route the loopback dev server through a
+    // proxy (blank pages, every case 'expected DSL did not load'); external
+    // hosts keep any ambient proxy.
+    '--proxy-bypass-list=<-loopback>',
     `--window-size=${windowSize}`,
     '--virtual-time-budget=30000',
     '--dump-dom',
@@ -45,7 +86,8 @@ let server
 let exitCode = 0
 try {
   server = startServer()
-  await waitForServer()
+  BOUND_PORT = await resolveBoundPort(server)
+  await waitForServer(BOUND_PORT)
   function encodeSource(source) {
   return Buffer.from(encodeURIComponent(source)).toString('base64')
 }
