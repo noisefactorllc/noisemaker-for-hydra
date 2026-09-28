@@ -28,20 +28,21 @@
   },
   "rollingCore": {
    "url": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
-   "sha256": "f7145e234f785ef00905242a3893a0e3e029140998f84d48010bd820694c802c",
-   "matchesPinned": true
+   "sha256": "25f780f0a71dcebfd3550a4ab90d13c59dcbce3fb515dfaaf410e7dadd4bcab9",
+   "matchesPinned": false
   },
   "companion": {
    "url": "/_engine/hydra-synth.js",
    "sha256": "5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded",
    "matchesPinned": true
   },
-  "rollingMatchesImmutable": true
+  "rollingMatchesImmutable": false
  },
  "env": {
-  "node": "v26.5.1",
-  "platform": "linux-x64",
-  "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL"
+  "node": "v26.0.0",
+  "platform": "darwin-arm64",
+  "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL",
+  "glBackend": "native"
  },
  "fixture": {
   "cases": 210,

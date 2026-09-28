@@ -25,6 +25,15 @@
  *
  * Usage: CHROME=/usr/bin/chromium node scripts/parity-gate.mjs [outdir]
  * Writes parity-gate-report.json into outdir (default: parity-evidence).
+ *
+ * GL backend: the default pins ANGLE SwiftShader explicitly (Linux container
+ * evidence). On a GPU host set GATE_GL_BACKEND=native to launch with the
+ * browser default stack (Metal/desktop GL): GAP-001's remaining authority
+ * cases (filter/octaveWarp, filter/oilPaint) exceed a 4 GiB cgroup while
+ * SwiftShader JIT-compiles them, but compile and render on a GL stack with a
+ * normal memory budget. Host-specific launch flags (for example
+ * --proxy-server on a proxied host) come through GATE_CHROME_EXTRA_ARGS
+ * (space-separated).
  */
 import { spawn } from 'node:child_process'
 import { mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
@@ -48,6 +57,8 @@ const fixture = JSON.parse(readFileSync(join(ROOT, 'test/fixtures/parity-cases.j
 const pinned = fixture.authorities
 const S32 = { width: 32, height: 24 }
 const S18 = { width: 24, height: 18 }
+const GL_BACKEND = process.env.GATE_GL_BACKEND || 'swiftshader'
+const EXTRA_ARGS = (process.env.GATE_CHROME_EXTRA_ARGS || '').split(' ').filter(Boolean)
 
 // Zero-extra-thread static file server (replaces the vite dev server:
 // chromium's SwiftShader thread spikes plus vite's threads exceeded the
@@ -216,7 +227,14 @@ async function withCdp (chrome, args, log, fn) {
 async function runSlice (sliceStart, limit, attempt, log) {
   const sliceCases = fixture.cases.slice(sliceStart, sliceStart + limit)
   const base = `http://127.0.0.1:${PORT}/test/parity-gate`
-  const cdpPort = PORT + 1000 + (sliceStart % 100)
+  // Slices run sequentially, so one CDP port can be reused; keep a small
+  // rotating offset so a slow-dying previous chromium never collides with the
+  // new launch, and stay inside hosts that only expose a small loopback port
+  // window (the macOS host broker allows 43117..43126 only). Port 43120 is
+  // occupied by another host service and never yields a DevTools endpoint
+  // (observed: the browser runs but binds nothing), so the rotation skips it.
+  const cdpPortPool = [1, 2, 4, 5, 6, 7, 8, 9]
+  const cdpPort = PORT + cdpPortPool[sliceStart % cdpPortPool.length]
   const chromeArgs = [
     '--headless=new',
     '--no-sandbox',
@@ -226,9 +244,10 @@ async function runSlice (sliceStart, limit, attempt, log) {
     '--disable-sync',
     '--no-first-run',
     '--no-default-browser-check',
-    '--use-gl=angle',
-    '--use-angle=swiftshader',
-    '--enable-unsafe-swiftshader',
+    ...(GL_BACKEND === 'swiftshader'
+      ? ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']
+      : []),
+    ...EXTRA_ARGS,
     '--enable-logging=stderr',
     '--v=0',
     `--remote-debugging-port=${cdpPort}`,
@@ -372,7 +391,7 @@ async function runSlice (sliceStart, limit, attempt, log) {
       slice: { start: sliceStart, limit },
       pinned,
       identity,
-      env: { node: process.version, platform: `${process.platform}-${process.arch}`, webgl: gl },
+      env: { node: process.version, platform: `${process.platform}-${process.arch}`, webgl: gl, glBackend: GL_BACKEND },
       fixture: { cases: fixture.cases.length, upstreamCommit: fixture.upstreamCommit, generator: fixture.generator, sha256: fixtureSha256 },
       denominator: {
         cases: sliceCases.length,
