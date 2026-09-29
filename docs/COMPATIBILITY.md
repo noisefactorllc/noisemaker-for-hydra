@@ -2,7 +2,9 @@
 
 ## 1. Source and authority revisions
 
-Daily review: 2026-09-29 (port-completion review, `noisemaker-port-audit` series). Inspected source: `e6300c971bdc13d77b915e2d0dd8eefc349d7ef0` (origin `main` head, remote identity verified). Suite re-executed at that source: 94 unit tests pass, 12 browser checks pass, both exit 0. No new closure is claimed. Corrections from this review: the `1.0.199` attribution in the GAP-001 status-change line below is fixed (the 2026-09-28 native-GL close qualified the `1.0.194` pin), the section-3 and section-2 closure wording is qualified to the current re-opened state, and section 5 carries the current first action. Upstream delta past the recorded discovery `72b07e3e` is docs-only with an empty `shaders/` delta. `v1.0.204` remains the newest published engine. Review evidence: `/series/review-20260929-144155/result.json`.
+Daily review: 2026-09-29 (port-completion review, `noisemaker-port-audit` series). Inspected source: `e6300c971bdc13d77b915e2d0dd8eefc349d7ef0` (origin `main` head). No new closure is claimed.
+Corrections: the GAP-001 close attribution below now names the `1.0.194` pin. Section-3 and section-2 wording states the current re-opened state. Section 5 carries the current first action. The supported-browsers row now dates the Firefox 155.0 and Safari/WebKit 26.6 legs to the 2026-09-28 GAP-002 closure round. The in-app help claim below is revised to the delivered Polymorphic DSL help.
+Evidence: `/series/review-20260929-144155/result.json` (re-executed suite, upstream check).
 
 Daily review: 2026-09-29 (ports-sync delivery: upstream vendor audit and authority re-pin to the newest published engine). Current inspected source: this record commit.
 Current upstream discovery: `72b07e3e159dd19a5ea87a75313fb470906a5024` (origin `main` tip; release tag `v1.0.204-1-g72b07e3e`). Published Noisemaker authority: re-pinned `1.0.204` — the immutable CDN bundle that tag publishes, containing the audited tip `682739066d3b74962febbdcdae85b5aa4d2e19f3` and the parallel delivery pair tip `4f5e0d28bdc155700393c314e9a5aafcc4da91fd` (engine sha256 `3f7a18aef5c30c75c4575db1b0c407f80fb276af447c7986f6e23e211dc15549`); 210 effect IDs (manifest sha256 `05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e`, unchanged since `1.0.182`).
@@ -74,7 +76,7 @@ The matrix below retains the earlier measured scope. A historical verified row i
 | Toolbar accessibility | verified (measured scope) | 17-check CDP keyboard pass in Chromium 154 with zero failures, 2026-09-26 (`a11y-evidence/`, GAP-005 closed). No screen reader was measured. Other browsers are outside this check. |
 | Renderer disposal | verified | The bounded probe stopped rendering and cleared the pipeline. Long-term GPU accounting remains unverified. |
 | Served demo output | verified | Two shown o1 samples at 480×320 were non-flat and different. This verifies the older served artifact only. |
-| Supported browsers and operating systems | verified (desktop baselines) | Chromium 154 (Debian 12), Firefox 155.0 (Debian 12, llvmpipe WebGL2), and Safari/WebKit 26.6 (macOS arm64, host-run) verified 2026-09-26/28. Mobile browsers and Windows are permanently out of scope for this harness and not claimed. Newer versions are unverified until re-qualified. |
+| Supported browsers and operating systems | verified (desktop baselines) | Chromium 154 (Debian 12) verified 2026-09-26. Firefox 155.0 (Debian 12, llvmpipe WebGL2) and Safari/WebKit 26.6 (macOS arm64, host-run) verified 2026-09-28 in the GAP-002 closure round. The Chromium and Firefox legs carry in-tree command and exit bindings in `workflow-evidence/`. The Safari leg's raw logs and drivers live only in that job's evidence archive (`archive-notes.txt`). They are SHA-256-bound and not re-checkable from this repository. Mobile browsers and Windows are permanently out of scope for this harness and not claimed. Newer versions are unverified until re-qualified. |
 | External media, audio/MIDI, temporal cases | unverified | No complete host integration or current-authority matrix exists. |
 | Artifact notices | verified | `dist/LICENSE` (repository AGPL-3.0 text) and `dist/THIRD-PARTY-NOTICES` are emitted from `public/` into every build (2026-09-26). `THIRD-PARTY-NOTICES` enumerates all 82 bundled npm packages with installed versions, licenses, and per-package copyright lines, plus the vendored files (p5.js local copy, Font Awesome, normalize.css, Skeleton, theme) and the third-party resources the page loads from other origins at runtime (p5.js 1.4.0 from cdnjs, Google Fonts, a cdn.glitch.com favicon). |
 | Dependency advisories | assessed | `npm audit --omit=dev` reports 16 advisories (2 low, 6 moderate, 7 high, 1 critical); module-graph evidence (82 bundled packages) shows the bundled ones (`qs`, `socket.io-client` chain, `shortid`, `@babel/runtime`) are dormant behind the undefined `VITE_SERVER_URL` or unused code paths, and the rest are not bundled. Advisories are assessed, not eliminated (2026-09-26). |
@@ -84,7 +86,7 @@ The matrix below retains the earlier measured scope. A historical verified row i
 [Browser observations](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/browser-probe.json). [Host observations](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/host-probe-wgsl.json).
 The official [Hydra guide](https://hydra.ojack.xyz/docs/docs/learning/getting-started/) documents JavaScript and keyboard workflows.
 The page is dated 2025-06-10 and was accessed on 2026-09-24. The fork supports its stated DSL demonstration contract.
-In-app help still describes ordinary JavaScript Hydra. It does not establish compatibility with those examples.
+In-app help describes the Polymorphic DSL since the 2026-09-26 GAP-002 round (`src/stores/text-elements.js`). Ordinary Hydra JavaScript examples from that guide do not compile in this editor. The fork documents its own DSL instead.
 
 ## 3. Parity coverage
 
@@ -264,7 +266,7 @@ The push activates an existing notification webhook. These documentation edits d
 
 ## 5. Open compatibility limits
 
-Next bounded check: Publish the executable `scripts/parity-summary` entrypoint, then close GAP-001 only on the supervisor-run summary at the `1.0.204` fixture with every case executed and exact (corrected 2026-09-29 by the port-completion review; GAP-004 closed 2026-09-26, so the earlier WebGL2-versus-WebGPU comparison is superseded). The full closure contract is in the GAP-001 gap record.
+Next bounded check: Publish the executable `scripts/parity-summary` entrypoint. Close GAP-001 only on the supervisor-run summary at the `1.0.204` fixture with every case executed and passing exact or strict. GAP-004 closed 2026-09-26, so the earlier WebGL2-versus-WebGPU comparison is superseded. The full closure contract is in the GAP-001 gap record.
 See the stable entries in [completion gaps](COMPLETION_GAPS.md).
 
 The stable [gap register](COMPLETION_GAPS.md#4-known-gaps) defines each action, dependency, and acceptance check.
