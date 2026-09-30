@@ -1,7 +1,7 @@
 [parity-gate] static gate server up
 [parity-gate] identity: bundle=true manifest=true companion=true rollingMatchesImmutable=false
 [parity-gate] slice 0..4: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-0 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=.gpu-run-fresh/chrome-profile-0 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 classicNoisedeck/bitEffects
@@ -22,7 +22,7 @@
 [parity-gate] compared so far: 5/5 classicNoisedeck/coalesce EXACT
 [parity-gate] slice 0: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 5..9: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-5 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=.gpu-run-fresh/chrome-profile-5 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 classicNoisedeck/colorLab
@@ -43,7 +43,7 @@
 [parity-gate] compared so far: 5/5 classicNoisedeck/glitch EXACT
 [parity-gate] slice 5: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 10..14: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-10 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=.gpu-run-fresh/chrome-profile-10 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 classicNoisedeck/kaleido
@@ -64,7 +64,7 @@
 [parity-gate] compared so far: 5/5 classicNoisedeck/noise3d EXACT
 [parity-gate] slice 10: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 15..19: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-15 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=.gpu-run-fresh/chrome-profile-15 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 classicNoisedeck/refract
@@ -85,7 +85,7 @@
 [parity-gate] compared so far: 5/5 classicNoisedeck/splat EXACT
 [parity-gate] slice 15: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 20..24: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-20 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=.gpu-run-fresh/chrome-profile-20 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/adjust
@@ -106,7 +106,7 @@
 [parity-gate] compared so far: 5/5 filter/celShading EXACT
 [parity-gate] slice 20: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 25..29: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-25 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=.gpu-run-fresh/chrome-profile-25 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/channel
@@ -127,7 +127,7 @@
 [parity-gate] compared so far: 5/5 filter/clouds EXACT
 [parity-gate] slice 25: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 30..34: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-30 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=.gpu-run-fresh/chrome-profile-30 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/colorReplace
@@ -148,7 +148,7 @@
 [parity-gate] compared so far: 5/5 filter/crt EXACT
 [parity-gate] slice 30: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 35..39: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-35 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=.gpu-run-fresh/chrome-profile-35 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/degauss
@@ -169,7 +169,7 @@
 [parity-gate] compared so far: 5/5 filter/edge EXACT
 [parity-gate] slice 35: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 40..44: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-40 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=.gpu-run-fresh/chrome-profile-40 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/emboss
@@ -190,7 +190,7 @@
 [parity-gate] compared so far: 5/5 filter/flipMirror EXACT
 [parity-gate] slice 40: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 45..49: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-45 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=.gpu-run-fresh/chrome-profile-45 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/fxaa
@@ -211,7 +211,7 @@
 [parity-gate] compared so far: 5/5 filter/grain EXACT
 [parity-gate] slice 45: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 50..54: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-50 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=.gpu-run-fresh/chrome-profile-50 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/grime
@@ -232,7 +232,7 @@
 [parity-gate] compared so far: 5/5 filter/historicPalette EXACT
 [parity-gate] slice 50: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 55..59: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-55 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=.gpu-run-fresh/chrome-profile-55 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/invert
@@ -253,7 +253,7 @@
 [parity-gate] compared so far: 5/5 filter/lightLeak EXACT
 [parity-gate] slice 55: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 60..64: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-60 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=.gpu-run-fresh/chrome-profile-60 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/lighting
@@ -274,7 +274,7 @@
 [parity-gate] compared so far: 5/5 filter/mosaicTiles EXACT
 [parity-gate] slice 60: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 65..69: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-65 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=.gpu-run-fresh/chrome-profile-65 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/motionBlur
@@ -295,7 +295,7 @@
 [parity-gate] compared so far: 5/5 filter/oilPaint EXACT
 [parity-gate] slice 65: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 70..74: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-70 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=.gpu-run-fresh/chrome-profile-70 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/osd
@@ -316,7 +316,7 @@
 [parity-gate] compared so far: 5/5 filter/patchwork EXACT
 [parity-gate] slice 70: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 75..79: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-75 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=.gpu-run-fresh/chrome-profile-75 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/photocopy
@@ -337,7 +337,7 @@
 [parity-gate] compared so far: 5/5 filter/plasticWrap EXACT
 [parity-gate] slice 75: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 80..84: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-80 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=.gpu-run-fresh/chrome-profile-80 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/polar
@@ -358,7 +358,7 @@
 [parity-gate] compared so far: 5/5 filter/reindex EXACT
 [parity-gate] slice 80: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 85..89: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-85 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=.gpu-run-fresh/chrome-profile-85 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/relief
@@ -379,7 +379,7 @@
 [parity-gate] compared so far: 5/5 filter/rotate EXACT
 [parity-gate] slice 85: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 90..94: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-90 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=.gpu-run-fresh/chrome-profile-90 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/scale
@@ -400,7 +400,7 @@
 [parity-gate] compared so far: 5/5 filter/scroll EXACT
 [parity-gate] slice 90: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 95..99: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-95 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=.gpu-run-fresh/chrome-profile-95 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/seamless
@@ -421,7 +421,7 @@
 [parity-gate] compared so far: 5/5 filter/skew EXACT
 [parity-gate] slice 95: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 100..104: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-100 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=.gpu-run-fresh/chrome-profile-100 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/smooth
@@ -442,7 +442,7 @@
 [parity-gate] compared so far: 5/5 filter/spatter EXACT
 [parity-gate] slice 100: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 105..109: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-105 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=.gpu-run-fresh/chrome-profile-105 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/spinBlur
@@ -463,7 +463,7 @@
 [parity-gate] compared so far: 5/5 filter/step EXACT
 [parity-gate] slice 105: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 110..114: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-110 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=.gpu-run-fresh/chrome-profile-110 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/stipple
@@ -484,7 +484,7 @@
 [parity-gate] compared so far: 5/5 filter/tetraColorArray EXACT
 [parity-gate] slice 110: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 115..119: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-115 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=.gpu-run-fresh/chrome-profile-115 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/tetraCosine
@@ -505,7 +505,7 @@
 [parity-gate] compared so far: 5/5 filter/tile EXACT
 [parity-gate] slice 115: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 120..124: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-120 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=.gpu-run-fresh/chrome-profile-120 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/tint
@@ -526,7 +526,7 @@
 [parity-gate] compared so far: 5/5 filter/vaseline EXACT
 [parity-gate] slice 120: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 125..129: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-125 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=.gpu-run-fresh/chrome-profile-125 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/vignette
@@ -547,7 +547,7 @@
 [parity-gate] compared so far: 5/5 filter/wind EXACT
 [parity-gate] slice 125: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 130..134: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-130 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=.gpu-run-fresh/chrome-profile-130 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 filter/wobble
@@ -568,7 +568,7 @@
 [parity-gate] compared so far: 5/5 filter3d/palette3d EXACT
 [parity-gate] slice 130: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 135..139: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-135 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=.gpu-run-fresh/chrome-profile-135 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 mixer/alphaMask
@@ -589,7 +589,7 @@
 [parity-gate] compared so far: 5/5 mixer/centerMask EXACT
 [parity-gate] slice 135: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 140..144: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-140 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=.gpu-run-fresh/chrome-profile-140 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 mixer/channelCombine
@@ -610,7 +610,7 @@
 [parity-gate] compared so far: 5/5 mixer/patternMix EXACT
 [parity-gate] slice 140: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 145..149: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-145 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=.gpu-run-fresh/chrome-profile-145 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 mixer/shadow
@@ -631,7 +631,7 @@
 [parity-gate] compared so far: 5/5 mixer/uvRemap EXACT
 [parity-gate] slice 145: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 150..154: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-150 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=.gpu-run-fresh/chrome-profile-150 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 points/attractor
@@ -652,7 +652,7 @@
 [parity-gate] compared so far: 5/5 points/flow EXACT
 [parity-gate] slice 150: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 155..159: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-155 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=.gpu-run-fresh/chrome-profile-155 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 points/heightGrid
@@ -693,7 +693,7 @@
 [parity-gate] compared so far: 5/5 points/physarum EXACT
 [parity-gate] slice 155: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 160..164: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-160 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=.gpu-run-fresh/chrome-profile-160 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 points/physical
@@ -714,7 +714,7 @@
 [parity-gate] compared so far: 5/5 render/meshRender EXACT
 [parity-gate] slice 160: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 165..169: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-165 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=.gpu-run-fresh/chrome-profile-165 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 render/pointsBillboardRender
@@ -735,7 +735,7 @@
 [parity-gate] compared so far: 5/5 render/renderCubemap3d EXACT
 [parity-gate] slice 165: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 170..174: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-170 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43121 --user-data-dir=.gpu-run-fresh/chrome-profile-170 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 render/renderCubemapSurface
@@ -758,7 +758,7 @@
 [parity-gate] compared so far: 5/5 synth/cell EXACT
 [parity-gate] slice 170: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 175..179: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-175 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43126 --user-data-dir=.gpu-run-fresh/chrome-profile-175 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 synth/cellularAutomata
@@ -779,7 +779,7 @@
 [parity-gate] compared so far: 5/5 synth/julia EXACT
 [parity-gate] slice 175: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 180..184: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-180 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43123 --user-data-dir=.gpu-run-fresh/chrome-profile-180 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 synth/mandala
@@ -800,7 +800,7 @@
 [parity-gate] compared so far: 5/5 synth/modPattern EXACT
 [parity-gate] slice 180: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 185..189: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-185 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43119 --user-data-dir=.gpu-run-fresh/chrome-profile-185 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 synth/navierStokes
@@ -821,7 +821,7 @@
 [parity-gate] compared so far: 5/5 synth/pattern EXACT
 [parity-gate] slice 185: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 190..194: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-190 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43125 --user-data-dir=.gpu-run-fresh/chrome-profile-190 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 synth/perlin
@@ -842,7 +842,7 @@
 [parity-gate] compared so far: 5/5 synth/roll EXACT
 [parity-gate] slice 190: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 195..199: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-195 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43122 --user-data-dir=.gpu-run-fresh/chrome-profile-195 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 synth/sacredGeometry
@@ -863,7 +863,7 @@
 [parity-gate] compared so far: 5/5 synth/spectrum EXACT
 [parity-gate] slice 195: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 200..204: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-200 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43118 --user-data-dir=.gpu-run-fresh/chrome-profile-200 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 synth/subdivide
@@ -884,7 +884,7 @@
 [parity-gate] compared so far: 5/5 synth3d/flythrough3d EXACT
 [parity-gate] slice 200: executed=30/30 exact=30 tolerance=0 failed=0 missing=0 chromiumExit=0
 [parity-gate] slice 205..209: launching headless Chromium (attempt 1)
-[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-profile-205 --disk-cache-dir=/Users/alex/.local/state/scaffold-cloud/office/jobs/2f40fc7c-2b86-4a3b-815a-3532026003a3/repos/noisemaker-for-hydra/.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
+[parity-gate] command: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-background-networking --disable-component-update --disable-sync --no-first-run --no-default-browser-check --proxy-server=http://127.0.0.1:3129 --enable-logging=stderr --v=0 --remote-debugging-port=43124 --user-data-dir=.gpu-run-fresh/chrome-profile-205 --disk-cache-dir=.gpu-run-fresh/chrome-http-cache --disk-cache-size=524288000 about:blank
 [parity-gate] navigate: http://127.0.0.1:43117/test/parity-gate/authority.html
 [parity-gate] authority webgl: WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL
 [parity-gate] authority done so far: 1/5 synth3d/fractal3d

@@ -46,14 +46,14 @@ Published engine: `1.0.176`, authority `c9ee8a049b2b63cd300da67c01ee40baf29dc288
 Current upstream: `823bbff1d17061d231cb0c7f5bf4527b3344abab`. Its changed behavior remains unverified.
 The rolling `/1` core matches the immutable published core. The manifest contains 210 effects.
 The current upstream tree also contains 210 effect definitions. Counts do not prove behavioral equivalence.
-[Authority evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/authority-tag.json). [Inventory](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/coverage-inventory.json).
+Authority evidence (audit evidence `evidence-audit-20260924-090235/authority-tag.json`). Inventory (audit evidence `evidence-audit-20260924-090235/coverage-inventory.json`).
 
 Freshness: browser evidence covers the reviewed port and published engine. Full qualification against current upstream remains **stale** and **unverified**.
 The engine URL remains mutable. The embedded companion extension lacks an immutable revision declaration.
-Tracked file hashes identify the exact extension bytes. [Source hashes](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/source-hashes.json).
+Tracked file hashes identify the exact extension bytes. Source hashes (audit evidence `evidence-audit-20260924-090235/source-hashes.json`).
 The source archive declares version `1.5.3`. No GitHub release was returned.
 The served demo records source `626f37c21170927e7c24429ca2c8f31cf38905ec`, which differs from this audit.
-[Deployment metadata](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/deployment-meta.data). Audit completion and document publication do not establish parity or release readiness.
+Deployment metadata (audit evidence `evidence-audit-20260924-090235/deployment-meta.data`). Audit completion and document publication do not establish parity or release readiness.
 
 ## 2. Host and distribution matrix
 
@@ -83,7 +83,7 @@ The matrix below retains the earlier measured scope. A historical verified row i
 | Upgrade and removal | verified (bounded) | Saved-sketch upgrade: the `?code=` scheme is unchanged since the previously served revision `626f37c`, verified by a unit test restoring a program encoded by that exact scheme including the legacy `show-code=false` parameter (2026-09-26). No published npm package or release channel exists; upgrade means replacing the served `dist`. Removal remains stop-the-server and delete-the-checkout. |
 | Release readiness | blocked | GAP-001 re-opened 2026-09-29 at the re-pinned `1.0.204` authority pending the supervisor-run `scripts/parity-summary` closing run (the 2026-09-28 close qualified the `1.0.194` pin). GAP-004 closed 2026-09-26. The audit-era external demo URL is declared and bound (2026-09-30). Bundle rebuild nondeterminism is recorded. No CI gate exists (GAP-006). |
 
-[Browser observations](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/browser-probe.json). [Host observations](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/host-probe-wgsl.json).
+Browser observations (audit evidence `evidence-audit-20260924-090235/browser-probe.json`). Host observations (audit evidence `evidence-audit-20260924-090235/host-probe-wgsl.json`).
 The official [Hydra guide](https://hydra.ojack.xyz/docs/docs/learning/getting-started/) documents JavaScript and keyboard workflows.
 The page is dated 2025-06-10 and was accessed on 2026-09-24. The fork supports its stated DSL demonstration contract.
 In-app help describes the Polymorphic DSL since the 2026-09-26 GAP-002 round (`src/stores/text-elements.js`). Ordinary Hydra JavaScript examples from that guide do not compile in this editor. The fork documents its own DSL instead.
@@ -228,7 +228,7 @@ Recorded limits: name/role/focus/activation semantics are verified as computed s
 
 ### Daily review, 2026-09-25
 
-48 unit tests and seven browser editor checks pass. The browser checks do not compare pixels. The retained WebGPU failure and two bounded WebGL2 comparisons remain relevant, but do not qualify all current authority inputs or the Hydra API. GAP-001, GAP-004, and the missing rendered CI gate remain open. [Raw evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json).
+48 unit tests and seven browser editor checks pass. The browser checks do not compare pixels. The retained WebGPU failure and two bounded WebGL2 comparisons remain relevant, but do not qualify all current authority inputs or the Hydra API. GAP-001, GAP-004, and the missing rendered CI gate remain open. Raw evidence (audit evidence `review-20260925-053200/hydra-browser-tests.json`).
 
 The current full case denominator remains incomplete. Missing parameters, hosts, external inputs, and stateful sequences remain qualification gaps. No skip or tolerated difference counts as exact parity.
 
@@ -246,36 +246,36 @@ The current full case denominator remains incomplete. Missing parameters, hosts,
 Exact comparisons: `core-noise`, `core-chain`. Each contains 3,072 RGBA8 channels at 32×24 and normalized time zero.
 Both have zero unequal channels and maximum absolute error zero. No tolerance was applied.
 Failed case: `hydra/solid:webgpu`. The compiler reports missing WGSL source.
-[Every missing effect ID](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/coverage-inventory.json) remains in the denominator. There is no complete rendered suite to execute.
+Every missing effect ID (audit evidence `evidence-audit-20260924-090235/coverage-inventory.json`) remains in the denominator. There is no complete rendered suite to execute.
 Two default probes do not qualify the effect catalog, Hydra mappings, external inputs, or stateful behavior.
 The two early measurement attempts remain retained. Their errors do not count as product failures or successful comparisons.
 No fixtures, goldens, tolerances, or exclusions changed. No case was skipped to obtain a passing summary.
 
 ## 4. Evidence
 
-Review CI boundary: No workflow run exists at the inspected source SHA. A passing export dispatch does not qualify rendered parity. Current complete-render enforcement remains an open verification requirement. [Exact-source responses and workflows](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/noisemaker-for-hydra-remote-evidence.json).
+Review CI boundary: No workflow run exists at the inspected source SHA. A passing export dispatch does not qualify rendered parity. Current complete-render enforcement remains an open verification requirement. Exact-source responses and workflows (audit evidence `review-20260925-053200/noisemaker-for-hydra-remote-evidence.json`).
 
-The current-source browser probe independently reproduces ERR_NO_WGSL_SOURCE for Hydra solid after switching to WGSL. [Probe](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-wgsl-current.json).
+The current-source browser probe independently reproduces ERR_NO_WGSL_SOURCE for Hydra solid after switching to WGSL. Probe (audit evidence `review-20260925-053200/hydra-wgsl-current.json`).
 
 | Literal command | Exit | Raw evidence |
 |---|---|---|
-| `npm run build` | 0 | [Build](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/build.json) |
-| `node --test test/*.test.mjs` | 0 | [Unit tests](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/unit.json) |
-| `PORT=5197 node scripts/test.mjs` | 0 | [Browser checks](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/browser.json) |
-| `npm ci --bin-links=false --ignore-scripts` | 0 | [Installation](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/install.json) |
-| `node node_modules/vite/bin/vite.js build` | 0 | [Consumer build](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/consumer-build.json) |
-| `node browser-probe.cjs` | 0 | [Rendered comparisons and UI](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/browser-probe.json) |
-| `node host-probe-wgsl.cjs` | 0 | [Completed probe with failed WGSL case](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/host-probe-wgsl.json) |
-| `npm audit --omit=dev --json` | 1 | [16 production dependency advisories](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/production-audit.json) |
+| `npm run build` | 0 | Build (audit evidence `evidence-audit-20260924-090235/build.json`) |
+| `node --test test/*.test.mjs` | 0 | Unit tests (audit evidence `evidence-audit-20260924-090235/unit.json`) |
+| `PORT=5197 node scripts/test.mjs` | 0 | Browser checks (audit evidence `evidence-audit-20260924-090235/browser.json`) |
+| `npm ci --bin-links=false --ignore-scripts` | 0 | Installation (audit evidence `evidence-audit-20260924-090235/install.json`) |
+| `node node_modules/vite/bin/vite.js build` | 0 | Consumer build (audit evidence `evidence-audit-20260924-090235/consumer-build.json`) |
+| `node browser-probe.cjs` | 0 | Rendered comparisons and UI (audit evidence `evidence-audit-20260924-090235/browser-probe.json`) |
+| `node host-probe-wgsl.cjs` | 0 | Completed probe with failed WGSL case (audit evidence `evidence-audit-20260924-090235/host-probe-wgsl.json`) |
+| `npm audit --omit=dev --json` | 1 | 16 production dependency advisories (audit evidence `evidence-audit-20260924-090235/production-audit.json`) |
 
 Probe commands run from the linked evidence directory. Build and unit commands run from the reviewed checkout or identified consumer.
 Chrome version: 153.0.8010.53. WebGL renderer label: `WebKit WebGL`.
 Core SHA-256: `2460ed60f8002c893f4f6c99a119be5d4ab1fafa6055cb94d95f887ff12a2952`.
 Manifest SHA-256: `05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e`.
-[Source hashes](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/source-hashes.json). [Artifact reproduction](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/distribution-reproduction.json).
-[Exact-source Actions](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/remote-ci.json) returned zero runs. The source tree contains no workflow.
+Source hashes (audit evidence `evidence-audit-20260924-090235/source-hashes.json`). Artifact reproduction (audit evidence `evidence-audit-20260924-090235/distribution-reproduction.json`).
+Exact-source Actions (audit evidence `evidence-audit-20260924-090235/remote-ci.json`) returned zero runs. The source tree contains no workflow.
 The push activates an existing notification webhook. These documentation edits do not deploy or release the editor.
-[Publication result](/Users/alex/.codex/automations/noisemaker-port-completion-audit/evidence-audit-20260924-090235/result.json) records the pushed commit and remote verification.
+Publication result (audit evidence `evidence-audit-20260924-090235/result.json`) records the pushed commit and remote verification.
 
 ## 5. Open compatibility limits
 
@@ -295,7 +295,7 @@ All eligible ports retain equal rotation priority. C++ remains excluded. No impl
 
 ## 6. History
 
-2026-09-25 daily review at `8c5dafd3cb5232297001e058b6b1dd2a05a215c9`: source freshness and bounded evidence reviewed. Open qualification limits retained. [Retained review evidence](/Users/alex/.codex/automations/noisemaker-port-completion-audit/review-20260925-053200/hydra-browser-tests.json). No new closure claimed.
+2026-09-25 daily review at `8c5dafd3cb5232297001e058b6b1dd2a05a215c9`: source freshness and bounded evidence reviewed. Open qualification limits retained. Retained review evidence (audit evidence `review-20260925-053200/hydra-browser-tests.json`). No new closure claimed.
 
 | Date | Source | Result | Change |
 |---|---|---|---|
