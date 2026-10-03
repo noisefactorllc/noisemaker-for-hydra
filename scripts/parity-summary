@@ -1,0 +1,99 @@
+#!/usr/bin/env node
+import { spawn } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync, readdirSync, mkdirSync, mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
+
+export function selectCases (manifest, ids) {
+  if (!ids.length) return manifest
+  const byId = new Map(manifest.map(value => [value.id, value]))
+  const seen = new Set()
+  return ids.map(id => {
+    if (seen.has(id)) throw new Error(`duplicate parity case: ${id}`)
+    seen.add(id)
+    const value = byId.get(id)
+    if (!value) throw new Error(`unknown parity case: ${id}`)
+    return value
+  })
+}
+
+export function summarizeReport (report) {
+  const d = report?.denominator || {}
+  const expected = Number(d.cases) || 0
+  const statuses = Array.isArray(report?.caseStatus) ? report.caseStatus : []
+  const seen = new Set()
+  let executed = 0; let exact = 0; let strict = 0; let fail = 0; let missing = 0
+  let frameExact = 0; let frameStrict = 0; let frameFailed = 0; let frameMissing = 0
+  for (const entry of statuses) {
+    if (seen.has(entry.id)) fail++
+    seen.add(entry.id)
+    frameExact += entry.exact
+    frameStrict += entry.tolerance
+    frameFailed += entry.failed
+    frameMissing += entry.missing
+    if (entry.missing || entry.frames !== 6) { missing++; continue }
+    executed++
+    if (entry.failed) fail++
+    else if (entry.tolerance) strict++
+    else if (entry.exact === 6) exact++
+    else fail++
+  }
+  missing += Math.max(0, expected - statuses.length)
+  const invalid = !report?.identityOk || expected <= 0 || statuses.length > expected ||
+    d.expectedComparisons !== expected * 6 ||
+    d.executedComparisons !== frameExact + frameStrict + frameFailed ||
+    d.exact !== frameExact || d.tolerance !== frameStrict ||
+    d.failed !== frameFailed || d.missing !== frameMissing ||
+    (!report?.pass && fail === 0 && missing === 0)
+  return {
+    expected, executed, exact, strict, near: 0, defer: 0, skip: 0,
+    fail: Math.max(fail, invalid ? 1 : 0), missing
+  }
+}
+
+async function main () {
+  const fixtureBytes = readFileSync(join(root, 'test/fixtures/parity-cases.json'))
+  const fixture = JSON.parse(fixtureBytes)
+  const fixtureSha = createHash('sha256').update(fixtureBytes).digest('hex')
+  const selected = selectCases(fixture.cases, process.argv.slice(2))
+  const outdir = mkdtempSync(join(tmpdir(), 'hydra-parity-'))
+  if (existsSync(outdir) && readdirSync(outdir).length) {
+    throw new Error(`parity output directory must be empty: ${outdir}`)
+  }
+  mkdirSync(outdir, { recursive: true })
+  process.stderr.write(`[parity-summary] evidence: ${outdir}\n`)
+  const env = { ...process.env }
+  delete env.GATE_TOTAL
+  if (process.argv.length > 2) env.GATE_CASE_IDS = JSON.stringify(selected.map(value => value.id))
+  else delete env.GATE_CASE_IDS
+  const code = await new Promise((resolveCode, reject) => {
+    const child = spawn(process.execPath, [join(root, 'scripts/parity-gate.mjs'), outdir], {
+      cwd: root, env, stdio: 'inherit'
+    })
+    child.on('error', reject)
+    child.on('close', resolveCode)
+  })
+  let report = null
+  try { report = JSON.parse(readFileSync(join(outdir, 'parity-gate-report.json'), 'utf8')) } catch (_) {}
+  const summary = summarizeReport(report)
+  const current = report?.fixture?.sha256 === fixtureSha &&
+    report?.fixture?.cases === fixture.cases.length &&
+    report?.denominator?.cases === selected.length &&
+    summary.expected === selected.length &&
+    Array.isArray(report?.caseStatus) &&
+    report.caseStatus.every((value, index) => value.id === selected[index]?.id)
+  if (!current) summary.fail = Math.max(summary.fail, 1)
+  process.stdout.write(`PARITY-SUMMARY ${JSON.stringify(summary)}\n`)
+  if (code !== 0 || !current || summary.fail !== 0) process.exitCode = 1
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch(err => {
+    process.stderr.write(`[parity-summary] ${err.message}\n`)
+    process.exitCode = 1
+  })
+}

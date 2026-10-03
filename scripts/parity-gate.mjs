@@ -43,17 +43,23 @@ import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
 
 import { sliceCacheReusable } from './parity-gate-cache.mjs'
+import { selectCases } from './parity-summary'
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const PORT = Number(process.env.PORT || 5199)
 const OUTDIR = resolve(process.argv[2] || join(ROOT, 'parity-evidence'))
 const BATCH = Number(process.env.GATE_BATCH || 5)
-const TOTAL = Number(process.env.GATE_TOTAL || 210)
 const fixtureSha256 = createHash('sha256')
   .update(readFileSync(join(ROOT, 'test/fixtures/parity-cases.json')))
   .digest('hex')
 const fixture = JSON.parse(readFileSync(join(ROOT, 'test/fixtures/parity-cases.json'), 'utf8'))
+const requestedCaseIds = process.env.GATE_CASE_IDS ? JSON.parse(process.env.GATE_CASE_IDS) : []
+if (!Array.isArray(requestedCaseIds) || !requestedCaseIds.every(id => typeof id === 'string')) {
+  throw new Error('GATE_CASE_IDS must be a JSON array of case IDs')
+}
+const selectedCases = selectCases(fixture.cases, requestedCaseIds)
+const TOTAL = requestedCaseIds.length ? selectedCases.length : Number(process.env.GATE_TOTAL || selectedCases.length)
 const pinned = fixture.authorities
 const S32 = { width: 32, height: 24 }
 const S18 = { width: 24, height: 18 }
@@ -225,7 +231,7 @@ async function withCdp (chrome, args, log, fn) {
 // comparison. Returns the slice report (pass=false when any group is missing
 // or failed — the caller retries and keeps the best result).
 async function runSlice (sliceStart, limit, attempt, log) {
-  const sliceCases = fixture.cases.slice(sliceStart, sliceStart + limit)
+  const sliceCases = selectedCases.slice(sliceStart, sliceStart + limit)
   const base = `http://127.0.0.1:${PORT}/test/parity-gate`
   // Slices run sequentially, so one CDP port can be reused; keep a small
   // rotating offset so a slow-dying previous chromium never collides with the
@@ -435,7 +441,9 @@ try {
     const limit = Math.min(BATCH, TOTAL - sliceStart)
     const sliceFile = join(OUTDIR, `slice-${String(sliceStart).padStart(3, '0')}.json`)
     let cached = null
-    try { cached = JSON.parse(readFileSync(sliceFile, 'utf8')) } catch (_) {}
+    if (!requestedCaseIds.length) {
+      try { cached = JSON.parse(readFileSync(sliceFile, 'utf8')) } catch (_) {}
+    }
     if (cached && sliceCacheReusable(cached, fixtureSha256, limit)) {
       reports.push({ report: cached, chromeExit: 0 })
       log(`slice ${sliceStart}: reusing cached slice report ${sliceFile} (fixture sha and slice limit match)`)
