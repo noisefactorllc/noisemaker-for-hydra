@@ -16,24 +16,20 @@ jobs:
     env:
       GATE_GL_BACKEND: native
       GATE_BATCH: '5'
+      CHROME: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
-        with:
-          node-version: '24'
-          cache: npm
-      - run: npm ci --ignore-scripts --bin-links=false
-      - name: Install Chromium
+      - name: Check office GPU tools
         shell: bash
         run: |
           set -euo pipefail
-          export PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/pw-browsers"
-          npx -y playwright@1.56.1 install chromium
-          CHROME_BIN=$(find "$PLAYWRIGHT_BROWSERS_PATH" -type f -name headless_shell -print -quit)
-          test -x "$CHROME_BIN"
-          echo "CHROME=$CHROME_BIN" >> "$GITHUB_ENV"
+          test -x /opt/homebrew/bin/node
+          test -x "$CHROME"
+          test "$(/opt/homebrew/bin/node --version)" = v26.0.0
+          echo /opt/homebrew/bin >> "$GITHUB_PATH"
+      - run: npm ci --ignore-scripts --bin-links=false
       - name: Test and render current source
         shell: bash
         run: |
