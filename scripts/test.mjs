@@ -37,7 +37,9 @@ function resolveBoundPort(server, timeoutMs = 15000) {
   const PORT = REQUESTED_PORT
   if (PORT) return Promise.resolve(PORT)
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('vite startup banner not seen in time')), timeoutMs)
+    let stderr = ''
+    server.stderr.on('data', data => { stderr += String(data) })
+    const timer = setTimeout(() => reject(new Error(`vite startup banner not seen in time: ${stderr.trim() || 'no stderr'}`)), timeoutMs)
     let buf = ''
     const onData = d => {
       buf += String(d)
