@@ -38,9 +38,9 @@ function resolveBoundPort(server, timeoutMs = 15000) {
   if (PORT) return Promise.resolve(PORT)
   return new Promise((resolve, reject) => {
     let stderr = ''
-    server.stderr.on('data', data => { stderr += String(data) })
-    const timer = setTimeout(() => reject(new Error(`vite startup banner not seen in time: ${stderr.trim() || 'no stderr'}`)), timeoutMs)
     let buf = ''
+    server.stderr.on('data', data => { stderr += String(data) })
+    const timer = setTimeout(() => reject(new Error(`vite startup banner not seen in time; stdout=${JSON.stringify(buf.trim().slice(-2000))}; stderr=${JSON.stringify(stderr.trim().slice(-2000))}`)), timeoutMs)
     const onData = d => {
       buf += String(d)
       const m = buf.match(/:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)\//)
