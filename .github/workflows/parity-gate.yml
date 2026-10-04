@@ -30,7 +30,7 @@ jobs:
           set -euo pipefail
           export PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/pw-browsers"
           npx -y playwright@1.56.1 install chromium
-          CHROME_BIN=$(find "$PLAYWRIGHT_BROWSERS_PATH" -type f -name chrome-headless-shell | head -1)
+          CHROME_BIN=$(find "$PLAYWRIGHT_BROWSERS_PATH" -type f -name headless_shell -print -quit)
           test -x "$CHROME_BIN"
           echo "CHROME=$CHROME_BIN" >> "$GITHUB_ENV"
       - name: Test and render current source
