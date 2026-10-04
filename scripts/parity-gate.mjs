@@ -286,11 +286,17 @@ async function runSlice (sliceStart, limit, attempt, log) {
     log(`authority webgl: ${gl}`)
     // A hung evaluate must not wedge the slice forever; watchdog each page
     // call and let the retry loop re-run the slice.
-    const evWatch = (expr, ms = Number(process.env.GATE_EVAL_TIMEOUT_MS || 240000)) =>
-      Promise.race([
-        evaluate(expr, true),
-        new Promise((_, rej) => setTimeout(() => rej(new Error(`evaluate timed out after ${ms}ms`)), ms))
-      ])
+    const evWatch = async (expr, ms = Number(process.env.GATE_EVAL_TIMEOUT_MS || 240000)) => {
+      let timer
+      try {
+        return await Promise.race([
+          evaluate(expr, true),
+          new Promise((_, rej) => { timer = setTimeout(() => rej(new Error(`evaluate timed out after ${ms}ms`)), ms) })
+        ])
+      } finally {
+        clearTimeout(timer)
+      }
+    }
     const authorityFrames = new Map()
     const authorityErrors = new Map()
     for (const c of sliceCases) {
