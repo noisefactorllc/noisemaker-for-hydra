@@ -1,7 +1,6 @@
 import html from 'choo/html'
 import Component from 'choo/component'
 import P5 from './../lib/p5-wrapper.js'
-import PatchBay from './../lib/patch-bay/pb-live.js'
 import { createNoisemakerRuntime } from './../lib/noisemaker-runtime.mjs'
 
 export default class HydraCanvas extends Component {
@@ -29,16 +28,6 @@ export default class HydraCanvas extends Component {
       this.hydra = renderer
       window.hydraSynth = renderer
 
-      if (this.state.serverURL !== null) {
-        this.pb = new PatchBay()
-        this.captureStream = this.canvas.captureStream(25)
-        this.pb.init(this.captureStream, {
-          server: this.state.serverURL,
-          room: 'iclc'
-        })
-        window.pb = this.pb
-      }
-
       this.emit('hydra loaded')
       return renderer
     }).catch(error => {
@@ -59,12 +48,6 @@ export default class HydraCanvas extends Component {
       })
       if (window.hydraSynth === renderer) window.hydraSynth = null
     }
-    if (this.captureStream) {
-      for (const track of this.captureStream.getTracks()) track.stop()
-      this.captureStream = null
-    }
-    if (this.pb && typeof this.pb._destroy === 'function') this.pb._destroy()
-    this.pb = null
   }
 
   getScreenImage(callback) {

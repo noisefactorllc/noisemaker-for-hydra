@@ -33,12 +33,16 @@ test('canvas component stops and disposes its Noisemaker renderer', () => {
   assert.match(source, /return Promise\.resolve\(renderer\.dispose\(\)\)\.then\(\(\) => renderer\)/)
 })
 
-test('canvas component cleanup stops capture tracks and patch bay (GAP-002 resource cleanup)', () => {
+test('canvas component cleanup releases the renderer and opens no patch bay stream (GAP-002 resource cleanup)', () => {
   const source = readFileSync('src/views/Hydra.js', 'utf8')
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
 
-  assert.match(source, /for \(const track of this\.captureStream\.getTracks\(\)\) track\.stop\(\)/)
-  assert.match(source, /this\.pb\._destroy\(\)/)
   assert.match(source, /window\.hydraSynth === renderer\) window\.hydraSynth = null/)
+  assert.doesNotMatch(source, /patch-bay|captureStream|window\.pb\b/)
+  assert.equal(existsSync('src/lib/patch-bay'), false)
+  for (const dependency of ['socket.io-client', 'simple-peer', 'shortid']) {
+    assert.equal(pkg.dependencies?.[dependency], undefined)
+  }
 })
 
 function sourceFiles(directory) {
