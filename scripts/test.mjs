@@ -43,7 +43,7 @@ function resolveBoundPort(server, timeoutMs = 15000) {
     const timer = setTimeout(() => reject(new Error(`vite startup banner not seen in time; stdout=${JSON.stringify(buf.trim().slice(-2000))}; stderr=${JSON.stringify(stderr.trim().slice(-2000))}`)), timeoutMs)
     const onData = d => {
       buf += String(d)
-      const m = buf.match(/:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)\//)
+      const m = buf.replace(/\x1b\[[0-9;]*m/g, '').match(/:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)\//)
       if (m) {
         clearTimeout(timer)
         server.stdout.off('data', onData)
