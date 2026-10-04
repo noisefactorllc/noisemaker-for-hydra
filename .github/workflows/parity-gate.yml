@@ -10,7 +10,8 @@ permissions:
 
 jobs:
   parity:
-    runs-on: macos-15
+    runs-on:
+      group: hydra-gpu
     timeout-minutes: 90
     env:
       GATE_GL_BACKEND: native
