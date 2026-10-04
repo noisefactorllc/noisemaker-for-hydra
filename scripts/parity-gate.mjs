@@ -37,7 +37,7 @@
  */
 import { spawn } from 'node:child_process'
 import { mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
-import { resolve, join } from 'node:path'
+import { resolve, join, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { createHash } from 'node:crypto'
@@ -78,11 +78,16 @@ const server = createServer((req, res) => {
     const path = decodeURIComponent((req.url || '/').split('?')[0])
     const rel = path === '/' ? 'index.html' : path.replace(/^\//, '')
     // vite-equivalent root: repository root first, then the public/ dir
-    let file = join(ROOT, rel)
+    // Resolve under a fixed base and refuse anything that escapes it.
+    const within = (base, target) => target === base || target.startsWith(base + sep)
+    let file = resolve(ROOT, rel)
+    if (!within(ROOT, file)) throw new Error('outside root')
     try {
       readFileSync(file)
     } catch (_) {
-      file = join(ROOT, 'public', rel)
+      const publicDir = join(ROOT, 'public')
+      file = resolve(publicDir, rel)
+      if (!within(publicDir, file)) throw new Error('outside root')
     }
     res.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream' })
     res.end(readFileSync(file))
