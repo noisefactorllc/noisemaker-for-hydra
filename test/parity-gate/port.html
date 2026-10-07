@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  GAP-001 rendered-parity gate: PORT side.
+  Rendered-parity gate: PORT side.
   Exercises the fork's actual render wiring end to end: the tracked companion
   bundle (/_engine/hydra-synth.js), window.HydraEffects.loadHydraEffects(), and
   src/lib/noisemaker-runtime.mjs (createNoisemakerRuntime). Renders the same
@@ -18,7 +18,7 @@ canvas.width = 32; canvas.height = 24
 const renderer = await createNoisemakerRuntime({
   canvas,
   extension: window.HydraEffects,
-  cdn: 'https://shaders.noisedeck.app/1.0.221',
+  cdn: 'https://shaders.noisedeck.app/1.0.264',
   preferWebGPU: false
 })
 renderer.stop()

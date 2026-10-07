@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * GAP-001 complete rendered parity gate.
+ * Complete rendered parity gate.
  *
  * Serves the repository with a zero-extra-thread static file server, then
  * drives headless Chromium over the DevTools protocol through
  * test/fixtures/parity-cases.json (210 pinned authority effect IDs):
  *   - the authority side: test/parity-gate/authority.html renders each case
- *     with the raw published Noisemaker engine (pinned immutable 1.0.221 CDN
+ *     with the raw published Noisemaker engine (pinned immutable 1.0.264 CDN
  *     bundle, default CanvasRenderer wiring), and
  *   - the port side: test/parity-gate/port.html renders the same programs
  *     through the tracked companion bundle plus the fork's
@@ -28,7 +28,7 @@
  *
  * GL backend: the default pins ANGLE SwiftShader explicitly (Linux container
  * evidence). On a GPU host set GATE_GL_BACKEND=native to launch with the
- * browser default stack (Metal/desktop GL): GAP-001's remaining authority
+ * browser default stack (Metal/desktop GL): the remaining authority
  * cases (filter/octaveWarp, filter/oilPaint) exceed a 4 GiB cgroup while
  * SwiftShader JIT-compiles them, but compile and render on a GL stack with a
  * normal memory budget. Host-specific launch flags (for example
@@ -541,7 +541,7 @@ try {
       gate: 'gap-001-rendered-parity',
       identityOk: identityOkMerged,
       // Informational only: the rolling /1 URL is upstream-managed and can
-      // drift ahead of the pinned immutable bundle; the gate pins 1.0.221.
+      // drift ahead of the pinned immutable bundle; the gate pins 1.0.264.
       rollingOk,
       pinned: first.pinned,
       identity: first.identity,

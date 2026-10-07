@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync, existsSync } from 'node:fs'
 
-// GAP-001 rendered-parity gate fixture integrity (fast checks only; the
+// Rendered-parity gate fixture integrity (fast checks only; the
 // rendered gate itself is scripts/parity-gate.mjs, driven separately with
 // CHROME=... because it renders 210 programs in headless Chromium).
 const fixturePath = 'test/fixtures/parity-cases.json'
@@ -19,11 +19,11 @@ test('parity case matrix covers the full 210-ID authority manifest', () => {
 
 test('parity case matrix pins authority identities', () => {
   const a = fixture.authorities
-  assert.equal(a.upstreamCommit, '058d15dc742f91dbab067229dae196d1477adad1')
+  assert.equal(a.upstreamCommit, '8fa067f6afec1f091272a8fae7b0b40d78f7b04d')
   assert.match(a.engineBundleSha256, /^[0-9a-f]{64}$/)
   assert.match(a.manifestSha256, /^[0-9a-f]{64}$/)
   assert.match(a.companionSha256, /^[0-9a-f]{64}$/)
-  assert.ok(a.engineBundle.includes('/1.0.221/'))
+  assert.ok(a.engineBundle.includes('/1.0.264/'))
 })
 
 test('every parity case defines deterministic programs for all frames', () => {

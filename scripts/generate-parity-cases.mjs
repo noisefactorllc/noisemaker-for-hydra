@@ -1,29 +1,29 @@
 #!/usr/bin/env node
 /**
- * Generate the GAP-001 rendered-parity case matrix from the pinned upstream
+ * Generate the rendered-parity case matrix from the pinned upstream
  * noisemaker commit's shaders/effects definitions.
  *
  * Usage: node scripts/generate-parity-cases.mjs /path/to/noisemaker-checkout
  *
  * The upstream checkout must be at commit
- * 058d15dc742f91dbab067229dae196d1477adad1 (published authority 1.0.221,
- * release tag v1.0.221). Writes test/fixtures/parity-cases.json.
+ * 8fa067f6afec1f091272a8fae7b0b40d78f7b04d (published authority 1.0.264,
+ * release tag v1.0.264). Writes test/fixtures/parity-cases.json.
  */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import { resolve, join } from 'node:path'
 import { createHash } from 'node:crypto'
 
-const UPSTREAM_COMMIT = '058d15dc742f91dbab067229dae196d1477adad1'
+const UPSTREAM_COMMIT = '8fa067f6afec1f091272a8fae7b0b40d78f7b04d'
 const AUTHORITIES = {
   upstreamCommit: UPSTREAM_COMMIT,
-  engineBundle: 'https://shaders.noisedeck.app/1.0.221/noisemaker-shaders-core.esm.min.js',
+  engineBundle: 'https://shaders.noisedeck.app/1.0.264/noisemaker-shaders-core.esm.min.js',
   // Pinned published identities (sha256 recorded when the matrix was re-minted
-  // at upstream 058d15dc; the gate verifies these before executing any case).
+  // at upstream 8fa067f6; the gate verifies these before executing any case).
   // The effect-catalog manifest bytes are unchanged since 1.0.182 (same
   // manifest sha256), so the minted case set is unchanged.
-  engineBundleSha256: '8cb48b7653b03ca9f76eb879cb27864e3685fbba806c6b5ff95d695deca5b2a2',
-  manifest: 'https://shaders.noisedeck.app/1.0.221/effects/manifest.json',
+  engineBundleSha256: 'fb8dabb2a0454c23b6ee7344d49a7c88dff5c3d4570e9ee88cfa7ddcfa5f6674',
+  manifest: 'https://shaders.noisedeck.app/1.0.264/effects/manifest.json',
   manifestSha256: '05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e',
   rollingCore: 'https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js',
   companion: '/_engine/hydra-synth.js',
