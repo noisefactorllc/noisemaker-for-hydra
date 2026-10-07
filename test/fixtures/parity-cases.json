@@ -38,7 +38,7 @@
   "manifestSha256": "05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e",
   "rollingCore": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
   "companion": "/_engine/hydra-synth.js",
-  "companionSha256": "5f04f7a43509cf6bb9629ee278b03314d55f734a06b8fd00ead37fa48a881ded"
+  "companionSha256": "b5c077e19a8b0dc70e4baf667ad65594c165d6b3c9e21808cc8f554096ae42a5"
  },
  "cases": [
   {

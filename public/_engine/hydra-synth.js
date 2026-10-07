@@ -919,14 +919,14 @@ var HydraEffects = (() => {
         {
           type: "vec4",
           name: "scale",
-          default: 1
+          default: [1, 1, 1, 1]
         }
       ],
-      glsl: `   vec4 v = _c0 * s;
-   return v.r + v.g + v.b + v.a;
+      glsl: `   vec4 v = _c0 * scale;
+   return vec4(vec3(v.r + v.g + v.b + v.a), _c0.a);
    }
-   float sum(vec2 _st, vec4 s) { // vec4 is not a typo, because argument type is not overloaded
-   vec2 v = _st.xy * s.xy;
+   float sum(vec2 _st, vec4 scale) { // vec4 is not a typo, because argument type is not overloaded
+   vec2 v = _st.xy * scale.xy;
    return v.x + v.y;`
     },
     {
@@ -1144,7 +1144,7 @@ var HydraEffects = (() => {
 
   // src/engine/hydraGlsl.js
   function isExecutableHydraEffect(effect) {
-    return effect.name !== "sum";
+    return Boolean(effect && effect.name && effect.glsl);
   }
   function hydraGlslBody(effect) {
     let body = effect.glsl.replace(/\btexture2D\s*\(/g, "texture(").replace(/\btextureCube\s*\(/g, "texture(");
@@ -1155,6 +1155,344 @@ var HydraEffects = (() => {
       );
     }
     return body;
+  }
+
+  // src/engine/wgslTranslate.js
+  var GLSL_TYPE_TO_WGSL = {
+    float: "f32",
+    int: "i32",
+    vec2: "vec2f",
+    vec3: "vec3f",
+    vec4: "vec4f",
+    mat2: "mat2x2f",
+    mat3: "mat3x3f",
+    mat4: "mat4x4f"
+  };
+  function glslTypeToWgsl(type) {
+    const wgsl = GLSL_TYPE_TO_WGSL[type];
+    if (!wgsl) throw new Error(`No WGSL equivalent for GLSL type '${type}'`);
+    return wgsl;
+  }
+  function splitTopLevel(text) {
+    const parts = [];
+    let depth = 0;
+    let current = "";
+    for (const ch of text) {
+      if (ch === "(" || ch === "[") depth++;
+      else if (ch === ")" || ch === "]") depth--;
+      if (ch === "," && depth === 0) {
+        parts.push(current);
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    if (current.trim() !== "") parts.push(current);
+    return parts.map((part) => part.trim());
+  }
+  function translateAtan(text) {
+    let out = "";
+    let i = 0;
+    while (i < text.length) {
+      const idx = text.indexOf("atan", i);
+      if (idx === -1) {
+        out += text.slice(i);
+        break;
+      }
+      const before = idx > 0 ? text[idx - 1] : "";
+      const after = text[idx + 4];
+      if (!/[A-Za-z0-9_]/.test(before) && after === "(" && !text.slice(idx).startsWith("atan2")) {
+        let depth = 0;
+        let end = -1;
+        for (let j = idx + 4; j < text.length; j++) {
+          if (text[j] === "(") depth++;
+          else if (text[j] === ")") {
+            depth--;
+            if (depth === 0) {
+              end = j;
+              break;
+            }
+          }
+        }
+        if (end !== -1) {
+          const inner = text.slice(idx + 5, end);
+          const args = splitTopLevel(inner);
+          if (args.length === 2) {
+            out += text.slice(i, idx) + "atan2(" + inner + ")";
+            i = end + 1;
+            continue;
+          }
+        }
+      }
+      out += text.slice(i, idx + 4);
+      i = idx + 4;
+    }
+    return out;
+  }
+  var IDENT = "[A-Za-z_][A-Za-z0-9_]*";
+  var UTILITY_WGSL = Object.values(utility_functions_default).map((utility) => translateGlslStatements(utility.glsl, {})).join("\n\n");
+  function translateGlslStatements(glsl, { samplers = {}, uniformNames = [] } = {}) {
+    let text = glsl;
+    text = text.replace(/^\s*#version.*$/gm, "");
+    text = text.replace(/^\s*precision\s+.*$/gm, "");
+    text = text.replace(/^\s*uniform\s+.*$/gm, "");
+    text = text.replace(/^\s*out\s+vec4\s+\w+\s*;$/gm, "");
+    text = text.replace(/\btexture(?:2D)?\s*\(\s*(\w+)\s*,/g, (m, tex) => {
+      const sampler = samplers[tex];
+      if (!sampler) throw new Error(`texture('${tex}') has no known WGSL sampler binding`);
+      return `textureSample(${tex}, ${sampler},`;
+    });
+    {
+      let out = "";
+      let i = 0;
+      for (; ; ) {
+        const m = /\bmod\s*\(/.exec(text.slice(i));
+        if (!m) {
+          out += text.slice(i);
+          break;
+        }
+        const start = i + m.index;
+        out += text.slice(i, start);
+        const open = start + m[0].length - 1;
+        let depth = 0;
+        let end = -1;
+        for (let j = open; j < text.length; j++) {
+          if (text[j] === "(") depth++;
+          else if (text[j] === ")") {
+            depth--;
+            if (depth === 0) {
+              end = j;
+              break;
+            }
+          }
+        }
+        if (end === -1) throw new Error("unbalanced mod( in GLSL source");
+        const args = splitTopLevel(text.slice(open + 1, end));
+        if (args.length !== 2) throw new Error(`mod() with ${args.length} arguments is not supported`);
+        const a = args[0];
+        const b = args[1];
+        out += `((${a}) - (${b}) * floor((${a}) / (${b})))`;
+        i = end + 1;
+      }
+      text = out;
+    }
+    text = translateAtan(text);
+    text = text.replace(
+      new RegExp(`\\bconst\\s+(float|int|vec[234]|mat[234])\\s+(${IDENT})\\s*=`, "g"),
+      (_, type, name) => `const ${name}: ${glslTypeToWgsl(type)} =`
+    );
+    text = text.replace(/\bvec([234])\s*\(/g, (_, n) => `vec${n}f(`);
+    text = text.replace(/\bmat([234])\s*\(/g, (_, n) => `mat${n}x${n}f(`);
+    text = text.replace(/\bfloat\s*\(/g, "f32(");
+    text = text.replace(/\bint\s*\(/g, "i32(");
+    {
+      let out = "";
+      let i = 0;
+      for (; ; ) {
+        const m = /\b(?:min|max|clamp)\s*\(/.exec(text.slice(i));
+        if (!m) {
+          out += text.slice(i);
+          break;
+        }
+        const start = i + m.index;
+        out += text.slice(i, start);
+        const open = start + m[0].length - 1;
+        let depth = 0;
+        let end = -1;
+        for (let j = open; j < text.length; j++) {
+          if (text[j] === "(") depth++;
+          else if (text[j] === ")") {
+            depth--;
+            if (depth === 0) {
+              end = j;
+              break;
+            }
+          }
+        }
+        if (end === -1) throw new Error("unbalanced min/max/clamp( in GLSL source");
+        const args = splitTopLevel(text.slice(open + 1, end));
+        const scalar = /^[+-]?(?:\d+\.?\d*|\.\d+)$/;
+        const arity = args.map((arg) => arg.match(/\bvec([234])f\s*\(/)?.[1] || arg.match(/\.([xyzwrgba]{2,4})\b/)?.[1].length).find(Boolean);
+        if (arity && (args.length === 2 || args.length === 3)) {
+          for (let n = 0; n < args.length; n++) {
+            if (scalar.test(args[n])) args[n] = `vec${arity}f(${args[n]})`;
+          }
+        }
+        out += `${m[0]}${args.join(", ")})`;
+        i = end + 1;
+      }
+      text = out;
+    }
+    text = text.replace(/\bfragColor\s*=/g, "return ");
+    text = text.replace(
+      new RegExp(`\\b(float|int|vec[234]|mat[234])\\s+(${IDENT})\\s*=`, "g"),
+      (_, type, name) => `var ${name}: ${glslTypeToWgsl(type)} =`
+    );
+    text = text.replace(
+      new RegExp(`\\b(float|int|vec[234])\\s+(${IDENT})\\s*;`, "g"),
+      (_, type, name) => `var ${name}: ${glslTypeToWgsl(type)};`
+    );
+    text = text.replace(new RegExp(`(${IDENT})\\s*\\+\\+`, "g"), "$1 = $1 + 1");
+    text = text.replace(new RegExp(`(${IDENT})\\s*--`, "g"), "$1 = $1 - 1");
+    if (/%/.test(text)) throw new Error("GLSL '%' has no WGSL float equivalent and is not in the port's corpus");
+    const globalUniformNames = ["time", "resolution", ...uniformNames];
+    for (const name of globalUniformNames) {
+      text = text.replace(new RegExp(`\\b${name}\\b`, "g"), `params.${name}`);
+    }
+    text = text.replace(
+      new RegExp(`\\b(void|float|int|vec[234]|mat[234])\\s+(${IDENT})\\s*\\(([^)]*)\\)\\s*\\{`, "g"),
+      (_, returnType, name, params) => {
+        const wgslParams = params.trim() === "" ? "" : splitTopLevel(params).map((param) => {
+          const m = param.match(new RegExp(`^(float|int|vec[234]|mat[234])\\s+(${IDENT})$`));
+          if (!m) throw new Error(`Unsupported GLSL parameter '${param.trim()}'`);
+          return `${m[2]}: ${glslTypeToWgsl(m[1])}`;
+        }).join(", ");
+        const ret = returnType === "void" ? "" : ` -> ${glslTypeToWgsl(returnType)}`;
+        return `fn ${name}(${wgslParams})${ret} {`;
+      }
+    );
+    return text;
+  }
+  var HELPERS = "";
+  var VERTEX_STAGE = `
+struct VertexOutput {
+  @builtin(position) position: vec4f,
+  @location(0) uv: vec2f,
+}
+
+@vertex
+fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
+  let positions = array<vec2f, 3>(
+    vec2f(-1.0, -1.0),
+    vec2f(3.0, -1.0),
+    vec2f(-1.0, 3.0)
+  );
+  let pos = positions[vertexIndex];
+  var out: VertexOutput;
+  out.position = vec4f(pos, 0.0, 1.0);
+  out.uv = pos * 0.5 + vec2f(0.5, 0.5);
+  return out;
+}
+`;
+  function buildProgramInterface({ inputs: rawInputs, uniforms }) {
+    const inputs = rawInputs.map((i) => typeof i === "string" ? { name: i } : i);
+    const lines = [];
+    const samplers = {};
+    let binding = 0;
+    for (const input of inputs) {
+      lines.push(`@group(0) @binding(${binding++}) var ${input.name}: texture_2d<f32>;`);
+      const samplerName = `${input.name}_sampler`;
+      lines.push(`@group(0) @binding(${binding++}) var ${samplerName}: sampler;`);
+      samplers[input.name] = samplerName;
+    }
+    let struct = "";
+    if (uniforms.length > 0) {
+      const members = uniforms.map((u) => `  ${u.name}: ${u.wgsl},`).join("\n");
+      struct = `struct Params {
+${members}
+}
+@group(0) @binding(${binding++}) var<uniform> params: Params;`;
+    }
+    return { bindings: lines.join("\n"), struct, uniformBindingIndex: uniforms.length > 0 ? binding - 1 : null, samplers };
+  }
+  function translateFusedProgram(fusedGlsl, { textureInputs, uniformNames }) {
+    const uniforms = [];
+    for (const name of uniformNames || []) {
+      uniforms.push({ name, wgsl: "f32" });
+    }
+    uniforms.push({ name: "resolution", wgsl: "vec2f" });
+    uniforms.push({ name: "time", wgsl: "f32" });
+    const inputs = [...textureInputs];
+    if (!inputs.some((i) => (typeof i === "string" ? i : i.name) === "prevBuffer")) inputs.push("prevBuffer");
+    const { bindings, struct, samplers } = buildProgramInterface({ inputs, uniforms });
+    let text = translateGlslStatements(fusedGlsl, { samplers, uniformNames });
+    text = text.replace(/\bfn main\(\)/, "@fragment\nfn fs_main(in: VertexOutput) -> @location(0) vec4f");
+    text = text.replace(/\bfn main\(/, "@fragment\nfn fs_main(in: VertexOutput) -> @location(0) vec4f");
+    text = text.replace(/gl_FragCoord\.x/g, "in.position.x");
+    text = text.replace(/gl_FragCoord\.y/g, "in.position.y");
+    for (const name of uniformNames || []) {
+      if (new RegExp(`(?<!params\\.)\\b${name}\\b`).test(text)) {
+        throw new Error(`fused WGSL translation left a bare dynamic uniform reference: ${name}`);
+      }
+    }
+    return `${bindings}
+
+${struct}
+
+${HELPERS}
+
+${UTILITY_WGSL}
+
+${VERTEX_STAGE}
+
+${text}`;
+  }
+  function buildEffectWgsl({ name, type, glsl: body, wrapperInputs, passInputs }) {
+    const uniforms = [
+      ...wrapperInputs.map((i) => ({ name: i.name, wgsl: glslTypeToWgsl(i.type) })),
+      { name: "resolution", wgsl: "vec2f" },
+      { name: "time", wgsl: "f32" }
+    ];
+    const { bindings, struct, samplers } = buildProgramInterface({ inputs: passInputs, uniforms });
+    const translated = translateGlslStatements(body, { samplers });
+    const ret = type === "coord" || type === "combineCoord" ? "vec2f" : "vec4f";
+    const leading = {
+      src: [["_st", "vec2f"]],
+      coord: [["_st", "vec2f"]],
+      color: [["_c0", "vec4f"]],
+      combine: [["_c0", "vec4f"], ["_c1", "vec4f"]],
+      combineCoord: [["_st", "vec2f"], ["_c0", "vec4f"]]
+    }[type];
+    const fnName = `_hydra_${name}`;
+    const params = leading.map(([arg, t]) => `${arg}: ${t}`);
+    const extraParams = wrapperInputs.map((i) => `${i.name}: ${glslTypeToWgsl(i.type)}`);
+    const wrapper = `fn ${fnName}(${[...params, ...extraParams].join(", ")}) -> ${ret} {
+${translated}
+}`;
+    const sample = (tex, coord) => `textureSample(${tex}, ${samplers[tex]}, ${coord})`;
+    let main;
+    const st = "let _st = vec2f(in.position.x, params.resolution.y - in.position.y) / params.resolution;";
+    if (type === "src") {
+      main = `${st}
+  return ${fnName}(_st${wrapperInputs.map((i) => `, params.${i.name}`).join("")});`;
+    } else if (type === "coord") {
+      main = `${st}
+  let newUV = ${fnName}(_st${wrapperInputs.map((i) => `, params.${i.name}`).join("")});
+  return ${sample("inputTex", "vec2f(newUV.x, 1.0 - newUV.y)")};`;
+    } else if (type === "color") {
+      main = `${st}
+  let _c0 = ${sample("inputTex", "vec2f(_st.x, 1.0 - _st.y)")};
+  return ${fnName}(_c0${wrapperInputs.map((i) => `, params.${i.name}`).join("")});`;
+    } else if (type === "combine") {
+      main = `${st}
+  let _c0 = ${sample("inputTex", "vec2f(_st.x, 1.0 - _st.y)")};
+  let _c1 = ${sample("tex", "vec2f(_st.x, 1.0 - _st.y)")};
+  return ${fnName}(_c0, _c1${wrapperInputs.map((i) => `, params.${i.name}`).join("")});`;
+    } else if (type === "combineCoord") {
+      main = `${st}
+  let _c0 = ${sample("tex", "vec2f(_st.x, 1.0 - _st.y)")};
+  let newUV = ${fnName}(_st, _c0${wrapperInputs.map((i) => `, params.${i.name}`).join("")});
+  return ${sample("inputTex", "vec2f(newUV.x, 1.0 - newUV.y)")};`;
+    } else {
+      throw new Error(`Unknown Hydra effect type '${type}'`);
+    }
+    const mainFn = `
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4f {
+  ${main}
+}`;
+    return `${bindings}
+
+${struct}
+
+${HELPERS}
+
+${UTILITY_WGSL}
+
+${VERTEX_STAGE}
+
+${wrapper}
+${mainFn}`;
   }
 
   // src/engine/portHydraEffects.js
@@ -1362,12 +1700,40 @@ ${tmpl.body(fnName, callArgs, sampler1, sampler2)}
       ]
     });
   }
+  function hydraPassTextureInputs(effect) {
+    const tmpl = TEMPLATES[effect.type];
+    if (!tmpl) throw new Error(`Hydra effect '${effect.name}' has unknown type '${effect.type}'`);
+    const { samplerInputs } = classifyInputs(processInputs(effect));
+    const names = [];
+    if (tmpl.needsInputTex) names.push("inputTex");
+    for (const s of samplerInputs) names.push(s.samplerName);
+    names.push("prevBuffer");
+    return names;
+  }
   function registerHydraEffect(effect, engine) {
     const eng = engine || getEngine();
     const definition = buildEffectDefinition(effect, eng.Effect);
     const shader = buildShader(effect);
+    const tmpl = TEMPLATES[effect.type];
+    const { wrapperInputs, samplerInputs } = classifyInputs(processInputs(effect));
     if (!definition.shaders) definition.shaders = {};
-    definition.shaders[effect.name] = { glsl: shader };
+    definition.shaders[effect.name] = {
+      glsl: shader,
+      // WebGPU backend source: translated from the same GLSL. The
+      // shared per-effect program is a fallback path — fused chain programs
+      // carry their own exact-typed WGSL — so its uniform members are f32.
+      wgsl: buildEffectWgsl({
+        name: effect.name,
+        type: effect.type,
+        glsl: hydraGlslBody(effect),
+        wrapperInputs,
+        passInputs: [
+          ...tmpl.needsInputTex ? ["inputTex"] : [],
+          ...samplerInputs.map((s) => s.samplerName),
+          "prevBuffer"
+        ]
+      })
+    };
     eng.registerEffect(effect.name, definition);
     eng.registerEffect(`${HYDRA_NAMESPACE}.${effect.name}`, definition);
     eng.registerEffect(`${HYDRA_NAMESPACE}/${effect.name}`, definition);
@@ -1418,7 +1784,7 @@ ${tmpl.body(fnName, callArgs, sampler1, sampler2)}
   var HYDRA_SURFACE_SPEC = Object.freeze({
     width: "screen",
     height: "screen",
-    format: "rgba32f",
+    format: "rgba8",
     usage: ["render", "sample", "copySrc", "copyDst"]
   });
   var LEADING_ARGUMENTS = {
@@ -1462,9 +1828,23 @@ ${tmpl.body(fnName, callArgs, sampler1, sampler2)}
     }
     const resolved = value && typeof value === "object" && "value" in value ? value.value : value;
     if (typeof resolved === "number" && Number.isFinite(resolved)) {
-      return Number.isInteger(resolved) ? `${resolved}.0` : String(resolved);
+      const str = Object.is(resolved, -0) ? "-0.0" : String(resolved);
+      const floatLiteral = !str.includes(".") && !str.includes("e") && !str.includes("E") ? `${str}.0` : str;
+      if (/^vec[234]$/.test(type)) {
+        return `${type}(${floatLiteral})`;
+      }
+      if (type === "float" || !type) {
+        return floatLiteral;
+      }
+      return Number.isInteger(resolved) ? str : floatLiteral;
     }
-    if (typeof resolved === "boolean") return resolved ? "true" : "false";
+    if (typeof resolved === "boolean") {
+      if (/^vec[234]$/.test(type)) {
+        return `${type}(${resolved ? "1.0" : "0.0"})`;
+      }
+      if (type === "float") return resolved ? "1.0" : "0.0";
+      return resolved ? "true" : "false";
+    }
     if (Array.isArray(resolved)) {
       if (!/^vec[234]$/.test(type)) throw new Error(`Unsupported Hydra input type '${type}'`);
       return `${type}(${resolved.map((item) => valueLiteral(
@@ -1594,7 +1974,7 @@ void main() {
 `;
     return { glsl, uniformBindings };
   }
-  function buildHydraShaderOverrides(compiled) {
+  function buildHydraShaderOverrides(compiled, promotedSurfaces = null) {
     const shaderOverrides = {};
     const outputSurfaces = [];
     const preserveSurfaces = [];
@@ -1631,13 +2011,27 @@ void main() {
             }
           }
         }
+      } else if (promotedSurfaces && output && !outputSurfaces.includes(output)) {
+        const readsPromotedSurface = (plan.chain || []).some((step) => step.op !== "_write" && Object.values(step.args || {}).some((value) => value?.kind === "output" && promotedSurfaces.has(value.name)));
+        if (readsPromotedSurface) {
+          outputSurfaces.push(output);
+          preserveSurfaces.push(output);
+        }
       }
       try {
         const nodes = reachableHydraSteps(finalTemp, steps);
         const final = nodes.find(({ step }) => step.temp === finalTemp);
         const fused = buildShader2(nodes, finalTemp);
+        const override = { glsl: fused.glsl };
+        try {
+          override.wgsl = translateFusedProgram(fused.glsl, {
+            textureInputs: hydraPassTextureInputs(final.effect),
+            uniformNames: Object.keys(fused.uniformBindings)
+          });
+        } catch (_) {
+        }
         shaderOverrides[finalTemp] = {
-          [final.effect.name]: { glsl: fused.glsl }
+          [final.effect.name]: override
         };
         if (Object.keys(fused.uniformBindings).length > 0) {
           uniformBindings[finalTemp] = fused.uniformBindings;
@@ -1687,7 +2081,15 @@ void main() {
   }
   function reconcileSurfaceFormats(renderer, outputSurfaces, preserveSurfaces = [], retainSurfaces = [], preBackups = []) {
     const pipeline = renderer.pipeline;
-    if (!pipeline?.graph?.textures || !pipeline.backend?.textures || !pipeline.surfaces) return;
+    if (!pipeline?.graph?.textures || !pipeline.backend?.textures || !pipeline.surfaces) {
+      for (const backup of preBackups) {
+        try {
+          pipeline?.backend?.destroyTexture?.(backup.name);
+        } catch (_) {
+        }
+      }
+      return;
+    }
     const promoted = new Set(outputSurfaces);
     const preserve = new Set(preserveSurfaces);
     const retain = new Set(retainSurfaces);
@@ -1695,8 +2097,15 @@ void main() {
     const current = /* @__PURE__ */ new Map();
     const touched = /* @__PURE__ */ new Set([...previous.keys(), ...promoted]);
     for (const surface of promoted) {
-      pipeline.graph.textures.set(`global_${surface}`, HYDRA_SURFACE_SPEC);
-      current.set(surface, HYDRA_SURFACE_SPEC);
+      const existing = pipeline.graph.textures.get(`global_${surface}`);
+      const hasPolicy = existing?.mipmaps !== void 0 || existing?.persistent !== void 0;
+      const spec = hasPolicy ? {
+        ...HYDRA_SURFACE_SPEC,
+        ...existing.mipmaps !== void 0 ? { mipmaps: existing.mipmaps } : {},
+        ...existing.persistent !== void 0 ? { persistent: existing.persistent } : {}
+      } : HYDRA_SURFACE_SPEC;
+      pipeline.graph.textures.set(`global_${surface}`, spec);
+      current.set(surface, spec);
     }
     for (const surface of retain) {
       if (current.has(surface) || !previous.has(surface)) continue;
@@ -1720,7 +2129,8 @@ void main() {
       const actual = pipeline.backend.textures.get(state.read)?.format;
       if (actual === desired) continue;
       if (preserve.has(surface) && pipeline.backend.getName?.() === "WebGPU") {
-        const retained = { ...HYDRA_SURFACE_SPEC, format: actual };
+        const base = current.get(surface) || HYDRA_SURFACE_SPEC;
+        const retained = { ...base, format: actual };
         pipeline.graph.textures.set(key, retained);
         current.set(surface, retained);
         continue;
@@ -1728,8 +2138,14 @@ void main() {
       if (preserve.has(surface) && !backups.some((b) => b.surface === surface)) {
         backups.push(backupSurfaceRead(pipeline, surface));
       }
-      pipeline.backend.destroyTexture(state.read);
-      pipeline.backend.destroyTexture(state.write);
+      try {
+        pipeline.backend.destroyTexture(state.read);
+      } catch (_) {
+      }
+      try {
+        pipeline.backend.destroyTexture(state.write);
+      } catch (_) {
+      }
       pipeline.surfaces.delete(surface);
       recreate = true;
     }
@@ -1742,7 +2158,12 @@ void main() {
           pipeline.backend.copyTexture(backup.name, state.read);
         }
       } finally {
-        for (const backup of backups) pipeline.backend.destroyTexture(backup.name);
+        for (const backup of backups) {
+          try {
+            pipeline.backend.destroyTexture(backup.name);
+          } catch (_) {
+          }
+        }
       }
     } else if (backups.length > 0) {
       try {
@@ -1753,7 +2174,12 @@ void main() {
           }
         }
       } finally {
-        for (const backup of backups) pipeline.backend.destroyTexture(backup.name);
+        for (const backup of backups) {
+          try {
+            pipeline.backend.destroyTexture(backup.name);
+          } catch (_) {
+          }
+        }
       }
     }
     PROMOTED_SURFACES.set(renderer, current);
@@ -1783,9 +2209,9 @@ void main() {
     const compile = prototype.compile;
     Object.defineProperty(prototype, INSTALLED, { value: true });
     prototype.compile = async function compileWithHydraParity(source, options = {}) {
-      const compiled = engine.compile(source);
-      const hydra = buildHydraShaderOverrides(compiled);
+      const compiled = engine.compile(source, options);
       const previous = PROMOTED_SURFACES.get(this) || /* @__PURE__ */ new Map();
+      const hydra = buildHydraShaderOverrides(compiled, previous);
       const promoted = new Set(hydra.outputSurfaces);
       const retain = new Set(hydra.retainSurfaces);
       const preserve = new Set(hydra.preserveSurfaces);
@@ -1793,15 +2219,22 @@ void main() {
       const existingPipeline = this.pipeline;
       const isWebGPU = existingPipeline?.backend?.getName?.() === "WebGPU";
       for (const surface of promoted) {
+        const existingSpec = existingPipeline?.graph?.textures?.get?.(`global_${surface}`);
+        const hasPolicy = existingSpec?.mipmaps !== void 0 || existingSpec?.persistent !== void 0;
+        const baseSpec = hasPolicy ? {
+          ...HYDRA_SURFACE_SPEC,
+          ...existingSpec.mipmaps !== void 0 ? { mipmaps: existingSpec.mipmaps } : {},
+          ...existingSpec.persistent !== void 0 ? { persistent: existingSpec.persistent } : {}
+        } : HYDRA_SURFACE_SPEC;
         if (isWebGPU && preserve.has(surface)) {
           const state = existingPipeline?.surfaces?.get(surface);
           const actual = state && existingPipeline?.backend?.textures?.get(state.read)?.format;
-          if (actual && actual !== HYDRA_SURFACE_SPEC.format) {
-            current.set(surface, { ...HYDRA_SURFACE_SPEC, format: actual });
+          if (actual && actual !== baseSpec.format) {
+            current.set(surface, { ...baseSpec, format: actual });
             continue;
           }
         }
-        current.set(surface, HYDRA_SURFACE_SPEC);
+        current.set(surface, baseSpec);
       }
       for (const surface of retain) {
         if (current.has(surface) || !previous.has(surface)) continue;

@@ -102,7 +102,7 @@ transition: width 1s;
   font-size: 20px;
 }
 
-/* Toolbar controls are real buttons (GAP-005): reset the native button
+/* Toolbar controls are real buttons: reset the native button
    chrome so the icon keeps its previous look, and show visible focus. */
 button.icon-button {
   background: none;
