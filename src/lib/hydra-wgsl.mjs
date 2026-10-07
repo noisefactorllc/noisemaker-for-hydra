@@ -1,5 +1,5 @@
 /**
- * GAP-004: WGSL (WebGPU) shader sources for the Hydra namespace.
+ * WGSL (WebGPU) shader sources for the Hydra namespace.
  *
  * The Hydra-namespace effects registered by the companion bundle carry GLSL
  * sources only (`definition.shaders[name] = { glsl }`). Under the engine's

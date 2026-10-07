@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// GAP-005 keyboard accessibility driver.
+// Keyboard accessibility driver.
 //
 // Drives a real headless Chromium input pipeline over the Chrome DevTools
 // Protocol: presses Tab to walk the toolbar, presses Enter and Space to

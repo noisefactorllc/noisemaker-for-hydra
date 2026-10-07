@@ -1,6 +1,0 @@
-node --test test/*.test.mjs
-CHROME=/usr/bin/chromium PORT=5197 node scripts/test.mjs
-node node_modules/vite/bin/vite.js build
-rm -f parity-evidence/slice-*.json && CHROME=/usr/bin/chromium GATE_BATCH=5 GATE_SLICE_ATTEMPTS=3 node scripts/parity-gate.mjs
-GATE_GL_BACKEND=native GATE_CHROME_EXTRA_ARGS=--proxy-server=http://127.0.0.1:3129 CHROME=/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome PORT=43117 GATE_TOTAL=210 GATE_BATCH=5 node scripts/parity-gate.mjs .gpu-run-fresh  # 2026-09-28 GAP-001 closing run, uncached, on the harness GPU host (darwin-arm64, Node v26.0.0, Chrome 153.0.8010.53) executed through the harness host-run service
-DISPLAY=:99 PLAYWRIGHT_BROWSERS_PATH=/state/cache/pw-browsers MOZ_DISABLE_CONTENT_SANDBOX=1 MOZ_DISABLE_GMP_SANDBOX=1 node firefox-check.mjs  # 2026-09-28 GAP-002 saved-sketch upgrade + Firefox 155.0 non-listed-browser checks under Xvfb/llvmpipe (playwright driver; driver and raw output archived with the job evidence archive, firefox-check.log / firefox-check-driver.mjs)

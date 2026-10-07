@@ -8,7 +8,7 @@ export default function toolbar(state, emit) {
     const dispatch = (eventName) => (e) => emit(eventName, e)
 
     // Each control is a real <button type="button"> so it is reachable with
-    // Tab and activated with Enter or Space by default (GAP-005). The
+    // Tab and activated with Enter or Space by default. The
     // decorative fontawesome <i> inside stays aria-hidden; the button itself
     // carries the accessible name through aria-label.
     const icon = (id, className, title, event) => html`

@@ -106,7 +106,7 @@ test('runtime preserves CanvasRenderer pipeline sink deferral and deferredFrameC
   assert.equal(renderer.deferredFrameCount, 3)
 })
 
-test('runtime preserves CanvasRenderer texture and pass contracts (GAP-004, GAP-005)', async () => {
+test('runtime preserves CanvasRenderer texture and pass contracts', async () => {
   assert.equal(typeof runtimeModule?.createNoisemakerRuntime, 'function')
 
   class MockPipeline {

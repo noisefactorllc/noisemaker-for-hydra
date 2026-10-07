@@ -152,7 +152,7 @@ const cases = [
     expectErrorLog: true
   },
   {
-    name: 'accessibility semantics (GAP-005)',
+    name: 'accessibility semantics',
     path: '/',
     expected: ['search hydra', '.write(o0)'],
     expectedDom: [

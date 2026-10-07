@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 
-// GAP-005 regression guard: toolbar and extension controls must be real
+// Regression guard: toolbar and extension controls must be real
 // buttons carrying accessible names, and the editor surfaces must be
 // labeled. The behavioral checks (Tab traversal, Enter/Space activation)
 // run in the browser through scripts/a11y-keyboard.mjs and the DOM checks

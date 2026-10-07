@@ -4,7 +4,7 @@ import raw from 'choo/html/raw'
 const d = (eventName, e, emit) => () => emit(eventName, e)
 
 // Each extension control is a real <button type="button"> so it is reachable
-// with Tab and activated with Enter or Space (GAP-005). The decorative
+// with Tab and activated with Enter or Space. The decorative
 // fontawesome <i> inside stays aria-hidden; the button carries the name.
 const icon = (id, className, title, event) => html`
 <button type="button" id="${id}-button" class="icon-button extension-icon" title="${title}" aria-label="${title}" onclick=${event}><i id="${id}-icon" class="fas ${className}" aria-hidden="true"></i></button>`

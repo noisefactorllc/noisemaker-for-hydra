@@ -1284,7 +1284,7 @@ test('formatError prioritizes diagnostics array attached to Error instances for 
   )
 })
 
-test('formatError handles effect definition validation errors in errors array (GAP-003)', async () => {
+test('formatError handles effect definition validation errors in errors array', async () => {
   const { formatError } = await loadRepl()
   const singleErr = {
     errors: [
@@ -1308,7 +1308,7 @@ test('formatError handles effect definition validation errors in errors array (G
   )
 })
 
-test('formatError handles Error instance with validation errors array (GAP-003)', async () => {
+test('formatError handles Error instance with validation errors array', async () => {
   const { formatError } = await loadRepl()
   const err = new Error("Effect definition validation failed")
   err.errors = [
@@ -1321,7 +1321,7 @@ test('formatError handles Error instance with validation errors array (GAP-003)'
   )
 })
 
-test('repl.eval formats compiler errors carrying effect definition validation failures (GAP-003)', async () => {
+test('repl.eval formats compiler errors carrying effect definition validation failures', async () => {
   const repl = await loadRepl()
   const originalWindow = global.window
   const validationErr = new Error("Invalid effect definition")
@@ -1408,7 +1408,7 @@ test('repl.eval formats compiler errors carrying texture policy validation failu
   }
 })
 
-test('formatError handles pass property validation errors in errors array (GAP-005)', async () => {
+test('formatError handles pass property validation errors in errors array', async () => {
   const { formatError } = await loadRepl()
   const passPolicyErr = {
     errors: [
@@ -1422,7 +1422,7 @@ test('formatError handles pass property validation errors in errors array (GAP-0
   )
 })
 
-test('repl.eval formats compiler errors carrying GAP-005 pass property validation failures', async () => {
+test('repl.eval formats compiler errors carrying pass property validation failures', async () => {
   const repl = await loadRepl()
   const originalWindow = global.window
   const validationErr = new Error("Invalid effect definition contract")

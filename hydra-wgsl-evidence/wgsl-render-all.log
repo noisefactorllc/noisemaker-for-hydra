@@ -1,5 +1,0 @@
-wgsl driver ready; attached: 51 hook: true backend: wgsl
-.........................................................Recompilation failed: Unknown effect: 'osc'; write() requires an input - cannot be first in chain: '[Write]' (line 2, col 9)
-E......................................
-wgsl results: 96 errors: 1
-ERR osc defaults {"code":"ERR_COMPILATION_FAILED"}

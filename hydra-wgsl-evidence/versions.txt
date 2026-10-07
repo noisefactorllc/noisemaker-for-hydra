@@ -1,4 +1,0 @@
-Node v26.5.1
-Deno 2.9.7 (stable, release, x86_64-unknown-linux-gnu)
-Chromium 154.0.8037.57 built on Debian GNU/Linux 12 (bookworm)
-Linux Linux 6.8.0-134-generic x86_64

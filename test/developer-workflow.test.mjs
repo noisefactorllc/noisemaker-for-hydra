@@ -25,7 +25,7 @@ function installWindow(historyCalls) {
   }
 }
 
-test('gallery clear removes the saved program from the URL (GAP-002 input removal)', async () => {
+test('gallery clear removes the saved program from the URL', async () => {
   const Gallery = (await loadGallery()).default
   const historyCalls = []
   const loaded = []
@@ -46,7 +46,7 @@ test('gallery clear removes the saved program from the URL (GAP-002 input remova
   assert.equal(gallery.current, null)
 })
 
-test('gallery restores the saved program from a URL code parameter (GAP-002 URL restoration)', async () => {
+test('gallery restores the saved program from a URL code parameter', async () => {
   const Gallery = (await loadGallery()).default
   const historyCalls = []
   const loaded = []
@@ -67,7 +67,7 @@ test('gallery restores the saved program from a URL code parameter (GAP-002 URL 
   assert.equal(gallery.code, source)
 })
 
-test('gallery restores a code parameter recorded from the scheme at revision 626f37c (GAP-003 saved-sketch upgrade)', async () => {
+test('gallery restores a code parameter recorded from the scheme at revision 626f37c', async () => {
   const Gallery = (await loadGallery()).default
   const historyCalls = []
   const loaded = []

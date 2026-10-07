@@ -5,10 +5,6 @@
 
 # Noisemaker for Hydra
 
-Current measured support: [compatibility report](docs/COMPATIBILITY.md).
-
-Current qualification limits: [completion gaps](docs/COMPLETION_GAPS.md).
-
 Noisemaker for Hydra is an experimental demo fork of the Hydra web editor. It allows mixed native use of Hydra and [Noisemaker](https://noisemaker.app/) in the same programs. The Noisemaker engine takes Hydra from WebGL 1 to 2, adds a WebGPU render target, and mixes in a library of 100+ effects including stateful simulations and particle systems.
 
 The fork replaces Hydra's renderer and editor. It ports Hydra's built-in effects to Noisemaker definition format. Noisemaker programs are written in Polymorphic DSL, a similar but more verbose live coding dialect.
@@ -57,6 +53,12 @@ npm test
 ```
 
 The test suite covers editor evaluation, Noisemaker AST mutation, renderer lifecycle, removal of legacy execution paths, and browser compilation of default and URL-encoded sketches.
+
+Rendered parity runs every effect in the published Noisemaker catalog through the raw engine and through this fork's runtime, at the engine release pinned in `scripts/generate-parity-cases.mjs`, and requires the frames to match exactly. It needs Chrome on a GPU host, and CI runs it on every push (`.github/workflows/parity-gate.yml`):
+
+```sh
+CHROME=/path/to/chrome GATE_GL_BACKEND=native npm run test:parity
+```
 
 ## Engine bundle
 

@@ -1,7 +1,0 @@
-v26.5.1
-11.17.0
-Chromium 154.0.8037.57 built on Debian GNU/Linux 12 (bookworm)
-delivered candidate tree (file identities pinned by workflow-evidence/source-hashes.txt; the published CDN/companion bytes are bound by the identity block in parity-evidence/parity-gate-report.json and parity-evidence/gate-run.log)
-Linux e3f886a881fe 6.8.0-134-generic #134-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 26 18:43:11 UTC 2026 x86_64 GNU/Linux
-harness GPU host, 2026-09-28 GAP-001 closing run: darwin-arm64 (macOS), node v26.0.0, Google Chrome 153.0.8010.53, WebGL "WebGL 2.0 (OpenGL ES 3.0 Chromium) / WebKit WebGL" (GATE_GL_BACKEND=native)
-GAP-002 saved-sketch upgrade + Firefox run, 2026-09-28: Debian GNU/Linux 12 (bookworm), linux-x64, node v26.5.1, npm 11.17.0; Xvfb 2:21.1.7-3+deb12u13 (extracted, DISPLAY=:99), Mesa 22.3.6-1 llvmpipe software WebGL2; Playwright Firefox 155.0; Playwright Chromium 153.0.8010.12 (SwiftShader WebGL2, same 4-case driver, pass)

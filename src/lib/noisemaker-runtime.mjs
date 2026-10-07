@@ -16,7 +16,7 @@ export async function createNoisemakerRuntime({
     throw new Error('Noisemaker engine does not export CanvasRenderer')
   }
 
-  // GAP-004: give every registered Hydra effect definition and the
+  // Give every registered Hydra effect definition and the
   // companion's fused-chain shader overrides WGSL sources so the engine's
   // WGSL (WebGPU) backend can compile Hydra programs. Both are no-ops under
   // the WebGL2 backend. A conversion failure must not break editor startup:
