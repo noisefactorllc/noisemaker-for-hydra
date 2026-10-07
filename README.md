@@ -9,7 +9,7 @@ Noisemaker for Hydra is an experimental demo fork of the Hydra web editor. It al
 
 The fork replaces Hydra's renderer and editor. It ports Hydra's built-in effects to Noisemaker definition format. Noisemaker programs are written in Polymorphic DSL, a similar but more verbose live coding dialect.
 
-This is intended to be an interesting short-lived tech demo only, illustrating how Noisemaker can be dropped in to other projects.
+This is intended to be an interesting tech demo only, illustrating how Noisemaker engine can be dropped in to other projects for interoperability. In this example, Noisemaker and Hydra are able to share a native shader graph.
 
 ## Run locally
 
