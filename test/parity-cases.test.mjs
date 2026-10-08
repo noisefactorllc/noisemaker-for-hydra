@@ -19,11 +19,11 @@ test('parity case matrix covers the full 210-ID authority manifest', () => {
 
 test('parity case matrix pins authority identities', () => {
   const a = fixture.authorities
-  assert.equal(a.upstreamCommit, '8fa067f6afec1f091272a8fae7b0b40d78f7b04d')
+  assert.equal(a.upstreamCommit, '5976b7a6b77f69c47c41f4ee296a54d5318e1f9d')
   assert.match(a.engineBundleSha256, /^[0-9a-f]{64}$/)
   assert.match(a.manifestSha256, /^[0-9a-f]{64}$/)
   assert.match(a.companionSha256, /^[0-9a-f]{64}$/)
-  assert.ok(a.engineBundle.includes('/1.0.264/'))
+  assert.ok(a.engineBundle.includes('/1.0.271/'))
 })
 
 test('every parity case defines deterministic programs for all frames', () => {
