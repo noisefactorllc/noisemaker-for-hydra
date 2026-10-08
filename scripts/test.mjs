@@ -68,9 +68,13 @@ async function waitForServer(port, timeoutMs = 10000) {
 
 let BOUND_PORT = 0
 
+// A headless Chrome that never returns (it hung a CI job for 90 minutes on a
+// shared GPU runner) must fail the case quickly instead of holding the job.
+const EDITOR_TIMEOUT_MS = 120000
+
 function runEditor(path, windowSize = '1024,768') {
   const url = `http://${HOST}:${BOUND_PORT}${path}`
-  return spawnSync(CHROME, [
+  const result = spawnSync(CHROME, [
     '--headless=new',
     '--no-sandbox',
     // Ambient proxy env must not route the loopback dev server through a
@@ -81,7 +85,11 @@ function runEditor(path, windowSize = '1024,768') {
     '--virtual-time-budget=30000',
     '--dump-dom',
     url
-  ], { encoding: 'utf8' })
+  ], { encoding: 'utf8', timeout: EDITOR_TIMEOUT_MS, killSignal: 'SIGKILL' })
+  if (result.error?.code === 'ETIMEDOUT') {
+    throw new Error(`Chrome did not finish ${url} within ${EDITOR_TIMEOUT_MS / 1000} s`)
+  }
+  return result
 }
 
 let server
