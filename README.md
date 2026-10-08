@@ -11,6 +11,10 @@ The fork replaces Hydra's renderer and editor. It ports Hydra's built-in effects
 
 This is intended to be an interesting tech demo only, illustrating how Noisemaker engine can be dropped in to other projects for interoperability. In this example, Noisemaker and Hydra are able to share a native shader graph.
 
+## Status
+
+The current measured support is the [compatibility report](https://github.com/noisefactorllc/noisemaker-for-hydra/issues/5). Known qualification limits are the [issues labelled `gap`](https://github.com/noisefactorllc/noisemaker-for-hydra/issues?q=is%3Aissue+label%3Agap). The earlier `docs/COMPATIBILITY.md` and `docs/COMPLETION_GAPS.md` are historical records of past audits; they were removed in 634d374 and remain in the Git history.
+
 ## Run locally
 
 ```sh
