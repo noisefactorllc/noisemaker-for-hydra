@@ -72,9 +72,8 @@ let BOUND_PORT = 0
 // shared GPU runner) must fail the case quickly instead of holding the job.
 const EDITOR_TIMEOUT_MS = 120000
 
-function runEditor(path, windowSize = '1024,768') {
-  const url = `http://${HOST}:${BOUND_PORT}${path}`
-  const result = spawnSync(CHROME, [
+function launchChrome(url, windowSize) {
+  return spawnSync(CHROME, [
     '--headless=new',
     '--no-sandbox',
     // Ambient proxy env must not route the loopback dev server through a
@@ -86,8 +85,22 @@ function runEditor(path, windowSize = '1024,768') {
     '--dump-dom',
     url
   ], { encoding: 'utf8', timeout: EDITOR_TIMEOUT_MS, killSignal: 'SIGKILL' })
+}
+
+function runEditor(path, windowSize = '1024,768') {
+  const url = `http://${HOST}:${BOUND_PORT}${path}`
+  let result = launchChrome(url, windowSize)
   if (result.error?.code === 'ETIMEDOUT') {
-    throw new Error(`Chrome did not finish ${url} within ${EDITOR_TIMEOUT_MS / 1000} s`)
+    // A one-off runner hiccup (CDN stall, GPU process stall) can hang a single
+    // headless page past its timeout without producing any verdict; a CI job
+    // died this way on case 10 of 12 while every earlier case and the whole
+    // unit suite passed. Retry the launch once, the same tolerance the parity
+    // gate applies to its slice runs; a second timeout still throws and fails
+    // the suite. Assertion failures are never retried.
+    result = launchChrome(url, windowSize)
+    if (result.error?.code === 'ETIMEDOUT') {
+      throw new Error(`Chrome did not finish ${url} within ${EDITOR_TIMEOUT_MS / 1000} s`)
+    }
   }
   return result
 }
