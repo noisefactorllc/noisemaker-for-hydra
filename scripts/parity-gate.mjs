@@ -6,7 +6,7 @@
  * drives headless Chromium over the DevTools protocol through
  * test/fixtures/parity-cases.json (210 pinned authority effect IDs):
  *   - the authority side: test/parity-gate/authority.html renders each case
- *     with the raw published Noisemaker engine (pinned immutable 1.0.275 CDN
+ *     with the raw published Noisemaker engine (pinned immutable 1.0.280 CDN
  *     bundle, default CanvasRenderer wiring), and
  *   - the port side: test/parity-gate/port.html renders the same programs
  *     through the tracked companion bundle plus the fork's
@@ -548,7 +548,7 @@ try {
       gate: 'gap-001-rendered-parity',
       identityOk: identityOkMerged,
       // Informational only: the rolling /1 URL is upstream-managed and can
-      // drift ahead of the pinned immutable bundle; the gate pins 1.0.275.
+      // drift ahead of the pinned immutable bundle; the gate pins 1.0.280.
       rollingOk,
       pinned: first.pinned,
       identity: first.identity,
