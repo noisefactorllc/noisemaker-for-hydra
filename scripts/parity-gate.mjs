@@ -468,12 +468,17 @@ try {
     // and keep the best result (fewest missing+failed) so neither a transient
     // launch failure nor a flaky compile masks a case.
     let report = null; let chromeExit = -1
-    const attempts = Number(process.env.GATE_SLICE_ATTEMPTS || 3)
+    // The macOS GPU runner's launch/page-run crashes come in bursts (a
+    // concurrent workflow on the same runner group thrashed a slice's three
+    // attempts into "no report" at 2026-10-09T03:03Z while every fresh run of
+    // the same tree passed), so budget enough in-run attempts to ride out a
+    // burst instead of needing an external re-run.
+    const attempts = Number(process.env.GATE_SLICE_ATTEMPTS || 6)
     let best = null
     for (let attempt = 1; attempt <= attempts; attempt++) {
       if (attempt > 1) {
         log(`slice ${sliceStart}: retrying (attempt ${attempt})`)
-        await new Promise(r => setTimeout(r, 5000))
+        await new Promise(r => setTimeout(r, 5000 * Math.min(attempt, 4)))
       }
       let current = null
       try {
