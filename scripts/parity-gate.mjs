@@ -244,8 +244,10 @@ async function runSlice (sliceStart, limit, attempt, log) {
   // window (the macOS host broker allows 43117..43126 only). Port 43120 is
   // occupied by another host service and never yields a DevTools endpoint
   // (observed: the browser runs but binds nothing), so the rotation skips it.
+  // Rotate the offset with the attempt too: a port poisoned by a leftover
+  // chromium would otherwise fail every retry of this slice on the same port.
   const cdpPortPool = [1, 2, 4, 5, 6, 7, 8, 9]
-  const cdpPort = PORT + cdpPortPool[sliceStart % cdpPortPool.length]
+  const cdpPort = PORT + cdpPortPool[(sliceStart + attempt - 1) % cdpPortPool.length]
   const chromeArgs = [
     '--headless=new',
     '--no-sandbox',
