@@ -477,6 +477,7 @@ try {
     // burst instead of needing an external re-run.
     const attempts = Number(process.env.GATE_SLICE_ATTEMPTS || 6)
     let best = null
+    const attemptErrors = []
     for (let attempt = 1; attempt <= attempts; attempt++) {
       if (attempt > 1) {
         log(`slice ${sliceStart}: retrying (attempt ${attempt})`)
@@ -486,7 +487,9 @@ try {
       try {
         current = await runSlice(sliceStart, limit, attempt, log)
       } catch (err) {
-        log(`slice run failed (attempt ${attempt}): ${String(err && err.message || err)}`)
+        const message = String(err && err.message || err)
+        attemptErrors.push(`attempt ${attempt}: ${message}`)
+        log(`slice run failed (attempt ${attempt}): ${message}`)
         continue
       }
       chromeExit = 0
@@ -498,6 +501,11 @@ try {
     report = report || best
     if (!report) {
       process.exitCode = 2
+      // Surface the collected attempt failures as a workflow-command error so
+      // the check-run annotation carries the real launch/page failure instead
+      // of a bare exit code (job logs are not readable by every reviewer).
+      const detail = attemptErrors.join(' | ').slice(0, 3000)
+      log(`::error::parity-gate slice ${sliceStart}: no report after ${attempts} attempts${detail ? `: ${detail}` : ''}`)
       log(`slice ${sliceStart}: giving up after retries (no report produced)`)
       break
     }
