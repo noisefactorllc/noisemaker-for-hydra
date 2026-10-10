@@ -71,14 +71,12 @@ let BOUND_PORT = 0
 // A headless Chrome that never returns (it hung a CI job for 90 minutes on a
 // shared GPU runner) must fail the case quickly instead of holding the job.
 const EDITOR_TIMEOUT_MS = 120000
-// Runner stalls on the shared GPU host outlast a single retry: runs
-// 37979954647 and 38069359237 each lost a case to two consecutive 120 s
-// timeouts while every other case passed, and the parity gate needed a
-// multi-attempt slice budget for the same reason. Give editor launches the
-// same tolerance: three attempts with the parity gate's short backoff. A
-// second timeout used to throw immediately; a third attempt rides out a
-// sustained burst without holding the job anywhere near its budget.
-const EDITOR_LAUNCH_ATTEMPTS = 3
+// A sustained runner stall can outlast a single retry: give editor launches a
+// multi-attempt budget with short backoff, the same tolerance the parity gate
+// applies to its slice runs (which exposes its budget as GATE_SLICE_ATTEMPTS).
+// Only a timed-out launch is retried; assertion failures still fail
+// immediately, and the case still fails after the budget is spent.
+const EDITOR_LAUNCH_ATTEMPTS = Number(process.env.EDITOR_LAUNCH_ATTEMPTS) || 3
 
 function launchChrome(url, windowSize) {
   return spawnSync(CHROME, [
