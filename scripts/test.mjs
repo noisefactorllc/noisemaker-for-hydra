@@ -76,7 +76,15 @@ const EDITOR_TIMEOUT_MS = 120000
 // applies to its slice runs (which exposes its budget as GATE_SLICE_ATTEMPTS).
 // Only a timed-out launch is retried; assertion failures still fail
 // immediately, and the case still fails after the budget is spent.
-const EDITOR_LAUNCH_ATTEMPTS = Number(process.env.EDITOR_LAUNCH_ATTEMPTS) || 3
+const EDITOR_LAUNCH_ATTEMPTS = (() => {
+  const raw = process.env.EDITOR_LAUNCH_ATTEMPTS
+  if (raw == null || raw === '') return 3
+  const value = Number(raw)
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new Error(`EDITOR_LAUNCH_ATTEMPTS must be a positive integer, got '${raw}'`)
+  }
+  return value
+})()
 
 function launchChrome(url, windowSize) {
   return spawnSync(CHROME, [
