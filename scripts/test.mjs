@@ -71,6 +71,14 @@ let BOUND_PORT = 0
 // A headless Chrome that never returns (it hung a CI job for 90 minutes on a
 // shared GPU runner) must fail the case quickly instead of holding the job.
 const EDITOR_TIMEOUT_MS = 120000
+// Runner stalls on the shared GPU host outlast a single retry: runs
+// 37979954647 and 38069359237 each lost a case to two consecutive 120 s
+// timeouts while every other case passed, and the parity gate needed a
+// multi-attempt slice budget for the same reason. Give editor launches the
+// same tolerance: three attempts with the parity gate's short backoff. A
+// second timeout used to throw immediately; a third attempt rides out a
+// sustained burst without holding the job anywhere near its budget.
+const EDITOR_LAUNCH_ATTEMPTS = 3
 
 function launchChrome(url, windowSize) {
   return spawnSync(CHROME, [
@@ -87,22 +95,20 @@ function launchChrome(url, windowSize) {
   ], { encoding: 'utf8', timeout: EDITOR_TIMEOUT_MS, killSignal: 'SIGKILL' })
 }
 
-function runEditor(path, windowSize = '1024,768') {
+async function runEditor(path, windowSize = '1024,768') {
   const url = `http://${HOST}:${BOUND_PORT}${path}`
-  let result = launchChrome(url, windowSize)
-  if (result.error?.code === 'ETIMEDOUT') {
-    // A one-off runner hiccup (CDN stall, GPU process stall) can hang a single
-    // headless page past its timeout without producing any verdict; a CI job
-    // died this way on case 10 of 12 while every earlier case and the whole
-    // unit suite passed. Retry the launch once, the same tolerance the parity
-    // gate applies to its slice runs; a second timeout still throws and fails
-    // the suite. Assertion failures are never retried.
-    result = launchChrome(url, windowSize)
-    if (result.error?.code === 'ETIMEDOUT') {
-      throw new Error(`Chrome did not finish ${url} within ${EDITOR_TIMEOUT_MS / 1000} s`)
+  for (let attempt = 1; attempt <= EDITOR_LAUNCH_ATTEMPTS; attempt++) {
+    if (attempt > 1) {
+      console.error(`[editor-test] retrying ${url} (attempt ${attempt} of ${EDITOR_LAUNCH_ATTEMPTS})`)
+      await new Promise(resolve => setTimeout(resolve, 5000 * Math.min(attempt, 4)))
     }
+    const result = launchChrome(url, windowSize)
+    if (result.error?.code !== 'ETIMEDOUT') return result
+    // A one-off runner hiccup (CDN stall, GPU process stall) can hang a single
+    // headless page past its timeout without producing any verdict. Assertion
+    // failures are never retried; only a timed-out launch is.
   }
-  return result
+  throw new Error(`Chrome did not finish ${url} within ${EDITOR_TIMEOUT_MS / 1000} s per attempt across ${EDITOR_LAUNCH_ATTEMPTS} attempts`)
 }
 
 let server
@@ -198,7 +204,7 @@ const cases = [
 ]
 
   for (const testCase of cases) {
-    const result = runEditor(testCase.path, testCase.windowSize)
+    const result = await runEditor(testCase.path, testCase.windowSize)
     const dom = result.stdout || ''
     const text = dom
       .replace(/<[^>]*>/g, '')
