@@ -79,9 +79,12 @@ function splitTopLevel (src, sep = ',') {
 // Scan the normalized GLSL source for identifier types: declarations
 // (`vecN NAME = ...` / `float NAME = ...` / `vecN NAME;`), function
 // parameters, and for-loop counters. This map drives the swizzle rewrites,
-// which need the base vector size of each swizzled identifier.
-function scanTypes (src) {
-  const types = new Map()
+// which need the base vector size of each swizzled identifier. `seeds`
+// pre-types identifiers that are not declared in the converted fragment
+// (uniforms visible to a fused program, wrapper inputs of a per-effect
+// program); declarations in the fragment itself shadow them.
+function scanTypes (src, seeds) {
+  const types = new Map(seeds)
   const asType = g => (g === 'float' ? 'float' : g)
   for (const m of src.matchAll(/\b(?:const\s+)?(?:vec([234])|float)\s+([\w]+)\s*(=|;)/g)) {
     types.set(m[2], m[1] ? `vec${m[1]}` : 'float')
@@ -116,9 +119,9 @@ function analyzeSwizzle (swizzle, baseDim) {
  * swizzles (including repeated/over-length forms), mat2, atan(y,x), mod(),
  * texture2D(), and the common builtins with WGSL-identical names.
  */
-export function glslToWgsl (glsl, { indent = '' } = {}) {
+export function glslToWgsl (glsl, { indent = '', seedTypes = [] } = {}) {
   const normalized = normalizeFloatLiterals(glsl)
-  const types = scanTypes(normalized)
+  const types = scanTypes(normalized, seedTypes)
 
   let src = normalized
 
@@ -263,8 +266,8 @@ function rewriteCalls (src, name, fn) {
 }
 
 // wgpu/naga rejects overloaded user functions, so GLSL mod() calls are
-// renamed per call site to a type-specific helper (mod_f / mod_fv2..4) based
-// on the promoted type of the first argument.
+// renamed per call site to a type-specific helper (mod_f / mod_fv2..4 /
+// mod_fv2v..4v) based on the promoted types of both arguments.
 function typeOfExpr (expr, types) {
   const e = expr.trim()
   // strip wrapping parens
@@ -330,9 +333,16 @@ function renameModCalls (src, types) {
       else if (src[j] === ')') { depth--; if (depth === 0) { j++; break } }
     }
     const argsText = src.slice(idx + 'mod_f('.length, j - 1)
-    const first = splitTopLevel(argsText)[0] || ''
-    const t = typeOfExpr(first, types)
-    const name = t === 'vec2' ? 'mod_fv2' : t === 'vec3' ? 'mod_fv3' : t === 'vec4' ? 'mod_fv4' : 'mod_f'
+    const args = splitTopLevel(argsText)
+    const t = typeOfExpr(args[0] || '', types)
+    const tY = typeOfExpr(args[1] || '', types)
+    // GLSL `mod(genType, genType)` keeps the vector width of the first
+    // argument; a vector second argument selects the v-suffixed helper (a
+    // scalar-y helper called with a vector y would be ill-typed WGSL).
+    const width = /^vec([234])$/.exec(t)
+    const name = width && tY === t
+      ? `mod_fv${width[1]}v`
+      : t === 'vec2' ? 'mod_fv2' : t === 'vec3' ? 'mod_fv3' : t === 'vec4' ? 'mod_fv4' : 'mod_f'
     out += `${name}(${argsText})`
     i = j
   }
@@ -481,9 +491,16 @@ export function buildWgslProgram (def) {
   // --- wrapper function ----------------------------------------------------
   const usedUtils = utilities ? splitGlslFunctions(utilities) : []
   const utilitiesWgsl = usedUtils.map(u => glslToWgsl(u)).join('\n\n')
-  const bodyWgsl = glslToWgsl(body, { indent: '  ' })
-
+  // The wrapper body is converted without its signature, so its parameters
+  // are invisible to the type scan; seed the leading template arguments
+  // (_st/_c0/_c1) and the wrapper inputs (uniform-backed GLSL parameters) so
+  // mod() helper selection and swizzle legality see their types.
   const leading = LEADING_ARGS[type]
+  const bodyWgsl = glslToWgsl(body, {
+    indent: '  ',
+    seedTypes: leading.concat(wrapperInputs).map(input => [input.name, input.type])
+  })
+
   const retType = (type === 'coord' || type === 'combineCoord') ? 'vec2<f32>' : 'vec4<f32>'
   const allArgs = leading.concat(wrapperInputs)
   const fnName = `_hydra_${name}`
@@ -619,12 +636,16 @@ export function convertHydraGlslProgramToWgsl (program) {
   const fnBlocks = blocks.filter((b, i) => i !== mainIdx)
   const mainBlock = blocks[mainIdx]
 
+  // Uniform declarations from the header are visible to every converted
+  // fragment but declared outside it; seed the per-block type maps with them
+  // so mod() helper selection and swizzle legality see their vector widths.
+  const seedTypes = uniforms.map(u => [u.name, u.type])
   const converted = fnBlocks.map(block => {
     const signatureRe = [...block.matchAll(/(?:^|\n)\s*(?:vec[234]|float)\s+[\w]+\s*\(([^)]*)\)\s*\{/g)]
       .flatMap(pm => splitTopLevel(pm[1]))
       .map(a => a.match(/^(vec[234]|float)\s+([\w]+)\s*$/))
       .filter(Boolean)
-    let out = glslToWgsl(block, { indent: '' })
+    let out = glslToWgsl(block, { indent: '', seedTypes })
     return applyImmutableParams(out, block, signatureRe)
   }).join('\n\n')
 
@@ -633,7 +654,7 @@ export function convertHydraGlslProgramToWgsl (program) {
     // WebGPU fragment y already grows downward like the GLSL-flipped `_st.y`
     .replace(/resolution\.y\s*-\s*pos\.y/g, 'pos.y')
     .replace(/fragColor\s*=\s*([^;]+);/, 'return $1;')
-  mainWgsl = glslToWgsl(mainWgsl, { indent: '' })
+  mainWgsl = glslToWgsl(mainWgsl, { indent: '', seedTypes })
   mainWgsl = mainWgsl
     .replace(/^void\s+main\s*\(\s*\)\s*\{/,
       '@fragment\nfn main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {')
