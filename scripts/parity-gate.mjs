@@ -241,7 +241,7 @@ async function runSlice (sliceStart, limit, attempt, log) {
   // Slices run sequentially, so one CDP port can be reused; keep a small
   // rotating offset so a slow-dying previous chromium never collides with the
   // new launch, and stay inside hosts that only expose a small loopback port
-  // window (the macOS host broker allows 43117..43126 only). Port 43120 is
+  // window (the macOS GPU host allows 43117..43126 only). Port 43120 is
   // occupied by another host service and never yields a DevTools endpoint
   // (observed: the browser runs but binds nothing), so the rotation skips it.
   // Rotate the offset with the attempt too: a port poisoned by a leftover
