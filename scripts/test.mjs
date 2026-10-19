@@ -90,6 +90,11 @@ function launchChrome(url, windowSize) {
   return spawnSync(CHROME, [
     '--headless=new',
     '--no-sandbox',
+    // The renderer crashes or hangs at navigation when /dev/shm is exhausted
+    // (sandboxes cap it at 64MB), which surfaces as a launch timeout after the
+    // full retry budget. Standard Chromium hardening: move shared memory to
+    // /tmp. CI VMs have no such cap, so the flag is pure hardening there.
+    '--disable-dev-shm-usage',
     // Ambient proxy env must not route the loopback dev server through a
     // proxy (blank pages, every case 'expected DSL did not load'); external
     // hosts keep any ambient proxy.
