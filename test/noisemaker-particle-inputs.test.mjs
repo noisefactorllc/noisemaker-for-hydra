@@ -104,7 +104,7 @@ function movedInputsRenderer ({ withColorModeUniform = true } = {}) {
 
 const ACTIVE_IDS = Object.keys(PARTICLE_INPUT_WIRING).filter(id => !RETIRED_WIRING.has(id))
 
-test('PARTICLE_INPUT_WIRING matches the pinned upstream 06ce0927 contract', () => {
+test('PARTICLE_INPUT_WIRING matches the pinned upstream 06ce0927 contract except the moved categories', () => {
   const fixture = JSON.parse(readFileSync(
     new URL('./fixtures/upstream-06ce0927/particle-input-wiring.json', import.meta.url), 'utf8'))
   assert.equal(
@@ -113,7 +113,25 @@ test('PARTICLE_INPUT_WIRING matches the pinned upstream 06ce0927 contract', () =
       .digest('hex'),
     '360558d022fe338d61835cb2402f85d320b122b455300654a34acb9d20f93a68',
     'upstream wiring fixture sha256 (pinned reference)')
-  assert.deepEqual(PARTICLE_INPUT_WIRING, fixture.effects)
+  // Upstream e23524f6b5ea and d3b5238c8bf2 later moved each surface's
+  // ui.category out of "source"; the table carries those current values
+  // (see the matching category test). Everything else stays 06ce0927.
+  const current = JSON.parse(JSON.stringify(fixture.effects))
+  const movedCategories = {
+    'points/dla': 'chemistry',
+    'points/flow': 'agents',
+    'points/hydraulic': 'agents',
+    'points/life': 'types',
+    'points/physarum': 'general'
+  }
+  for (const [effectId, category] of Object.entries(movedCategories)) {
+    current[effectId].global.ui.category = category
+  }
+  assert.deepEqual(PARTICLE_INPUT_WIRING, current)
+  // The fixture itself still pins the historical 06ce0927 categories.
+  for (const effectId of Object.keys(movedCategories)) {
+    assert.equal(fixture.effects[effectId].global.ui.category, 'source')
+  }
 })
 
 test('RETIRED_WIRING marks the surface upstream moved into individual behaviors', () => {
@@ -129,6 +147,22 @@ test('RETIRED_WIRING marks the surface upstream moved into individual behaviors'
     'upstream pointsEmit definition fixture sha256 (pinned reference)')
   assert.doesNotMatch(upstream, /diffuseTex/,
     'upstream 317c43ccb2ea render/pointsEmit has no diffuseTex global')
+})
+
+test('PARTICLE_INPUT_WIRING carries the current upstream ui.category for each surface', () => {
+  // Upstream e23524f6b5ea and d3b5238c8bf2 moved each surface's category
+  // out of "source" into the owning behavior's category.
+  const expected = {
+    'points/dla': 'chemistry',
+    'points/flow': 'agents',
+    'points/hydraulic': 'agents',
+    'points/life': 'types',
+    'points/physarum': 'general'
+  }
+  for (const [effectId, category] of Object.entries(expected)) {
+    assert.equal(PARTICLE_INPUT_WIRING[effectId].global.ui.category, category,
+      `${effectId}: ui.category follows upstream`)
+  }
 })
 
 test('patchParticleInputs adds each active upstream surface global with the legacy default', () => {

@@ -32,35 +32,43 @@
  * moving texture selection into each consuming behavior. The port mirrors
  * that removal: the surface stays retired on every bundle shape, because
  * adding it would reintroduce a parameter upstream no longer publishes.
+ *
+ * Upstream e23524f6b5ea and d3b5238c8bf2 also moved each surface's
+ * ui.category out of "source" and into the owning behavior's category; the
+ * table below carries those current values (the moved-inputs contract uses
+ * the same categories, so the fallback metadata stays consistent with
+ * upstream across bundle shapes).
  */
 
-// Byte-faithful mirror of the upstream 06ce0927 wiring. The companion
-// fixture test/fixtures/upstream-06ce0927/particle-input-wiring.json pins
-// the same contract and is mechanically compared against this table.
+// The wiring mirror carries upstream 06ce0927's contract with the current
+// ui.category values from e23524f6b5ea and d3b5238c8bf2 (see the header
+// note). The companion fixture test/fixtures/upstream-06ce0927/
+// particle-input-wiring.json pins the historical 06ce0927 contract and is
+// mechanically compared against this table with those categories applied.
 export const PARTICLE_INPUT_WIRING = {
   'points/dla': {
     surface: 'fieldTex',
-    global: { type: 'surface', default: 'inputTex', ui: { label: 'field map', category: 'source' } },
+    global: { type: 'surface', default: 'inputTex', ui: { label: 'field map', category: 'chemistry' } },
     passProgram: 'agent'
   },
   'points/flow': {
     surface: 'fieldTex',
-    global: { type: 'surface', default: 'inputTex', ui: { label: 'field map', category: 'source' } },
+    global: { type: 'surface', default: 'inputTex', ui: { label: 'field map', category: 'agents' } },
     passProgram: 'agent'
   },
   'points/hydraulic': {
     surface: 'heightTex',
-    global: { type: 'surface', default: 'inputTex', ui: { label: 'height map', category: 'source' } },
+    global: { type: 'surface', default: 'inputTex', ui: { label: 'height map', category: 'agents' } },
     passProgram: 'agent'
   },
   'points/life': {
     surface: 'diffuseTex',
-    global: { type: 'surface', default: 'inputTex', ui: { label: 'diffuse map', category: 'source' } },
+    global: { type: 'surface', default: 'inputTex', ui: { label: 'diffuse map', category: 'types' } },
     passProgram: 'agent'
   },
   'points/physarum': {
     surface: 'fieldTex',
-    global: { type: 'surface', default: 'inputTex', ui: { label: 'field map', category: 'source' } },
+    global: { type: 'surface', default: 'inputTex', ui: { label: 'field map', category: 'general' } },
     passProgram: 'agent'
   },
   'render/pointsEmit': {
