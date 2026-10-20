@@ -1,0 +1,108 @@
+<!doctype html>
+<!--
+  Particle texture input gate (browser level).
+  Exercises the fork's actual compile wiring end to end: the tracked
+  companion bundle (/_engine/hydra-synth.js),
+  window.HydraEffects.loadHydraEffects(), and
+  src/lib/noisemaker-runtime.mjs (createNoisemakerRuntime, which applies
+  the particle-input patch to the loaded definitions). Verifies that the
+  ported parameter contract from upstream noisemaker 06ce0927 is live on
+  the real pinned engine (1.0.301): each particle effect accepts its named
+  surface argument in the DSL (fieldTex, heightTex, diffuseTex), the sim
+  pass then reads the referenced surface (global_o1), and the omitted case
+  still reads the chained input (node_N_out). A rejected argument or an
+  unresolved input fails decisively. Mirrors the assertions of upstream
+  shaders/tests/test_particle_input_textures.mjs at the engine level.
+-->
+<html><body><pre id="out">particle-inputs-boot</pre>
+<script src="/_engine/hydra-synth.js"></script>
+<script type="module">
+import { createNoisemakerRuntime } from '/src/lib/noisemaker-runtime.mjs'
+const pre = document.getElementById('out')
+
+const canvas = document.createElement('canvas')
+canvas.width = 64; canvas.height = 64
+const renderer = await createNoisemakerRuntime({
+  canvas,
+  extension: window.HydraEffects,
+  cdn: 'https://shaders.noisedeck.app/1.0.301',
+  preferWebGPU: false
+})
+
+// --- Definition-level checks: the patch landed on the loaded effects. ---
+const expectedSurfaces = {
+  'points/dla': 'fieldTex',
+  'points/flow': 'fieldTex',
+  'points/hydraulic': 'heightTex',
+  'points/life': 'diffuseTex',
+  'points/physarum': 'fieldTex',
+  'render/pointsEmit': 'diffuseTex'
+}
+for (const [effectId, surface] of Object.entries(expectedSurfaces)) {
+  const entry = renderer._loadedEffects.get(effectId)
+  if (!entry || !entry.instance) throw new Error(`${effectId} not loaded`)
+  const spec = entry.instance.globals[surface]
+  if (!spec || spec.type !== 'surface' || spec.default !== 'inputTex') {
+    throw new Error(`${effectId}: surface global ${surface} missing or wrong: ${JSON.stringify(spec)}`)
+  }
+}
+
+// --- Engine-level checks: the DSL accepts each named surface and the ---
+// --- sim pass reads the referenced surface (or the chained input).   ---
+// Graph pass lookup: the engine tags each pass with its effect and program.
+function simPassInput (effectFunc, program) {
+  const passes = renderer.pipeline && renderer.pipeline.graph && renderer.pipeline.graph.passes
+  if (!passes) throw new Error('pipeline graph missing after compile')
+  const pass = passes.find(p => (p.effectFunc === effectFunc || p.effectKey === effectFunc) &&
+    (p.program === program || (p.program || '').endsWith(`_${program}`)))
+  if (!pass) throw new Error(`${effectFunc}: ${program} pass missing from compiled graph`)
+  const input = pass.inputs && pass.inputs.inputTex
+  if (!input) throw new Error(`${effectFunc}: ${program} pass has no inputTex input`)
+  return input
+}
+
+async function compileCase (effectFunc, arg, program, chain) {
+  const prefix = 'search synth, render, points\nsolid(color: #ff0000).write(o1)\n'
+  const call = arg ? `${effectFunc}(${arg})` : `${effectFunc}()`
+  const dsl = `${prefix}${chain(call)}.write(o0)\nrender(o0)`
+  try {
+    await renderer.compile(dsl)
+  } catch (err) {
+    const detail = (err && (err.message || err.error)) ||
+      JSON.stringify(err && (err.diagnostics || err), null, 0)
+    throw new Error(`${effectFunc}(${arg || 'omitted'}): compile threw: ${String(detail).slice(0, 400)}`)
+  }
+  const input = simPassInput(effectFunc, program)
+  if (arg) {
+    if (input !== 'global_o1') {
+      throw new Error(`${effectFunc}(${arg}): sim pass input is '${input}', expected 'global_o1'`)
+    }
+  } else if (!/^node_\d+_out$/.test(input)) {
+    throw new Error(`${effectFunc} omitted: sim pass input is '${input}', expected the chained node input`)
+  }
+}
+
+const emitChain = call => `solid(color: #00ff00).pointsEmit().${call}`
+const emitOnlyChain = call => `solid(color: #00ff00).${call}`
+
+await compileCase('dla', 'fieldTex: read(o1)', 'agent', emitChain)
+await compileCase('flow', 'fieldTex: read(o1)', 'agent', emitChain)
+await compileCase('hydraulic', 'heightTex: read(o1)', 'agent', emitChain)
+await compileCase('life', 'diffuseTex: read(o1)', 'agent', emitChain)
+await compileCase('physarum', 'fieldTex: read(o1)', 'agent', emitChain)
+await compileCase('pointsEmit', 'diffuseTex: read(o1)', 'init', emitOnlyChain)
+// The omitted case still resolves to the chained input (legacy fallback).
+await compileCase('dla', null, 'agent', emitChain)
+await compileCase('pointsEmit', null, 'init', emitOnlyChain)
+
+document.getElementById('out').textContent = 'particle-inputs-ready'
+</script>
+<script>
+// Surface any module error in the DOM so a dump shows the failure reason.
+window.addEventListener('error', event => {
+  document.getElementById('out').textContent = `particle-inputs-error: ${event.message}`
+})
+window.addEventListener('unhandledrejection', event => {
+  document.getElementById('out').textContent = `particle-inputs-error: ${event.reason && event.reason.message}`
+})
+</script></html>

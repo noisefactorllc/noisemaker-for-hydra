@@ -11,6 +11,7 @@ import {
 // definitions: globals keyed by parameter name, passes keyed by program
 // with an inputs map of uniform name to texture source.
 function fakeRenderer () {
+  const reregistered = []
   const loaded = new Map()
   for (const [effectId, wiring] of Object.entries(PARTICLE_INPUT_WIRING)) {
     const [namespace, name] = effectId.split('/')
@@ -39,7 +40,11 @@ function fakeRenderer () {
       }
     })
   }
-  return { _loadedEffects: loaded }
+  return { _loadedEffects: loaded, reregistered,
+    registerEffectWithRuntime (effect) {
+      reregistered.push(effect)
+      return {}
+    } }
 }
 
 test('PARTICLE_INPUT_WIRING matches the pinned upstream 06ce0927 contract', () => {
@@ -108,6 +113,39 @@ test('patchParticleInputs reports only the loaded effects it patched', () => {
   const patched = patchParticleInputs(renderer)
   assert.deepEqual(patched.map(entry => `${entry.namespace}/${entry.name}`),
     Object.keys(PARTICLE_INPUT_WIRING).filter(id => id !== 'points/physarum'))
+})
+
+test('patchParticleInputs re-registers each patched effect for the DSL op spec', () => {
+  const renderer = fakeRenderer()
+  patchParticleInputs(renderer)
+  assert.equal(renderer.reregistered.length, Object.keys(PARTICLE_INPUT_WIRING).length,
+    'every patched effect is re-registered')
+  for (const effectId of Object.keys(PARTICLE_INPUT_WIRING)) {
+    const [namespace, name] = effectId.split('/')
+    const call = renderer.reregistered.find(effect => effect.namespace === namespace && effect.name === name)
+    assert.ok(call, `${effectId}: re-registered`)
+    assert.equal(call.name, name)
+    assert.ok(call.instance.globals[PARTICLE_INPUT_WIRING[effectId].surface],
+      `${effectId}: re-registration carries the patched instance`)
+  }
+})
+
+test('patchParticleInputs skips re-registration when nothing changed', () => {
+  const renderer = fakeRenderer()
+  patchParticleInputs(renderer)
+  const firstCount = renderer.reregistered.length
+  assert.ok(firstCount > 0)
+  patchParticleInputs(renderer)
+  assert.equal(renderer.reregistered.length, firstCount,
+    'a second pass re-registers nothing')
+})
+
+test('patchParticleInputs tolerates a renderer without the registration hook', () => {
+  const renderer = fakeRenderer()
+  delete renderer.registerEffectWithRuntime
+  const patched = patchParticleInputs(renderer)
+  assert.equal(patched.length, Object.keys(PARTICLE_INPUT_WIRING).length,
+    'the patch still applies without the hook')
 })
 
 test('patchParticleInputs tolerates a renderer without _loadedEffects', () => {

@@ -220,7 +220,10 @@ const cases = [
     path: `/?code=${encodeURIComponent(encodeSource(SOURCE))}`,
     expected: ['search hydra', 'gradient(speed: 0).write(o0)'],
     windowSize: '640,480',
-    extraPage: { path: '/test/tile-media.html', expected: ['tile-media-ready'] }
+    extraPage: { path: '/test/tile-media.html', expected: ['tile-media-ready'] },
+    extraPages: [
+      { path: '/test/particle-inputs.html', expected: ['particle-inputs-ready'] }
+    ]
   }
 ]
 
@@ -258,11 +261,14 @@ const cases = [
 
     // An extraPage runs as a second launch inside the same case verdict, so
     // the suite's PASS count stays stable for the CI gate's exact-count check.
-    if (testCase.extraPage) {
-      const extra = await runEditor(testCase.extraPage.path, testCase.extraPage.windowSize)
-      const extraDom = extra.stdout || ''
-      const extraOk = testCase.extraPage.expected.every(part => extraDom.includes(part)) && extra.status === 0
-      if (!extraOk) failures.push(`extraPage ${testCase.extraPage.path} did not pass`)
+    // extraPages carries additional required pages the same way.
+    const extraPages = testCase.extraPages || []
+    if (testCase.extraPage) extraPages.push(testCase.extraPage)
+    for (const extra of extraPages) {
+      const extraResult = await runEditor(extra.path, extra.windowSize)
+      const extraDom = extraResult.stdout || ''
+      const extraOk = extra.expected.every(part => extraDom.includes(part)) && extraResult.status === 0
+      if (!extraOk) failures.push(`extraPage ${extra.path} did not pass`)
     }
 
     if (!sourceLoaded || failures.length > 0 || !expectedDomPresent || result.status !== 0) {

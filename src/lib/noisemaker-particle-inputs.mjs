@@ -104,7 +104,20 @@ export function patchParticleInputs (renderer) {
       }
     }
 
-    if (changed) patched.push(entry)
+    if (changed) {
+      // Refresh the engine's DSL op spec for the patched definition. The
+      // engine builds op args from instance.globals at loadEffects time and
+      // registers them as a snapshot; the DSL validator (S001) rejects any
+      // keyword argument that is not in that snapshot, so the new named
+      // surface must be registered too. registerEffectWithRuntime rebuilds
+      // the op args from the patched instance and registerOp overwrites the
+      // previous spec. The refreshed globals introduce no enum choices, so
+      // the returned choices map stays empty and no enum merge follows.
+      if (typeof renderer.registerEffectWithRuntime === 'function') {
+        renderer.registerEffectWithRuntime({ namespace: entry.namespace, name: entry.name, instance })
+      }
+      patched.push(entry)
+    }
   }
   return patched
 }
