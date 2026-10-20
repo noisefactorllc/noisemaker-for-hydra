@@ -52,7 +52,7 @@ test('patched WGSL declares a 6-slot uniform array and reads slot 5', () => {
 test('patched GLSL declares the tile uniforms and offsets by tileOffset', () => {
   assert.match(MEDIA_INPUT_GLSL, /uniform vec2 tileOffset;/)
   assert.match(MEDIA_INPUT_GLSL, /uniform vec2 fullResolution;/)
-  assert.match(MEDIA_INPUT_GLSL, /\(gl_FragCoord\.xy \+ tileOffset\) \/ size/)
+  assert.match(MEDIA_INPUT_GLSL, /if \(tileOffset\.x == 0\.0 && tileOffset\.y == 0\.0\) \{\n        st = gl_FragCoord\.xy \/ size;\n    \} else \{\n        st = \(gl_FragCoord\.xy \+ tileOffset\) \/ size;\n    \}/)
   assert.match(MEDIA_INPUT_GLSL, /fullResolution\.x > 0\.0 \? fullResolution : resolution/)
 })
 
@@ -89,27 +89,31 @@ test('patchMediaTile tolerates a renderer without _loadedEffects', () => {
   assert.equal(patchMediaTile(null), null)
 })
 
-// Upstream reference: noisefactorllc/noisemaker commit fde974e58a0d
-// ("LEDGER: make synth/media tile-aware for tiled print export"), file
-// copies committed under test/fixtures/upstream-fde974e5/ so the byte
-// identity of the port is mechanically checkable without upstream access.
+// Upstream reference: noisefactorllc/noisemaker commits fde974e58a0d
+// ("LEDGER: make synth/media tile-aware for tiled print export") and
+// 668b82ea1f7b ("LEDGER: keep synth/media's untiled sampling path
+// bit-identical"). File copies are committed under test/fixtures/ so the
+// byte identity of the port is mechanically checkable without upstream
+// access: definition.js pins the slot 5 contract at fde974e5, and the
+// mediaInput shader sources pin the current tile-aware sources at 668b82ea
+// (fde974e5 and 668b82ea agree on the definition.js contract).
 
-test('embedded GLSL mediaInput is byte-identical to upstream fde974e5', () => {
-  const upstream = readFileSync(new URL('./fixtures/upstream-fde974e5/glsl-mediaInput.glsl', import.meta.url))
+test('embedded GLSL mediaInput is byte-identical to upstream 668b82ea', () => {
+  const upstream = readFileSync(new URL('./fixtures/upstream-668b82ea/glsl-mediaInput.glsl', import.meta.url))
   assert.equal(createHash('sha256').update(upstream).digest('hex'),
-    '44deab9ae821122b85a9f6be411d038edc62809f77c3212969d7680acace5e52',
+    '39286ea42ba84515178be96bb070aad7bcd383ad5ae91c3332c5f5bc09eb24bf',
     'upstream GLSL fixture sha256 (pinned reference)')
   assert.equal(Buffer.from(MEDIA_INPUT_GLSL, 'utf8').toString('hex'), upstream.toString('hex'),
-    'MEDIA_INPUT_GLSL is byte-identical to upstream fde974e5 glsl/mediaInput.glsl')
+    'MEDIA_INPUT_GLSL is byte-identical to upstream 668b82ea glsl/mediaInput.glsl')
 })
 
-test('embedded WGSL mediaInput is byte-identical to upstream fde974e5', () => {
-  const upstream = readFileSync(new URL('./fixtures/upstream-fde974e5/wgsl-mediaInput.wgsl', import.meta.url))
+test('embedded WGSL mediaInput is byte-identical to upstream 668b82ea', () => {
+  const upstream = readFileSync(new URL('./fixtures/upstream-668b82ea/wgsl-mediaInput.wgsl', import.meta.url))
   assert.equal(createHash('sha256').update(upstream).digest('hex'),
-    'ecd8060c3a06745a5100072823d9afab13bed71f283e3c8641caabb4a9a152b7',
+    'd6bb52fc65bc2c10cdf5073b3b9e6469028fd52a25db9e3abf848478735a7dcd',
     'upstream WGSL fixture sha256 (pinned reference)')
   assert.equal(Buffer.from(MEDIA_INPUT_WGSL, 'utf8').toString('hex'), upstream.toString('hex'),
-    'MEDIA_INPUT_WGSL is byte-identical to upstream fde974e5 wgsl/mediaInput.wgsl')
+    'MEDIA_INPUT_WGSL is byte-identical to upstream 668b82ea wgsl/mediaInput.wgsl')
 })
 
 test('TILE_UNIFORM_LAYOUT matches the upstream definition.js slot 5 contract', () => {
