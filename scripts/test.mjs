@@ -91,13 +91,35 @@ const EDITOR_LAUNCH_ATTEMPTS = (() => {
   return value
 })()
 
-function launchChrome(url, windowSize, userDataDir) {
+// The editor suite must never touch the browser's default profile. A shared
+// default profile accretes HTTP and GPU cache across every launch and every
+// run; on a small or shared filesystem it eventually wedges page loads (a
+// 180 s launch timeout on every case, as observed on a runner whose default
+// headless profile had grown to hundreds of MB). A dedicated directory under
+// the system temp dir keeps the suite self-contained and bounded, while
+// staying warm across the cases of one run so pages do not pay cold-cache
+// and first-run service costs under the virtual time budget.
+const EDITOR_PROFILE_DIR = mkdtempSync(join(tmpdir(), 'editor-test-profile-'))
+const EDITOR_DISK_CACHE_BYTES = 128 * 1024 * 1024
+
+process.on('exit', () => {
+  try { rmSync(EDITOR_PROFILE_DIR, { recursive: true, force: true }) } catch { /* best effort */ }
+})
+
+function launchChrome(url, windowSize) {
   return spawnSync(CHROME, [
     '--headless=new',
     '--no-sandbox',
-    // Fresh profile per launch (see runEditor): never share a profile
-    // directory between attempts or cases.
-    `--user-data-dir=${userDataDir}`,
+    `--user-data-dir=${EDITOR_PROFILE_DIR}`,
+    // The parity-gate driver uses the same hardening: no background services
+    // fighting the page for the virtual time budget (sync, component
+    // updates, GCM registration, first-run prompts).
+    '--disable-background-networking',
+    '--disable-component-update',
+    '--disable-sync',
+    '--no-first-run',
+    '--no-default-browser-check',
+    `--disk-cache-size=${EDITOR_DISK_CACHE_BYTES}`,
     // The renderer crashes or hangs at navigation when /dev/shm is exhausted
     // (sandboxes cap it at 64MB), which surfaces as a launch timeout after the
     // full retry budget. Standard Chromium hardening: move shared memory to
@@ -127,20 +149,8 @@ async function runEditor(path, windowSize = '1024,768') {
       console.error(`[editor-test] retrying ${url} (attempt ${attempt} of ${EDITOR_LAUNCH_ATTEMPTS})`)
       await new Promise(resolve => setTimeout(resolve, 5000 * Math.min(attempt, 4)))
     }
-    // A fresh profile directory per attempt. Chrome holds a singleton lock on
-    // its profile directory; when a timed-out launch leaves a hung browser
-    // (or its helpers) holding the shared default profile, every retry with
-    // the same profile attaches to the wedged process and hangs too, which
-    // turns a one-off stall into three identical timeouts. A fresh profile
-    // isolates each attempt. The parity-gate driver already launches every
-    // slice with its own profile directory.
-    const profileDir = mkdtempSync(join(tmpdir(), 'editor-test-profile-'))
-    try {
-      const result = launchChrome(url, windowSize, profileDir)
-      if (result.error?.code !== 'ETIMEDOUT') return result
-    } finally {
-      rmSync(profileDir, { recursive: true, force: true })
-    }
+    const result = launchChrome(url, windowSize)
+    if (result.error?.code !== 'ETIMEDOUT') return result
     // A one-off runner hiccup (CDN stall, GPU process stall) can hang a single
     // headless page past its timeout without producing any verdict. Assertion
     // failures are never retried; only a timed-out launch is.
