@@ -77,12 +77,8 @@ const EDITOR_TIMEOUT_MS = 180000
 // A sustained runner stall can outlast a single retry: give editor launches a
 // multi-attempt budget with short backoff, the same tolerance the parity gate
 // applies to its slice runs (which exposes its budget as GATE_SLICE_ATTEMPTS).
-// A timed-out launch is retried, and so is the transient timing miss where a
-// page dumps its DOM before the async engine load surfaces the compile
-// diagnostic (the editor and the source are present, only the expected
-// diagnostic and its log-error marker are missing). Every other assertion
-// failure fails immediately, and the case still fails after the budget is
-// spent.
+// Only a timed-out launch is retried; assertion failures still fail
+// immediately, and the case still fails after the budget is spent.
 const EDITOR_LAUNCH_ATTEMPTS = (() => {
   const raw = process.env.EDITOR_LAUNCH_ATTEMPTS
   if (raw == null || raw === '') return 3
@@ -229,65 +225,32 @@ const cases = [
 ]
 
   for (const testCase of cases) {
-    // A slow page can finish its async engine load after the DOM dump: the
-    // editor and the source render, but the compile diagnostic and its
-    // log-error marker never make it into the dump. On a shared runner that
-    // timing miss is transient (run 39370876293 failed four cases this way
-    // while run 39381485291 passed the same code), so give the case the
-    // same bounded relaunch budget as a hung launch. The verdict still
-    // requires every expectation; a genuine defect keeps failing every
-    // attempt because the diagnostic never appears on any relaunch.
-    const DIAGNOSTIC_ATTEMPTS = EDITOR_LAUNCH_ATTEMPTS
-    let result = null
-    let dom = ''
-    let sourceLoaded = false
+    const result = await runEditor(testCase.path, testCase.windowSize)
+    const dom = result.stdout || ''
+    const text = dom
+      .replace(/<[^>]*>/g, '')
+      .replace(/&gt;/g, '>')
+      .replace(/&lt;/g, '<')
+      .replace(/&amp;/g, '&')
+    const sourceLoaded = testCase.expected.every(part => text.includes(part))
     const expectedDom = testCase.expectedDom || []
-    let expectedDomPresent = expectedDom.every(part => dom.includes(part))
+    const expectedDomPresent = expectedDom.every(part => dom.includes(part))
     const expectedDiagnostics = testCase.expectedDiagnostics || []
-    let expectedDiagnosticsPresent = expectedDiagnostics.every(message => dom.includes(message))
-    let errorLogPresent = false
-    let failures = []
-    let attempt = 0
-    while (true) {
-      attempt++
-      result = await runEditor(testCase.path, testCase.windowSize)
-      dom = result.stdout || ''
-      const text = dom
-        .replace(/<[^>]*>/g, '')
-        .replace(/&gt;/g, '>')
-        .replace(/&lt;/g, '<')
-        .replace(/&amp;/g, '&')
-      sourceLoaded = testCase.expected.every(part => text.includes(part))
-      expectedDomPresent = expectedDom.every(part => dom.includes(part))
-      expectedDiagnosticsPresent = expectedDiagnostics.every(message => text.includes(message))
-      errorLogPresent = dom.includes('log-error')
-      const knownFailures = [
-        'engine not ready',
-        'ReferenceError',
-        'SyntaxError',
-        'Unknown effect',
-        'Unknown argument',
-        'Recompilation failed',
-        'out of range'
-      ]
-      failures = knownFailures.filter(message => text.includes(message) && !expectedDiagnostics.includes(message))
-      const diagnosticPending =
-        sourceLoaded &&
-        expectedDomPresent &&
-        result.status === 0 &&
-        failures.length === 0 &&
-        ((expectedDiagnostics.length > 0 && !expectedDiagnosticsPresent) ||
-          (testCase.expectErrorLog && !errorLogPresent))
-      if (diagnosticPending && attempt < DIAGNOSTIC_ATTEMPTS) {
-        console.error(`[editor-test] retrying ${testCase.name} (attempt ${attempt + 1} of ${DIAGNOSTIC_ATTEMPTS}): diagnostic missed the DOM dump`)
-        await new Promise(resolve => setTimeout(resolve, 5000 * Math.min(attempt, 4)))
-        continue
-      }
-      if (expectedDiagnostics.length > 0 || testCase.expectErrorLog) {
-        if (!expectedDiagnosticsPresent) failures.push(`expected diagnostic missing: ${expectedDiagnostics.join(', ')}`)
-        if (testCase.expectErrorLog && !errorLogPresent) failures.push('log-error missing')
-      }
-      break
+    const expectedDiagnosticsPresent = expectedDiagnostics.every(message => text.includes(message))
+    const errorLogPresent = dom.includes('log-error')
+    const knownFailures = [
+      'engine not ready',
+      'ReferenceError',
+      'SyntaxError',
+      'Unknown effect',
+      'Unknown argument',
+      'Recompilation failed',
+      'out of range'
+    ]
+    let failures = knownFailures.filter(message => text.includes(message) && !expectedDiagnostics.includes(message))
+    if (expectedDiagnostics.length > 0 || testCase.expectErrorLog) {
+      if (!expectedDiagnosticsPresent) failures.push(`expected diagnostic missing: ${expectedDiagnostics.join(', ')}`)
+      if (testCase.expectErrorLog && !errorLogPresent) failures.push('log-error missing')
     }
     if (dom.includes('log-error') && !testCase.expectErrorLog) {
       failures.push('log-error')
