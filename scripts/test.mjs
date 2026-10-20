@@ -70,7 +70,10 @@ let BOUND_PORT = 0
 
 // A headless Chrome that never returns (it hung a CI job for 90 minutes on a
 // shared GPU runner) must fail the case quickly instead of holding the job.
-const EDITOR_TIMEOUT_MS = 120000
+// Shared runners can also be merely slow: a contended launch may need well
+// over two minutes per page, so the budget is large enough for that while a
+// genuinely hung page still exhausts the retry budget instead of hanging CI.
+const EDITOR_TIMEOUT_MS = 180000
 // A sustained runner stall can outlast a single retry: give editor launches a
 // multi-attempt budget with short backoff, the same tolerance the parity gate
 // applies to its slice runs (which exposes its budget as GATE_SLICE_ATTEMPTS).
@@ -210,7 +213,8 @@ const cases = [
     name: 'resized window DSL',
     path: `/?code=${encodeURIComponent(encodeSource(SOURCE))}`,
     expected: ['search hydra', 'gradient(speed: 0).write(o0)'],
-    windowSize: '640,480'
+    windowSize: '640,480',
+    extraPage: { path: '/test/tile-media.html', expected: ['tile-media-ready'] }
   }
 ]
 
@@ -244,6 +248,15 @@ const cases = [
     }
     if (dom.includes('log-error') && !testCase.expectErrorLog) {
       failures.push('log-error')
+    }
+
+    // An extraPage runs as a second launch inside the same case verdict, so
+    // the suite's PASS count stays stable for the CI gate's exact-count check.
+    if (testCase.extraPage) {
+      const extra = await runEditor(testCase.extraPage.path, testCase.extraPage.windowSize)
+      const extraDom = extra.stdout || ''
+      const extraOk = testCase.extraPage.expected.every(part => extraDom.includes(part)) && extra.status === 0
+      if (!extraOk) failures.push(`extraPage ${testCase.extraPage.path} did not pass`)
     }
 
     if (!sourceLoaded || failures.length > 0 || !expectedDomPresent || result.status !== 0) {

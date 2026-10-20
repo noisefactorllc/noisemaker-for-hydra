@@ -1,0 +1,139 @@
+<!doctype html>
+<!--
+  Tile-aware media input gate (browser level).
+  Exercises the fork's actual render wiring end to end: the tracked companion
+  bundle (/_engine/hydra-synth.js), window.HydraEffects.loadHydraEffects(),
+  and src/lib/noisemaker-runtime.mjs (createNoisemakerRuntime). Verifies that
+  the runtime's tile-aware media patch lands on the loaded synth/media
+  definition AND that the engine consumes it in a real render: the patched
+  GLSL compiles, and a 64x64 render whose tile region is offset [15,27] of a
+  128x128 full frame matches the corresponding interior crop of the untiled
+  render. If the engine ignored slot 5 (tileOffset.xy / fullResolution.zw),
+  the tiled interior would shift by the tile offset and the comparison would
+  fail decisively. Mirrors upstream shaders/tests/test_tiling_parity.mjs.
+-->
+<html><body><pre id="out">tile-media-boot</pre>
+<script src="/_engine/hydra-synth.js"></script>
+<script type="module">
+import { createNoisemakerRuntime } from '/src/lib/noisemaker-runtime.mjs'
+const pre = document.getElementById('out')
+const FULL = 128
+const TILE = 64
+const OFFSET = [15, 27]
+const MARGIN = 18   // ignore the neighbor-sampling border; a correct interior must match
+const TOL = 2       // per-channel LSB tolerance for a correct tile interior
+const MEDIA_DSL = 'search synth\n\nmedia().write(o0)\n\nrender(o0)'
+
+const canvas = document.createElement('canvas')
+canvas.width = FULL; canvas.height = FULL
+const renderer = await createNoisemakerRuntime({
+  canvas,
+  extension: window.HydraEffects,
+  cdn: 'https://shaders.noisedeck.app/1.0.301',
+  preferWebGPU: false
+})
+
+// --- Definition-level checks: the patch landed on the loaded effect. ---
+const entry = renderer._loadedEffects.get('synth/media')
+if (!entry || !entry.instance) throw new Error('synth/media not loaded')
+const layout = entry.instance.uniformLayout
+if (!layout || !layout.tileOffset) throw new Error('tileOffset missing from uniform layout')
+if (layout.tileOffset.slot !== 5 || layout.tileOffset.components !== 'xy') {
+  throw new Error(`tileOffset layout mismatch: ${JSON.stringify(layout.tileOffset)}`)
+}
+if (!layout.fullResolution || layout.fullResolution.slot !== 5 || layout.fullResolution.components !== 'zw') {
+  throw new Error(`fullResolution layout mismatch: ${JSON.stringify(layout.fullResolution)}`)
+}
+const shaders = entry.instance.shaders
+if (!shaders || !shaders.mediaInput) throw new Error('mediaInput shader missing')
+if (!shaders.mediaInput.glsl.includes('uniform vec2 tileOffset;')) {
+  throw new Error('tile-aware GLSL mediaInput source not applied')
+}
+
+// --- Test source: four distinct quadrants so any shift fails decisively. ---
+function makeSource () {
+  const c = document.createElement('canvas')
+  c.width = FULL; c.height = FULL
+  const ctx = c.getContext('2d')
+  const q = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0]]
+  for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) {
+    ctx.fillStyle = `rgb(${q[y * 2 + x].join(',')})`
+    ctx.fillRect(x * FULL / 2, y * FULL / 2, FULL / 2, FULL / 2)
+  }
+  return c
+}
+
+// Render the media DSL at size w x h with the given tile region (or none)
+// and read back the o0 surface pixels as a Uint8 RGBA8 buffer.
+async function renderMediaAt (w, h, region) {
+  if (canvas.width !== w || canvas.height !== h) renderer.resize(w, h)
+  await renderer.compile(MEDIA_DSL)
+  const pipeline = renderer.pipeline
+  if (!pipeline || !pipeline.graph) throw new Error('pipeline missing after compile')
+  const mediaPass = pipeline.graph.passes.find(p => p.effectKey === 'synth.media')
+  if (!mediaPass) throw new Error('media pass missing (effectKey synth.media)')
+  const texId = mediaPass.inputs && mediaPass.inputs.imageTex
+  if (!texId || !/^imageTex_step_\d+$/.test(texId)) {
+    throw new Error(`invalid media texture id: ${texId}`)
+  }
+  const upload = renderer.updateTextureFromSource(texId, makeSource(), { flipY: true })
+  if (!upload || upload.width !== FULL || upload.height !== FULL) {
+    throw new Error(`media texture upload failed: ${JSON.stringify(upload)}`)
+  }
+  if (region) renderer.setTileRegion(region)
+  else renderer.clearTileRegion()
+  renderer.render(0)
+  renderer.render(0)
+  const surface = pipeline.surfaces.get('o0')
+  if (!surface) throw new Error('o0 surface missing after render')
+  const px = await pipeline.backend.readPixels(surface.read)
+  return { width: px.width ?? w, height: px.height ?? h, data: px.data ?? px }
+}
+
+// Canvas/GL present with a bottom-left origin, so a tile at pixel offset
+// (ox, oy) corresponds to this crop of the full-frame image.
+function cropFromBottomLeft (src, [ox, oy], w, h) {
+  const out = new Uint8ClampedArray(w * h * 4)
+  for (let y = 0; y < h; y++) {
+    const srcY = src.height - oy - h + y
+    if (srcY < 0 || srcY >= src.height) continue
+    out.set(src.data.subarray((srcY * src.width + ox) * 4, (srcY * src.width + ox + w) * 4), y * w * 4)
+  }
+  return out
+}
+
+function interiorMaxDiff (tile, cropped, margin) {
+  let max = 0; let worst = null
+  for (let y = margin; y < tile.height - margin; y++) {
+    for (let x = margin; x < tile.width - margin; x++) {
+      for (let c = 0; c < 3; c++) {
+        const i = (y * tile.width + x) * 4 + c
+        const d = Math.abs(tile.data[i] - cropped[i])
+        if (d > max) { max = d; worst = [x, y, c] }
+      }
+    }
+  }
+  return { max, worst }
+}
+
+function distinctColors (px) {
+  const s = new Set()
+  for (let i = 0; i < px.data.length; i += 4) s.add((px.data[i] << 24) | (px.data[i + 1] << 16) | (px.data[i + 2] << 8) | px.data[i + 3])
+  return s.size
+}
+
+// --- Full-frame render (no tiling). ---
+const full = await renderMediaAt(FULL, FULL, null)
+if (distinctColors(full) < 4) throw new Error(`full-frame render is not the uploaded image: ${distinctColors(full)} colors`)
+
+// --- Tiled render: 64x64 tile at offset [15, 27] of the 128x128 frame. ---
+const tile = await renderMediaAt(TILE, TILE, { offset: OFFSET, fullResolution: [FULL, FULL] })
+if (distinctColors(tile) < 4) throw new Error(`tiled render is not the uploaded image: ${distinctColors(tile)} colors`)
+
+const cropped = cropFromBottomLeft(full, OFFSET, TILE, TILE)
+const { max, worst } = interiorMaxDiff(tile, cropped, MARGIN)
+if (max > TOL) throw new Error(`tile interior mismatch: maxDiff=${max} @${worst}`)
+
+pre.textContent = 'tile-media-ready'
+window.parent.postMessage({ type: 'ready', side: 'tile-media' }, '*')
+</script></body></html>
