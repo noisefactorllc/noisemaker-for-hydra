@@ -1,4 +1,5 @@
 import { patchMediaTile } from './noisemaker-media-tile.mjs'
+import { patchParticleInputs } from './noisemaker-particle-inputs.mjs'
 
 export const DEFAULT_NOISEMAKER_CDN = 'https://shaders.noisedeck.app/1'
 
@@ -60,6 +61,20 @@ export async function createNoisemakerRuntime({
     patchMediaTile(renderer)
   } catch (err) {
     console.warn(`[noisemaker-runtime] media tile patch failed: ${err && err.message}`)
+  }
+
+  // Apply the explicit particle texture input patch to the loaded particle
+  // effect definitions. Upstream 06ce0927 promotes each particle sim pass's
+  // chained input read to a named surface global that defaults to the
+  // chained input, so the parameter contract gains an independently
+  // addressable surface while rendered behavior stays unchanged. It must
+  // run before the first render, when the engine lazily builds its program
+  // registry from the effect definition, and before any DSL compile reads
+  // the effect's globals.
+  try {
+    patchParticleInputs(renderer)
+  } catch (err) {
+    console.warn(`[noisemaker-runtime] particle input patch failed: ${err && err.message}`)
   }
 
   renderer.start()

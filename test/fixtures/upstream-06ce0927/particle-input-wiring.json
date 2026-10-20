@@ -1,0 +1,35 @@
+{
+  "source": "noisefactorllc/noisemaker shaders/effects at 06ce0927d3ee7e948ba258a7f2f94c21b5f8cecf (\"Add explicit particle texture inputs with legacy fallbacks\")",
+  "effects": {
+    "points/dla": {
+      "surface": "fieldTex",
+      "global": { "type": "surface", "default": "inputTex", "ui": { "label": "field map", "category": "source" } },
+      "passProgram": "agent"
+    },
+    "points/flow": {
+      "surface": "fieldTex",
+      "global": { "type": "surface", "default": "inputTex", "ui": { "label": "field map", "category": "source" } },
+      "passProgram": "agent"
+    },
+    "points/hydraulic": {
+      "surface": "heightTex",
+      "global": { "type": "surface", "default": "inputTex", "ui": { "label": "height map", "category": "source" } },
+      "passProgram": "agent"
+    },
+    "points/life": {
+      "surface": "diffuseTex",
+      "global": { "type": "surface", "default": "inputTex", "ui": { "label": "diffuse map", "category": "source" } },
+      "passProgram": "agent"
+    },
+    "points/physarum": {
+      "surface": "fieldTex",
+      "global": { "type": "surface", "default": "inputTex", "ui": { "label": "field map", "category": "source" } },
+      "passProgram": "agent"
+    },
+    "render/pointsEmit": {
+      "surface": "diffuseTex",
+      "global": { "type": "surface", "default": "inputTex", "ui": { "label": "diffuse map", "category": "source", "resetOnChange": true } },
+      "passProgram": "init"
+    }
+  }
+}
