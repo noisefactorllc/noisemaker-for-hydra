@@ -67,10 +67,13 @@ export async function createNoisemakerRuntime({
   // effect definitions. Upstream 06ce0927 promotes each particle sim pass's
   // chained input read to a named surface global that defaults to the
   // chained input, so the parameter contract gains an independently
-  // addressable surface while rendered behavior stays unchanged. It must
-  // run before the first render, when the engine lazily builds its program
-  // registry from the effect definition, and before any DSL compile reads
-  // the effect's globals.
+  // addressable surface while rendered behavior stays unchanged. Upstream
+  // 317c43ccb2ea later removed pointsEmit's surface and moved texture
+  // selection into each consuming behavior; the patch mirrors that removal
+  // and leaves bundles that already carry the moved-inputs contract as
+  // published. It must run before the first render, when the engine
+  // lazily builds its program registry from the effect definition, and
+  // before any DSL compile reads the effect's globals.
   try {
     patchParticleInputs(renderer)
   } catch (err) {

@@ -1,0 +1,42 @@
+{
+  "source": "https://shaders.noisedeck.app/1/effects/points/dla.js (rolling CDN bundle), fetched 2026-10-20",
+  "note": "Pinned shape of upstream 317c43ccb2ea moved-inputs contract as served to the port runtime: the surface global carries colorModeUniform and default none, and the sim pass binds the surface name next to the chained input.",
+  "fieldTexGlobal": {
+    "type": "surface",
+    "default": "none",
+    "colorModeUniform": "fieldActive",
+    "ui": {
+      "label": "field map",
+      "category": "chemistry"
+    }
+  },
+  "diffuseTexGlobal": {
+    "type": "surface",
+    "default": "none",
+    "colorModeUniform": "diffuseActive",
+    "ui": {
+      "label": "diffuse map",
+      "category": "chemistry"
+    }
+  },
+  "agentPass": {
+    "program": "agent",
+    "inputs": {
+      "xyzTex": "global_xyz",
+      "velTex": "global_vel",
+      "rgbaTex": "global_rgba",
+      "gridTex": "global_dla_grid",
+      "inputTex": "inputTex",
+      "fieldTex": "fieldTex",
+      "diffuseTex": "diffuseTex"
+    },
+    "uniforms": {
+      "diffuseActive": "diffuseActive",
+      "fieldActive": "fieldActive",
+      "stride": "stride",
+      "inputWeight": "inputWeight",
+      "attrition": "attrition",
+      "stateSize": "stateSize"
+    }
+  }
+}

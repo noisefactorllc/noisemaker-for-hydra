@@ -21,9 +21,17 @@
  * contract only, never the rendered pixels.
  *
  * The patch is forward-safe: when a future engine bundle already carries
- * upstream 06ce0927, the global is present and the sim pass no longer
- * carries the legacy literal, so the patch leaves the definition as
- * published.
+ * upstream's moved-inputs contract (commit 317c43ccb2ea, "Move particle
+ * texture inputs into individual behaviors" — the surface global carries a
+ * colorModeUniform and the sim pass binds the surface name itself), the
+ * patch leaves the definition as published. The rolling CDN serves bundles
+ * with that contract today.
+ *
+ * Upstream 317c43ccb2ea also removed render/pointsEmit's explicit
+ * diffuseTex surface and restored the init pass's chained-input wiring,
+ * moving texture selection into each consuming behavior. The port mirrors
+ * that removal: the surface stays retired on every bundle shape, because
+ * adding it would reintroduce a parameter upstream no longer publishes.
  */
 
 // Byte-faithful mirror of the upstream 06ce0927 wiring. The companion
@@ -62,6 +70,13 @@ export const PARTICLE_INPUT_WIRING = {
   }
 }
 
+// Upstream 317c43ccb2ea removed render/pointsEmit's explicit diffuseTex
+// surface (see the header note). The port mirrors the removal: never patch
+// this effect, on any bundle shape. The other entries keep their 06ce0927
+// mirror for bundles that predate upstream's moved-inputs contract; the
+// moved-inputs detection below leaves newer bundles as published.
+export const RETIRED_WIRING = new Set(['render/pointsEmit'])
+
 /**
  * Applies the explicit particle texture input patch to the runtime's
  * loaded effect definitions.
@@ -70,17 +85,33 @@ export const PARTICLE_INPUT_WIRING = {
  *   _loadedEffects (a Map of "namespace/name" to
  *   {namespace, name, instance} entries).
  * @returns {Array} the patched loaded effect entries, in the table's
- *   order; effects that are not loaded or already carry the upstream
- *   wiring contribute no entry.
+ *   order; effects that are not loaded, retired (RETIRED_WIRING), or
+ *   already carrying upstream's moved-inputs wiring contribute no entry.
  */
 export function patchParticleInputs (renderer) {
   if (!renderer || !renderer._loadedEffects || typeof renderer._loadedEffects.get !== 'function') return []
   const patched = []
   for (const [effectId, wiring] of Object.entries(PARTICLE_INPUT_WIRING)) {
+    // A definition upstream no longer publishes must not come back.
+    if (RETIRED_WIRING.has(effectId)) continue
     const entry = renderer._loadedEffects.get(effectId)
     if (!entry || !entry.instance) continue
 
     const instance = entry.instance
+
+    // Forward safety: a definition that already carries upstream's
+    // moved-inputs contract (the surface global sets a colorModeUniform,
+    // or the sim pass binds the surface name itself) is published wiring,
+    // not the legacy fallback the patch rewrites. Leave it untouched;
+    // rewiring it would break the separate chained-input read.
+    const spec = instance.globals && instance.globals[wiring.surface]
+    const simPass = Array.isArray(instance.passes)
+      ? instance.passes.find(pass => pass && pass.program === wiring.passProgram)
+      : null
+    const movedInputs = (spec && spec.colorModeUniform) ||
+      (simPass && simPass.inputs && simPass.inputs[wiring.surface] === wiring.surface)
+    if (movedInputs) continue
+
     let changed = false
 
     // Add the named surface global when the loaded definition still uses

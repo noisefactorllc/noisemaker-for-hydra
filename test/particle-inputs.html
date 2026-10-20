@@ -5,14 +5,18 @@
   companion bundle (/_engine/hydra-synth.js),
   window.HydraEffects.loadHydraEffects(), and
   src/lib/noisemaker-runtime.mjs (createNoisemakerRuntime, which applies
-  the particle-input patch to the loaded definitions). Verifies that the
-  ported parameter contract from upstream noisemaker 06ce0927 is live on
-  the real pinned engine (1.0.301): each particle effect accepts its named
-  surface argument in the DSL (fieldTex, heightTex, diffuseTex), the sim
-  pass then reads the referenced surface (global_o1), and the omitted case
-  still reads the chained input (node_N_out). A rejected argument or an
-  unresolved input fails decisively. Mirrors the assertions of upstream
-  shaders/tests/test_particle_input_textures.mjs at the engine level.
+  the particle-input patch to the loaded definitions). Verifies that
+  the ported parameter contract from upstream noisemaker 06ce0927 is live
+  on the real pinned engine (1.0.301): each particle effect accepts its
+  named surface argument in the DSL (fieldTex, heightTex, diffuseTex), the
+  sim pass then reads the referenced surface (global_o1), and the omitted
+  case still reads the chained input (node_N_out). Upstream 317c43ccb2ea
+  ("Move particle texture inputs into individual behaviors") removed
+  pointsEmit's diffuseTex surface and the port mirrors that removal: the
+  patch must keep the surface retired. A rejected argument, an unresolved
+  input, or a resurrected retired surface fails decisively. Mirrors the
+  assertions of upstream shaders/tests/test_particle_input_textures.mjs at
+  the engine level.
 -->
 <html><body><pre id="out">particle-inputs-boot</pre>
 <script src="/_engine/hydra-synth.js"></script>
@@ -35,8 +39,7 @@ const expectedSurfaces = {
   'points/flow': 'fieldTex',
   'points/hydraulic': 'heightTex',
   'points/life': 'diffuseTex',
-  'points/physarum': 'fieldTex',
-  'render/pointsEmit': 'diffuseTex'
+  'points/physarum': 'fieldTex'
 }
 for (const [effectId, surface] of Object.entries(expectedSurfaces)) {
   const entry = renderer._loadedEffects.get(effectId)
@@ -45,6 +48,13 @@ for (const [effectId, surface] of Object.entries(expectedSurfaces)) {
   if (!spec || spec.type !== 'surface' || spec.default !== 'inputTex') {
     throw new Error(`${effectId}: surface global ${surface} missing or wrong: ${JSON.stringify(spec)}`)
   }
+}
+
+// The retired surface must stay retired (upstream 317c43ccb2ea removed it).
+const emit = renderer._loadedEffects.get('render/pointsEmit')
+if (!emit || !emit.instance) throw new Error('render/pointsEmit not loaded')
+if (emit.instance.globals.diffuseTex) {
+  throw new Error('render/pointsEmit: retired diffuseTex surface was resurrected')
 }
 
 // --- Engine-level checks: the DSL accepts each named surface and the ---
@@ -90,7 +100,6 @@ await compileCase('flow', 'fieldTex: read(o1)', 'agent', emitChain)
 await compileCase('hydraulic', 'heightTex: read(o1)', 'agent', emitChain)
 await compileCase('life', 'diffuseTex: read(o1)', 'agent', emitChain)
 await compileCase('physarum', 'fieldTex: read(o1)', 'agent', emitChain)
-await compileCase('pointsEmit', 'diffuseTex: read(o1)', 'init', emitOnlyChain)
 // The omitted case still resolves to the chained input (legacy fallback).
 await compileCase('dla', null, 'agent', emitChain)
 await compileCase('pointsEmit', null, 'init', emitOnlyChain)

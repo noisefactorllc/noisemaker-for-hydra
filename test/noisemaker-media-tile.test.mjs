@@ -53,7 +53,8 @@ test('patched GLSL declares the tile uniforms and offsets by tileOffset', () => 
   assert.match(MEDIA_INPUT_GLSL, /uniform vec2 tileOffset;/)
   assert.match(MEDIA_INPUT_GLSL, /uniform vec2 fullResolution;/)
   assert.match(MEDIA_INPUT_GLSL, /if \(tileOffset\.x == 0\.0 && tileOffset\.y == 0\.0\) \{\n        st = gl_FragCoord\.xy \/ size;\n    \} else \{\n        st = \(gl_FragCoord\.xy \+ tileOffset\) \/ size;\n    \}/)
-  assert.match(MEDIA_INPUT_GLSL, /fullResolution\.x > 0\.0 \? fullResolution : resolution/)
+  assert.match(MEDIA_INPUT_GLSL, /fullResolution\.x > 0\.0 && \(fullResolution\.x != resolution\.x \|\| fullResolution\.y != resolution\.y\)/,
+    'the untiled anchoring path branches on the runtime resolution')
 })
 
 test('patchMediaTile extends the loaded media uniform layout with slot 5', () => {
@@ -84,36 +85,55 @@ test('patchMediaTile returns null when synth/media is not loaded', () => {
   assert.equal(patchMediaTile(renderer), null)
 })
 
+test('patchMediaTile leaves a definition that already carries the tile contract as published', () => {
+  // Shape of the rolling CDN's post-b6598330 synth/media bundle: the
+  // definition declares the slot 5 layout itself.
+  const renderer = fakeRenderer(true)
+  const instance = renderer._loadedEffects.get('synth/media').instance
+  instance.uniformLayout.tileOffset = { slot: 5, components: 'xy' }
+  instance.uniformLayout.fullResolution = { slot: 5, components: 'zw' }
+  const entry = patchMediaTile(renderer)
+  assert.ok(entry, 'the loaded entry is still returned')
+  assert.equal(entry.instance.shaders.mediaInput.glsl, 'OLD GLSL',
+    'published sources are left untouched')
+  assert.equal(entry.instance.shaders.mediaInput.wgsl, 'OLD WGSL',
+    'published sources are left untouched')
+  assert.equal(entry.instance.uniformLayout.imageSize.slot, 4,
+    'the published layout is left untouched')
+})
+
 test('patchMediaTile tolerates a renderer without _loadedEffects', () => {
   assert.equal(patchMediaTile({}), null)
   assert.equal(patchMediaTile(null), null)
 })
 
 // Upstream reference: noisefactorllc/noisemaker commits fde974e58a0d
-// ("LEDGER: make synth/media tile-aware for tiled print export") and
+// ("LEDGER: make synth/media tile-aware for tiled print export"),
 // 668b82ea1f7b ("LEDGER: keep synth/media's untiled sampling path
-// bit-identical"). File copies are committed under test/fixtures/ so the
-// byte identity of the port is mechanically checkable without upstream
-// access: definition.js pins the slot 5 contract at fde974e5, and the
-// mediaInput shader sources pin the current tile-aware sources at 668b82ea
-// (fde974e5 and 668b82ea agree on the definition.js contract).
+// bit-identical") and b659833032cf ("Restore exact media parity across
+// tiled and untiled renders"). File copies are committed under
+// test/fixtures/ so the byte identity of the port is mechanically
+// checkable without upstream access: definition.js pins the slot 5
+// contract at fde974e5 (unchanged by the later commits), and the
+// mediaInput shader sources pin the current tile-aware sources at
+// b659833032cf.
 
-test('embedded GLSL mediaInput is byte-identical to upstream 668b82ea', () => {
-  const upstream = readFileSync(new URL('./fixtures/upstream-668b82ea/glsl-mediaInput.glsl', import.meta.url))
+test('embedded GLSL mediaInput is byte-identical to upstream b6598330', () => {
+  const upstream = readFileSync(new URL('./fixtures/upstream-b6598330/glsl-mediaInput.glsl', import.meta.url))
   assert.equal(createHash('sha256').update(upstream).digest('hex'),
-    '39286ea42ba84515178be96bb070aad7bcd383ad5ae91c3332c5f5bc09eb24bf',
+    'b7905564ff42d2373ecc28ffc5184d072eb88b1f4b85026c08abb541accb2f63',
     'upstream GLSL fixture sha256 (pinned reference)')
   assert.equal(Buffer.from(MEDIA_INPUT_GLSL, 'utf8').toString('hex'), upstream.toString('hex'),
-    'MEDIA_INPUT_GLSL is byte-identical to upstream 668b82ea glsl/mediaInput.glsl')
+    'MEDIA_INPUT_GLSL is byte-identical to upstream b6598330 glsl/mediaInput.glsl')
 })
 
-test('embedded WGSL mediaInput is byte-identical to upstream 668b82ea', () => {
-  const upstream = readFileSync(new URL('./fixtures/upstream-668b82ea/wgsl-mediaInput.wgsl', import.meta.url))
+test('embedded WGSL mediaInput is byte-identical to upstream b6598330', () => {
+  const upstream = readFileSync(new URL('./fixtures/upstream-b6598330/wgsl-mediaInput.wgsl', import.meta.url))
   assert.equal(createHash('sha256').update(upstream).digest('hex'),
-    'd6bb52fc65bc2c10cdf5073b3b9e6469028fd52a25db9e3abf848478735a7dcd',
+    '471fc806b7d7bbaaa8b6bd122eb991170479c6ba611fab6f079b66ab2d2c62c5',
     'upstream WGSL fixture sha256 (pinned reference)')
   assert.equal(Buffer.from(MEDIA_INPUT_WGSL, 'utf8').toString('hex'), upstream.toString('hex'),
-    'MEDIA_INPUT_WGSL is byte-identical to upstream 668b82ea wgsl/mediaInput.wgsl')
+    'MEDIA_INPUT_WGSL is byte-identical to upstream b6598330 wgsl/mediaInput.wgsl')
 })
 
 test('TILE_UNIFORM_LAYOUT matches the upstream definition.js slot 5 contract', () => {

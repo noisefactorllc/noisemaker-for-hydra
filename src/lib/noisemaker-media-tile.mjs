@@ -5,13 +5,15 @@
  * tiled print export") adds tileOffset and fullResolution uniforms (slot 5,
  * xy and zw components) to the media effect and rewrites the mediaInput
  * GLSL and WGSL sources so tile-local fragments resolve against the full
- * export canvas. Upstream commit 668b82ea1f7b then branches the tile-aware
- * sampling on the runtime tileOffset so the untiled path executes the
- * original expression unchanged and stays bit-identical on compilers with
- * relaxed math. The pinned CDN authority (1.0.301) predates both commits,
- * so the runtime applies this patch to the loaded effect definition after
- * loadEffects() and before the first render, when the engine lazily builds
- * its program registry from the effect definition.
+ * export canvas. Upstream commit b659833032cf ("Restore exact media parity
+ * across tiled and untiled renders") then branches the anchor and offset
+ * math on the runtime resolution: when fullResolution matches resolution
+ * the untiled expression runs unchanged, so normal-size rendering stays
+ * bit-identical on compilers with relaxed math. The mirror below carries
+ * the tile-aware sources at b659833032cf. The pinned CDN authority (1.0.301)
+ * predates the commits, so the runtime applies this patch to the loaded
+ * effect definition after loadEffects() and before the first render, when
+ * the engine lazily builds its program registry from the effect definition.
  *
  * The engine already carries the full tile pipeline (setTileRegion stores
  * _tileOffset/_fullResolution and the per-frame render state exposes
@@ -22,7 +24,7 @@
 
 // The sources below are byte-identical to upstream
 // shaders/effects/synth/media/glsl/mediaInput.glsl and
-// shaders/effects/synth/media/wgsl/mediaInput.wgsl at 668b82ea1f7b. They
+// shaders/effects/synth/media/wgsl/mediaInput.wgsl at b659833032cf. They
 // contain no backticks, template substitutions or backslashes, so embedding
 // them as template literals preserves them exactly.
 
@@ -121,11 +123,6 @@ vec4 getImage(vec2 st) {
     }
     st.y = 1.0 - st.y;
 
-    // Anchoring is relative to the full export canvas, not the tile.
-    // fullResolution defaults to resolution when not tiling, so normal-size
-    // rendering keeps the exact same values.
-    vec2 fullRes = fullResolution.x > 0.0 ? fullResolution : resolution;
-
     float scale = 100.0 / scaleAmt;
 
     if (scale == 0.0) {
@@ -133,44 +130,86 @@ vec4 getImage(vec2 st) {
     }
     st *= scale;
 
-    // Position adjustments based on anchor point
-    if (position == 0) {
-        // top left
-        st.y += (fullRes.y / size.y * scale) - (scale - (1.0 / size.y * scale));
-    } else if (position == 1) {
-        // top center
-        st.x -= (fullRes.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
-        st.y += (fullRes.y / size.y * scale) - (scale - (1.0 / size.y * scale));
-    } else if (position == 2) {
-        // top right
-        st.x -= (fullRes.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
-        st.y += (fullRes.y / size.y * scale) - (scale - (1.0 / size.y * scale));
-    } else if (position == 3) {
-        // mid left
-        st.y += (fullRes.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
-    } else if (position == 4) {
-        // mid center
-        st.x -= (fullRes.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
-        st.y += (fullRes.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
-    } else if (position == 5) {
-        // mid right
-        st.x -= (fullRes.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
-        st.y += (fullRes.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
-    } else if (position == 6) {
-        // bottom left
-        st.y += 1.0 - (scale - (1.0 / size.y * scale));
-    } else if (position == 7) {
-        // bottom center
-        st.x -= (fullRes.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
-        st.y += 1.0 - (scale - (1.0 / size.y * scale));
-    } else if (position == 8) {
-        // bottom right
-        st.x -= (fullRes.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
-        st.y += 1.0 - (scale - (1.0 / size.y * scale));
-    }
+    // Keep the original untiled math exact on both backends.
+    if (fullResolution.x > 0.0 && (fullResolution.x != resolution.x || fullResolution.y != resolution.y)) {
+        // Position adjustments based on anchor point
+        if (position == 0) {
+            // top left
+            st.y += (fullResolution.y / size.y * scale) - (scale - (1.0 / size.y * scale));
+        } else if (position == 1) {
+            // top center
+            st.x -= (fullResolution.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
+            st.y += (fullResolution.y / size.y * scale) - (scale - (1.0 / size.y * scale));
+        } else if (position == 2) {
+            // top right
+            st.x -= (fullResolution.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
+            st.y += (fullResolution.y / size.y * scale) - (scale - (1.0 / size.y * scale));
+        } else if (position == 3) {
+            // mid left
+            st.y += (fullResolution.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
+        } else if (position == 4) {
+            // mid center
+            st.x -= (fullResolution.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
+            st.y += (fullResolution.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
+        } else if (position == 5) {
+            // mid right
+            st.x -= (fullResolution.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
+            st.y += (fullResolution.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
+        } else if (position == 6) {
+            // bottom left
+            st.y += 1.0 - (scale - (1.0 / size.y * scale));
+        } else if (position == 7) {
+            // bottom center
+            st.x -= (fullResolution.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
+            st.y += 1.0 - (scale - (1.0 / size.y * scale));
+        } else if (position == 8) {
+            // bottom right
+            st.x -= (fullResolution.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
+            st.y += 1.0 - (scale - (1.0 / size.y * scale));
+        }
 
-    st.x -= map(offsetX, -100.0, 100.0, -fullRes.x / size.x * scale, fullRes.x / size.x * scale) * 1.5;
-    st.y -= map(offsetY, -100.0, 100.0, -fullRes.y / size.y * scale, fullRes.y / size.y * scale) * 1.5;
+        st.x -= map(offsetX, -100.0, 100.0, -fullResolution.x / size.x * scale, fullResolution.x / size.x * scale) * 1.5;
+        st.y -= map(offsetY, -100.0, 100.0, -fullResolution.y / size.y * scale, fullResolution.y / size.y * scale) * 1.5;
+    } else {
+        // Position adjustments based on anchor point
+        if (position == 0) {
+            // top left
+            st.y += (resolution.y / size.y * scale) - (scale - (1.0 / size.y * scale));
+        } else if (position == 1) {
+            // top center
+            st.x -= (resolution.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
+            st.y += (resolution.y / size.y * scale) - (scale - (1.0 / size.y * scale));
+        } else if (position == 2) {
+            // top right
+            st.x -= (resolution.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
+            st.y += (resolution.y / size.y * scale) - (scale - (1.0 / size.y * scale));
+        } else if (position == 3) {
+            // mid left
+            st.y += (resolution.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
+        } else if (position == 4) {
+            // mid center
+            st.x -= (resolution.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
+            st.y += (resolution.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
+        } else if (position == 5) {
+            // mid right
+            st.x -= (resolution.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
+            st.y += (resolution.y / size.y * scale * 0.5) + (0.5 - (1.0 / size.y * scale)) - (scale);
+        } else if (position == 6) {
+            // bottom left
+            st.y += 1.0 - (scale - (1.0 / size.y * scale));
+        } else if (position == 7) {
+            // bottom center
+            st.x -= (resolution.x / size.x * scale * 0.5) - (0.5 - (1.0 / size.x * scale));
+            st.y += 1.0 - (scale - (1.0 / size.y * scale));
+        } else if (position == 8) {
+            // bottom right
+            st.x -= (resolution.x / size.x * scale) - (1.0 - (1.0 / size.x * scale));
+            st.y += 1.0 - (scale - (1.0 / size.y * scale));
+        }
+
+        st.x -= map(offsetX, -100.0, 100.0, -resolution.x / size.x * scale, resolution.x / size.x * scale) * 1.5;
+        st.y -= map(offsetY, -100.0, 100.0, -resolution.y / size.y * scale, resolution.y / size.y * scale) * 1.5;
+    }
 
     // Correct for aspect ratio before rotation
     st.x *= size.x / size.y;
@@ -356,43 +395,70 @@ fn getImage(pos: vec2<f32>) -> vec4<f32> {
     }
     st.y = 1.0 - st.y;
 
-    // Anchoring is relative to the full export canvas, not the tile.
-    // fullResolution defaults to resolution when not tiling, so normal-size
-    // rendering keeps the exact same values.
-    let fullRes = select(resolution, fullResolution, fullResolution.x > 0.0);
-
     var scale = 100.0 / scaleAmt;
     if (scale == 0.0) { scale = 1.0; }
     st = st * scale;
 
-    if (posIndex == 0) {
-        st.y = st.y + (fullRes.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
-    } else if (posIndex == 1) {
-        st.x = st.x - (fullRes.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
-        st.y = st.y + (fullRes.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
-    } else if (posIndex == 2) {
-        st.x = st.x - (fullRes.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
-        st.y = st.y + (fullRes.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
-    } else if (posIndex == 3) {
-        st.y = st.y + (fullRes.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
-    } else if (posIndex == 4) {
-        st.x = st.x - (fullRes.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
-        st.y = st.y + (fullRes.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
-    } else if (posIndex == 5) {
-        st.x = st.x - (fullRes.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
-        st.y = st.y + (fullRes.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
-    } else if (posIndex == 6) {
-        st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
-    } else if (posIndex == 7) {
-        st.x = st.x - (fullRes.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
-        st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
-    } else if (posIndex == 8) {
-        st.x = st.x - (fullRes.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
-        st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
-    }
+    // Keep the original untiled math exact on both backends.
+    if (fullResolution.x > 0.0 && (fullResolution.x != resolution.x || fullResolution.y != resolution.y)) {
+        if (posIndex == 0) {
+            st.y = st.y + (fullResolution.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 1) {
+            st.x = st.x - (fullResolution.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (fullResolution.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 2) {
+            st.x = st.x - (fullResolution.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (fullResolution.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 3) {
+            st.y = st.y + (fullResolution.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
+        } else if (posIndex == 4) {
+            st.x = st.x - (fullResolution.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (fullResolution.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
+        } else if (posIndex == 5) {
+            st.x = st.x - (fullResolution.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (fullResolution.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
+        } else if (posIndex == 6) {
+            st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 7) {
+            st.x = st.x - (fullResolution.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
+            st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 8) {
+            st.x = st.x - (fullResolution.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
+            st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
+        }
 
-    st.x = st.x - map(offsetX, -100.0, 100.0, -fullRes.x / imageSize.x * scale, fullRes.x / imageSize.x * scale) * 1.5;
-    st.y = st.y - map(offsetY, -100.0, 100.0, -fullRes.y / imageSize.y * scale, fullRes.y / imageSize.y * scale) * 1.5;
+        st.x = st.x - map(offsetX, -100.0, 100.0, -fullResolution.x / imageSize.x * scale, fullResolution.x / imageSize.x * scale) * 1.5;
+        st.y = st.y - map(offsetY, -100.0, 100.0, -fullResolution.y / imageSize.y * scale, fullResolution.y / imageSize.y * scale) * 1.5;
+    } else {
+        if (posIndex == 0) {
+            st.y = st.y + (resolution.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 1) {
+            st.x = st.x - (resolution.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (resolution.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 2) {
+            st.x = st.x - (resolution.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (resolution.y / imageSize.y * scale) - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 3) {
+            st.y = st.y + (resolution.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
+        } else if (posIndex == 4) {
+            st.x = st.x - (resolution.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (resolution.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
+        } else if (posIndex == 5) {
+            st.x = st.x - (resolution.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
+            st.y = st.y + (resolution.y / imageSize.y * scale * 0.5) + (0.5 - (1.0 / imageSize.y * scale)) - scale;
+        } else if (posIndex == 6) {
+            st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 7) {
+            st.x = st.x - (resolution.x / imageSize.x * scale * 0.5) + (0.5 - (1.0 / imageSize.x * scale));
+            st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
+        } else if (posIndex == 8) {
+            st.x = st.x - (resolution.x / imageSize.x * scale) + (1.0 - (1.0 / imageSize.x * scale));
+            st.y = st.y + 1.0 - (scale - (1.0 / imageSize.y * scale));
+        }
+
+        st.x = st.x - map(offsetX, -100.0, 100.0, -resolution.x / imageSize.x * scale, resolution.x / imageSize.x * scale) * 1.5;
+        st.y = st.y - map(offsetY, -100.0, 100.0, -resolution.y / imageSize.y * scale, resolution.y / imageSize.y * scale) * 1.5;
+    }
 
     st.x = st.x * (imageSize.x / imageSize.y);
     // Preserve exact texture coordinates for the identity transform.
@@ -475,7 +541,10 @@ export const TILE_UNIFORM_LAYOUT = {
 
 /**
  * Applies the tile-aware media patch to the runtime's loaded effect
- * definitions.
+ * definitions. Forward-safe: when the loaded definition already carries
+ * the tile contract (uniformLayout declares tileOffset and
+ * fullResolution, as the rolling CDN's post-b659833032cf bundles do), the
+ * patch leaves the definition as published.
  *
  * @param {object} renderer - Noisemaker CanvasRenderer exposing
  *   _loadedEffects (a Map of "namespace/name" to
@@ -489,6 +558,14 @@ export function patchMediaTile (renderer) {
   if (!entry || !entry.instance) return null
 
   const instance = entry.instance
+
+  // Forward safety: a definition that already declares the tile uniform
+  // layout carries the upstream tile contract (fde974e58a0d and later),
+  // including upstream b659833032cf's exact untiled anchoring branch in
+  // its mediaInput sources. Leave it as published; overwriting the
+  // sources with the embedded mirror would regress that branch.
+  const layout = instance.uniformLayout
+  if (layout && layout.tileOffset && layout.fullResolution) return entry
 
   // Extend the effect-level uniform layout with the tile uniforms. The
   // engine's program registry reads uniformLayout at plan-compile time and
