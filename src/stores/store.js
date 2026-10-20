@@ -1,4 +1,5 @@
 import repl, { formatError } from './repl-v2.js'
+import { log } from '../views/editor/log.js'
 // console.log('ENVIRONMENT IS', process.env.NODE_ENV)
 
 export default function store(state, emitter) {
@@ -30,6 +31,16 @@ export default function store(state, emitter) {
       state.isError = info.isError
       if(callback) callback(info.codeString, info.isError)
       emitter.emit('render')
+      // The batched render that publishes this state to the diagnostics log
+      // is scheduled through requestAnimationFrame. A page whose runner
+      // never delivers a frame (a broken display link) never runs that
+      // callback, so a real compile diagnostic stays stuck in state and the
+      // diagnostics log keeps its stale content. Write the compiled
+      // diagnostic line synchronously through the same log element so the
+      // diagnostic always lands; the batched render keeps owning the
+      // element afterwards. This runs after the callback and the render
+      // event, so the established completion chain is never at risk.
+      if (info.isError) log(info.errorMessage, 'log-error')
     })
 
   })
