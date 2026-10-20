@@ -108,6 +108,16 @@ function launchChrome(url, windowSize) {
     '--use-gl=angle',
     '--use-angle=swiftshader',
     '--enable-unsafe-swiftshader',
+    // The editor batches its diagnostics DOM update through
+    // requestAnimationFrame. A runner session whose display link is broken
+    // (CVDisplayLinkCreateWithCGDisplay failures in the Chrome stderr) never
+    // delivers a frame, so rAF callbacks never run and the dumped DOM keeps
+    // the stale pre-compile log even though the engine and the compile are
+    // long done. Run the whole compositor on the software path instead of
+    // the display-link-backed hardware path, so frames are produced on
+    // schedule regardless of the runner's graphics session and the rAF
+    // callback runs before the dump. Assertion scope is unchanged.
+    '--disable-gpu',
     // Ambient proxy env must not route the loopback dev server through a
     // proxy (blank pages, every case 'expected DSL did not load'); external
     // hosts keep any ambient proxy.
