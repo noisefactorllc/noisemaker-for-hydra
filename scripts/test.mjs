@@ -98,6 +98,12 @@ function launchChrome(url, windowSize) {
     // full retry budget. Standard Chromium hardening: move shared memory to
     // /tmp. CI VMs have no such cap, so the flag is pure hardening there.
     '--disable-dev-shm-usage',
+    // Force software WebGL so a headless GPU stack can never wedge the page or
+    // stall browser teardown (the parity gate launches its own slices with
+    // the same ANGLE/SwiftShader flags).
+    '--use-gl=angle',
+    '--use-angle=swiftshader',
+    '--enable-unsafe-swiftshader',
     // Ambient proxy env must not route the loopback dev server through a
     // proxy (blank pages, every case 'expected DSL did not load'); external
     // hosts keep any ambient proxy.
