@@ -102,6 +102,62 @@ function movedInputsRenderer ({ withColorModeUniform = true } = {}) {
     registerEffectWithRuntime () { return {} } }
 }
 
+// A bundle that carries upstream 27a2b58f4a17's renamed contract: dla,
+// flow and physarum publish the heightTex surface ("height map", as in
+// heightGrid and hydraulic) and declare the fieldTex -> heightTex
+// paramAliases registry on the definition; the legacy fieldTex surface is
+// gone from globals and from the sim pass inputs. hydraulic and life keep
+// their own published surfaces. The patch must leave every definition as
+// published.
+function renamedInputsRenderer () {
+  const loaded = new Map()
+  const ids = Object.keys(PARTICLE_INPUT_WIRING).filter(id => !RETIRED_WIRING.has(id))
+  for (const effectId of ids) {
+    const [namespace, name] = effectId.split('/')
+    const wiring = PARTICLE_INPUT_WIRING[effectId]
+    const renamedField = wiring.surface === 'fieldTex'
+    const surface = renamedField ? 'heightTex' : wiring.surface
+    const instance = {
+      globals: {
+        stateSize: { type: 'int', default: 256 },
+        [surface]: { type: 'surface', default: 'none', colorModeUniform: 'surfaceActive' }
+      },
+      passes: [
+        {
+          name: wiring.passProgram,
+          program: wiring.passProgram,
+          inputs: {
+            velTex: 'global_vel',
+            inputTex: 'inputTex',
+            [surface]: surface
+          },
+          uniforms: { stride: 'stride' }
+        }
+      ]
+    }
+    if (renamedField) instance.paramAliases = { [wiring.surface]: surface }
+    loaded.set(effectId, { namespace, name, instance })
+  }
+  // The retired effect keeps the shape the patch used to rewrite.
+  loaded.set('render/pointsEmit', {
+    namespace: 'render',
+    name: 'pointsEmit',
+    instance: {
+      globals: { stateSize: { type: 'int', default: 256 } },
+      passes: [
+        {
+          name: 'init',
+          program: 'init',
+          inputs: { velTex: 'global_vel', inputTex: 'inputTex' },
+          uniforms: { stateSize: 'stateSize' }
+        }
+      ]
+    }
+  })
+  return { _loadedEffects: loaded, reregistered: [],
+    registerEffectWithRuntime () { return {} } }
+}
+
 const ACTIVE_IDS = Object.keys(PARTICLE_INPUT_WIRING).filter(id => !RETIRED_WIRING.has(id))
 
 test('PARTICLE_INPUT_WIRING matches the pinned upstream 06ce0927 contract except the moved categories', () => {
@@ -253,6 +309,44 @@ test('patchParticleInputs detects the moved-inputs contract without a colorModeU
   assert.deepEqual(patchParticleInputs(renderer), [])
   assert.equal(JSON.stringify([...renderer._loadedEffects.values()]), before,
     'a sim pass that already binds the surface name is published wiring')
+})
+
+test('patchParticleInputs leaves upstream renamed fieldTex definitions as published', () => {
+  // The renamed shape is pinned from the rolling CDN bundle (upstream
+  // 27a2b58f4a17's contract as served today): the height surface is
+  // heightTex and the definition declares the fieldTex -> heightTex
+  // paramAliases registry.
+  const contract = JSON.parse(readFileSync(
+    new URL('./fixtures/upstream-27a2b58f/renamed-inputs-contract.json', import.meta.url), 'utf8'))
+  assert.equal(createHash('sha256').update(JSON.stringify(contract, null, 2) + '\n').digest('hex'),
+    '63c23fba3fac19e55dd427100bd8c7804c09a9e483cea1fa774cc3bd22a93513',
+    'renamed-inputs contract fixture sha256 (pinned reference)')
+  assert.equal(contract.heightTexGlobal.colorModeUniform, 'fieldActive')
+  assert.equal(contract.heightTexGlobal.ui.label, 'height map')
+  assert.equal(contract.agentPass.inputs.heightTex, 'heightTex')
+  assert.equal(contract.paramAliases.fieldTex, 'heightTex')
+
+  const renderer = renamedInputsRenderer()
+  const before = JSON.stringify([...renderer._loadedEffects.values()])
+  const patched = patchParticleInputs(renderer)
+  assert.deepEqual(patched, [], 'a renamed-contract bundle needs no patch')
+  assert.equal(JSON.stringify([...renderer._loadedEffects.values()]), before,
+    'the loaded definitions are untouched')
+  for (const effectId of ['points/dla', 'points/flow', 'points/physarum']) {
+    const instance = renderer._loadedEffects.get(effectId).instance
+    assert.equal(instance.globals.fieldTex, undefined,
+      `${effectId}: the retired fieldTex surface must not be resurrected`)
+    assert.ok(instance.globals.heightTex, `${effectId}: the published heightTex surface stays`)
+    const simPass = instance.passes.find(pass => pass.program === 'agent')
+    assert.equal(simPass.inputs.inputTex, 'inputTex',
+      `${effectId}: the sim pass keeps its published chained input`)
+    assert.equal(simPass.inputs.heightTex, 'heightTex',
+      `${effectId}: the sim pass keeps the published heightTex binding`)
+  }
+  // The retired effect is skipped on this bundle shape too.
+  const emit = renderer._loadedEffects.get('render/pointsEmit').instance
+  assert.equal(emit.globals.diffuseTex, undefined)
+  assert.equal(emit.passes[0].inputs.inputTex, 'inputTex')
 })
 
 test('patchParticleInputs reports only the loaded effects it patched', () => {

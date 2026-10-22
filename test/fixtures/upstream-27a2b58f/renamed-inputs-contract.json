@@ -1,0 +1,45 @@
+{
+  "source": "https://shaders.noisedeck.app/1/effects/points/dla.js (rolling CDN bundle), fetched 2026-10-22",
+  "note": "Pinned shape of upstream 27a2b58f4a17's renamed contract as served to the port runtime: the field surface is heightTex (\"height map\"), the definition declares paramAliases fieldTex -> heightTex, and the sim pass binds heightTex next to the chained input.",
+  "heightTexGlobal": {
+    "type": "surface",
+    "default": "none",
+    "colorModeUniform": "fieldActive",
+    "ui": {
+      "label": "height map",
+      "category": "chemistry"
+    }
+  },
+  "diffuseTexGlobal": {
+    "type": "surface",
+    "default": "none",
+    "colorModeUniform": "diffuseActive",
+    "ui": {
+      "label": "diffuse map",
+      "category": "chemistry"
+    }
+  },
+  "paramAliases": {
+    "fieldTex": "heightTex"
+  },
+  "agentPass": {
+    "program": "agent",
+    "inputs": {
+      "xyzTex": "global_xyz",
+      "velTex": "global_vel",
+      "rgbaTex": "global_rgba",
+      "gridTex": "global_dla_grid",
+      "inputTex": "inputTex",
+      "heightTex": "heightTex",
+      "diffuseTex": "diffuseTex"
+    },
+    "uniforms": {
+      "diffuseActive": "diffuseActive",
+      "fieldActive": "fieldActive",
+      "stride": "stride",
+      "inputWeight": "inputWeight",
+      "attrition": "attrition",
+      "stateSize": "stateSize"
+    }
+  }
+}

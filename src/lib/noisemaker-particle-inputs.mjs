@@ -33,6 +33,14 @@
  * that removal: the surface stays retired on every bundle shape, because
  * adding it would reintroduce a parameter upstream no longer publishes.
  *
+ * Upstream 27a2b58f4a17 renamed dla/flow/physarum's field input to
+ * heightTex ("height map", as in heightGrid and hydraulic) and kept
+ * fieldTex accepted through a paramAliases registry on the built-in
+ * definitions. On a bundle that carries that renamed contract the
+ * loaded definition declares the rename itself, so the patch leaves it
+ * as published; adding the legacy fieldTex surface there would
+ * reintroduce a parameter upstream no longer publishes.
+ *
  * Upstream e23524f6b5ea and d3b5238c8bf2 also moved each surface's
  * ui.category out of "source" and into the owning behavior's category; the
  * table below carries those current values (the moved-inputs contract uses
@@ -116,7 +124,15 @@ export function patchParticleInputs (renderer) {
     const simPass = Array.isArray(instance.passes)
       ? instance.passes.find(pass => pass && pass.program === wiring.passProgram)
       : null
-    const movedInputs = (spec && spec.colorModeUniform) ||
+
+    // Upstream 27a2b58f4a17's renamed contract (fieldTex -> heightTex for
+    // dla/flow/physarum) is declared on the definition itself: the effect
+    // carries a paramAliases entry for the legacy name and publishes the
+    // renamed surface instead. The patch must never re-add the legacy
+    // surface there — leave the definition as published.
+    const renamed = !!(instance.paramAliases && instance.paramAliases[wiring.surface])
+    const movedInputs = renamed ||
+      (spec && spec.colorModeUniform) ||
       (simPass && simPass.inputs && simPass.inputs[wiring.surface] === wiring.surface)
     if (movedInputs) continue
 
