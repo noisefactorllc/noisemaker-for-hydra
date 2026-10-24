@@ -1,6 +1,6 @@
 {
  "generator": "scripts/generate-parity-cases.mjs",
- "upstreamCommit": "158e65cdebed578aa83d2d0d5d722b5126fb02ec",
+ "upstreamCommit": "d0ed94ae19cca7328bc7d6b28902712a0838e1a9",
  "generatedFrom": {
   "manifest": 210,
   "cases": 210,
@@ -31,10 +31,10 @@
   }
  },
  "authorities": {
-  "upstreamCommit": "158e65cdebed578aa83d2d0d5d722b5126fb02ec",
-  "engineBundle": "https://shaders.noisedeck.app/1.0.301/noisemaker-shaders-core.esm.min.js",
-  "engineBundleSha256": "f895c9400a02a8e709b6d500cf768961e0ff981af88d67f3a3c0357653dd9a0c",
-  "manifest": "https://shaders.noisedeck.app/1.0.301/effects/manifest.json",
+  "upstreamCommit": "d0ed94ae19cca7328bc7d6b28902712a0838e1a9",
+  "engineBundle": "https://shaders.noisedeck.app/1.0.312/noisemaker-shaders-core.esm.min.js",
+  "engineBundleSha256": "43fa9681cec8d0b277d4d0e4eb02122f77b4877d839fc7c8a591e4e7ae283b34",
+  "manifest": "https://shaders.noisedeck.app/1.0.312/effects/manifest.json",
   "manifestSha256": "05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e",
   "rollingCore": "https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js",
   "companion": "/_engine/hydra-synth.js",
@@ -7724,8 +7724,10 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().attractor(stateSize: 256, attractor: rossler, speed: 1.5423, viewMode: 1).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().attractor(stateSize: 256, attractor: rossler, speed: 1.5423, viewMode: 1, diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -7779,8 +7781,10 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().buddhabrot(stateSize: 512, mode: anti, maxIter: 1545, minIter: 770, centerX: 1.62, centerY: 1.62, zoom: 3.873).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().buddhabrot(stateSize: 512, mode: anti, maxIter: 1545, minIter: 770, centerX: 1.62, centerY: 1.62, zoom: 3.873, diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -7837,8 +7841,11 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().dla(stateSize: 256, anchorDensity: 3.8523, stride: 38.73, inputWeight: 77, decay: 0.385, deposit: 15.515, attrition: 7.7, matteOpacity: 0.77).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "heightTex",
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().dla(stateSize: 256, anchorDensity: 3.8523, stride: 38.73, inputWeight: 77, decay: 0.385, deposit: 15.515, attrition: 7.7, matteOpacity: 0.77, heightTex: read(o1), diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -7903,8 +7910,10 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().flock(separation: 3.85, alignment: 3.85, cohesion: 3.85, perceptionRadius: 156.3, separationRadius: 78.15, maxSpeed: 7.815, maxForce: 0.7723, boundaryMode: softWall, wallMargin: 156.3, noiseWeight: 0.77).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().flock(separation: 3.85, alignment: 3.85, cohesion: 3.85, perceptionRadius: 156.3, separationRadius: 78.15, maxSpeed: 7.815, maxForce: 0.7723, boundaryMode: softWall, wallMargin: 156.3, noiseWeight: 0.77, diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -7957,8 +7966,11 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().flow(stateSize: 256, behavior: obedient, stride: 770.23, strideDeviation: 0.385, kink: 7.7, quantize: true, inputWeight: 77).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "heightTex",
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().flow(stateSize: 256, behavior: obedient, stride: 770.23, strideDeviation: 0.385, kink: 7.7, quantize: true, inputWeight: 77, heightTex: read(o1), diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8037,8 +8049,11 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().hydraulic(stride: 770.23, quantize: true, inverse: true, inputWeight: 77).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "heightTex",
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().hydraulic(stride: 770.23, quantize: true, inverse: true, inputWeight: 77, heightTex: read(o1), diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8095,8 +8110,10 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().lenia(muK: 23.33, sigmaK: 7.723, muG: 1.563, sigmaG: 0.3873, repulsion: 3.85, dt: 0.3873, searchRadius: 31.95, depositAmount: 3.873).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().lenia(muK: 23.33, sigmaK: 7.723, muG: 1.563, sigmaG: 0.3873, repulsion: 3.85, dt: 0.3873, searchRadius: 31.95, depositAmount: 3.873, diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8169,8 +8186,10 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().life(stateSize: 256, typeCount: 7, attractionScale: 3.85, repulsionScale: 3.85, minRadius: 0.03873, maxRadius: 0.1586, maxSpeed: 0.007815, friction: 0.77, boundaryMode: bounce, matrixSeed: 770, symmetricForces: true, useTypeColor: true).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().life(stateSize: 256, typeCount: 7, attractionScale: 3.85, repulsionScale: 3.85, minRadius: 0.03873, maxRadius: 0.1586, maxSpeed: 0.007815, friction: 0.77, boundaryMode: bounce, matrixSeed: 770, symmetricForces: true, useTypeColor: true, diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8227,8 +8246,11 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().physarum(moveSpeed: 2.3215, turnSpeed: 2.419024, sensorAngle: 1.178, sensorDistance: 0.07746, inputWeight: 77, deposit: 0.77, decay: 0.77, resetState: true).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "heightTex",
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().physarum(moveSpeed: 2.3215, turnSpeed: 2.419024, sensorAngle: 1.178, sensorDistance: 0.07746, inputWeight: 77, deposit: 0.77, decay: 0.77, resetState: true, heightTex: read(o1), diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {
@@ -8281,8 +8303,10 @@
      }
     ],
     "defines": [],
-    "surfaceBindings": [],
-    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().physical(stateSize: 256, gravity: 1.08, wind: 1.08, energy: 1.54, drag: 0.154, deviation: 0.77, wander: 0.77).write(o0)\nrender(o0)"
+    "surfaceBindings": [
+     "diffuseTex"
+    ],
+    "source": "search points, synth\nnoise(speed: 0).write(o1)\nnoise().physical(stateSize: 256, gravity: 1.08, wind: 1.08, energy: 1.54, drag: 0.154, deviation: 0.77, wander: 0.77, diffuseTex: read(o1)).write(o0)\nrender(o0)"
    }
   },
   {

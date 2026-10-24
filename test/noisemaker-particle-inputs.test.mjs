@@ -8,9 +8,9 @@ import {
   patchParticleInputs
 } from '../src/lib/noisemaker-particle-inputs.mjs'
 
-// The loaded instance shape mirrors the 1.0.301 engine bundle's effect
-// definitions: globals keyed by parameter name, passes keyed by program
-// with an inputs map of uniform name to texture source.
+// The loaded instance shape mirrors a pre-moved-inputs engine bundle's
+// effect definitions: globals keyed by parameter name, passes keyed by
+// program with an inputs map of uniform name to texture source.
 function fakeRenderer () {
   const reregistered = []
   const loaded = new Map()

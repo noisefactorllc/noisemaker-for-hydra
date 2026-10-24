@@ -10,10 +10,12 @@
  * math on the runtime resolution: when fullResolution matches resolution
  * the untiled expression runs unchanged, so normal-size rendering stays
  * bit-identical on compilers with relaxed math. The mirror below carries
- * the tile-aware sources at b659833032cf. The pinned CDN authority (1.0.301)
- * predates the commits, so the runtime applies this patch to the loaded
- * effect definition after loadEffects() and before the first render, when
- * the engine lazily builds its program registry from the effect definition.
+ * the tile-aware sources at b659833032cf. The pinned CDN authority (1.0.312)
+ * already carries the commits, so on the pinned bundle the patch detects the
+ * published tile contract and leaves the definition as published; the patch
+ * still applies to older bundles: after loadEffects() and before the first
+ * render, when the engine lazily builds its program registry from the
+ * effect definition.
  *
  * The engine already carries the full tile pipeline (setTileRegion stores
  * _tileOffset/_fullResolution and the per-frame render state exposes

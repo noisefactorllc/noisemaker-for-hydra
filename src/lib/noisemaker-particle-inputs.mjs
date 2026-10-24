@@ -12,13 +12,15 @@
  * "agent", or "init" for render/pointsEmit) now read through the named
  * surface, while every other pass keeps the legacy literal wiring.
  *
- * The pinned CDN authority (1.0.301) predates the commit, so the runtime
- * applies this patch to the loaded effect definitions after loadEffects()
- * and before the first render, when the engine lazily builds its program
- * registry from the effect definition. The engine already supports this
- * exact surface-global contract (points/heightGrid carries heightTex with
- * the same shape in the pinned bundle), so the patch changes the parameter
- * contract only, never the rendered pixels.
+ * The pinned CDN authority (1.0.312) already carries upstream's
+ * moved-inputs contract, so on the pinned bundle the patch detects the
+ * published wiring and leaves every definition as published. The patch
+ * still applies to older bundles: after loadEffects() and before the
+ * first render, when the engine lazily builds its program registry from
+ * the effect definition. The engine already supports this exact
+ * surface-global contract (points/heightGrid carries heightTex with the
+ * same shape), so the patch changes the parameter contract only, never
+ * the rendered pixels.
  *
  * The patch is forward-safe: when a future engine bundle already carries
  * upstream's moved-inputs contract (commit 317c43ccb2ea, "Move particle
