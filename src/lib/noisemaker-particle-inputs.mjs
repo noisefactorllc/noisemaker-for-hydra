@@ -12,7 +12,7 @@
  * "agent", or "init" for render/pointsEmit) now read through the named
  * surface, while every other pass keeps the legacy literal wiring.
  *
- * The pinned CDN authority (1.0.312) already carries upstream's
+ * The pinned CDN authority (1.0.320) already carries upstream's
  * moved-inputs contract, so on the pinned bundle the patch detects the
  * published wiring and leaves every definition as published. The patch
  * still applies to older bundles: after loadEffects() and before the
