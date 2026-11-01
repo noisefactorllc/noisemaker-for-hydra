@@ -10,6 +10,7 @@ import test from 'node:test'
 
 import {
   ROOT,
+  needsBrowserSuite,
   selectChangedTests,
   shardIsValid,
   shardTestList
@@ -98,7 +99,7 @@ test('the entrypoint fails closed when no test matches a changed path', () => {
     timeout: 60_000
   })
   assert.equal(r.status, 1, 'no-match selection must exit nonzero')
-  assert.match(r.stderr, /no unit test exercises the changed paths/)
+  assert.match(r.stderr, /no test exercises the changed paths/)
 })
 
 test('the entrypoint fails closed when a shard slice is empty', () => {
@@ -110,4 +111,43 @@ test('the entrypoint fails closed when a shard slice is empty', () => {
   })
   assert.equal(r.status, 1, 'an empty shard must exit nonzero instead of full discovery')
   assert.match(r.stderr, /selects no test/)
+})
+
+test('needsBrowserSuite maps browser-facing paths and skips node-only paths', () => {
+  assert.equal(needsBrowserSuite('src/lib/noisemaker-runtime.mjs'), true)
+  assert.equal(needsBrowserSuite('public/app.js'), true)
+  assert.equal(needsBrowserSuite('scripts/test.mjs'), true)
+  assert.equal(needsBrowserSuite('test/context-loss-guards.html'), true)
+  assert.equal(needsBrowserSuite('vite.config.js'), true)
+  assert.equal(needsBrowserSuite('index.js'), true)
+  assert.equal(needsBrowserSuite('test/noisemaker-context-loss.test.mjs'), false)
+  assert.equal(needsBrowserSuite('scripts/parity-gate.mjs'), false)
+  assert.equal(needsBrowserSuite('docs/index.md'), false)
+})
+
+test('a node-only changed path runs its unit slice without the browser suite', () => {
+  // A changed unit test file selects itself; no part of the browser suite
+  // reaches a node-only test change.
+  const r = spawnSync('node', ['scripts/test-entrypoint.mjs'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+    env: { ...process.env, NM_CHANGED_FILES: 'test/parity-gate-cache.test.mjs' },
+    timeout: 120_000
+  })
+  assert.equal(r.status, 0)
+  assert.doesNotMatch(r.stdout, /\[editor-test\]/, 'the browser suite must not run for node-only changes')
+})
+
+test('a browser-facing changed path with no unit match runs the browser suite only', () => {
+  // Concatenation keeps this source free of the basename, which no unit
+  // test imports, so the entrypoint takes the browser-suite-only path.
+  const htmlPath = ['test', 'context-loss-guards.'].join('/') + 'html'
+  const r = spawnSync('node', ['scripts/test-entrypoint.mjs'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+    env: { ...process.env, NM_CHANGED_FILES: htmlPath },
+    timeout: 240_000
+  })
+  assert.equal(r.status, 0)
+  assert.match(r.stdout, /\[editor-test\] PASS/, 'the browser suite must run for a browser-facing change')
 })

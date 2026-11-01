@@ -7,7 +7,9 @@
  *   - a changed test file runs itself,
  *   - a changed src/ or scripts/ module runs every unit test whose source
  *     imports that file's basename,
- * and the browser suite then exercises the runtime end to end. Selection
+ * and the browser suite then exercises the runtime end to end, but only
+ * when a changed path can affect it: src/, public/, the browser driver
+ * itself, or an HTML page. Node-only changes stay inside the unit slice.
  * fails closed: when no unit test matches a changed path the entrypoint
  * exits nonzero instead of silently running everything or nothing. Every
  * invocation stays inside the 300s bound; when the changed-path tests would
@@ -78,6 +80,24 @@ export function shardTestList (selectedTests, shardIndex, shardCount) {
   return selectedTests.filter((_, index) => index % shardCount === shardIndex)
 }
 
+/**
+ * Whether the changed paths can affect the browser suite. The suite drives
+ * the editor and its test pages end to end, so it exercises the runtime and
+ * editor sources, shipped assets, the browser driver itself and the HTML
+ * test pages; node-only test and script changes do not reach it.
+ * @param {string} changedPath - one repository path.
+ * @returns {boolean}
+ */
+export function needsBrowserSuite (changedPath) {
+  const base = changedPath.split('/').pop()
+  return changedPath.startsWith('src/') ||
+    changedPath.startsWith('public/') ||
+    changedPath === 'scripts/test.mjs' ||
+    changedPath.endsWith('.html') ||
+    base === 'vite.config.js' ||
+    base === 'index.js'
+}
+
 function readShardNumber (name) {
   const raw = process.env[name]
   if (raw === undefined || raw === '') return null
@@ -96,7 +116,9 @@ function runUnit (files) {
 
 function runBrowserSuite () {
   const r = spawnSync('node', ['scripts/test.mjs'], { stdio: 'inherit', cwd: ROOT })
-  process.exit(r.status || 0)
+  // A spawn error or signal kill leaves status null; that is a failure,
+  // never a pass.
+  process.exit(r.status === null ? 1 : (r.status || 0))
 }
 
 function main () {
@@ -108,9 +130,13 @@ function main () {
     runBrowserSuite()
   }
 
+  // The browser suite only runs when a changed path can affect it; node-only
+  // changes stay inside the unit slice and keep every such test bounded.
+  const browserRelevant = changed.filter(needsBrowserSuite)
+
   const selected = selectChangedTests(changed, unitFiles)
-  if (!selected.length) {
-    console.error(`test-entrypoint: no unit test exercises the changed paths: ${changed.join(', ')}`)
+  if (!selected.length && !browserRelevant.length) {
+    console.error(`test-entrypoint: no test exercises the changed paths: ${changed.join(', ')}`)
     process.exit(1)
   }
 
@@ -119,12 +145,12 @@ function main () {
   const shardList = shardIsValid(shardIndex, shardCount)
     ? shardTestList(selected, shardIndex, shardCount)
     : selected
-  if (!shardList.length) {
+  if (selected.length && !shardList.length) {
     console.error(`test-entrypoint: shard ${shardIndex} of ${shardCount} selects no test of ${selected.length}`)
     process.exit(1)
   }
-
-  runUnit(shardList)
+  if (shardList.length) runUnit(shardList)
+  if (!browserRelevant.length) process.exit(0)
   runBrowserSuite()
 }
 
