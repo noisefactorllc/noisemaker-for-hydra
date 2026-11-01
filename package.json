@@ -7,8 +7,8 @@
   "scripts": {
     "test": "node scripts/test-entrypoint.mjs",
     "test:parity": "CHROME=${CHROME:-/usr/bin/chromium} node scripts/parity-gate.mjs parity-evidence",
-    "build": "vite build",
-    "dev": "vite . --host",
+    "build": "node node_modules/vite/bin/vite.js build",
+    "dev": "node node_modules/vite/bin/vite.js . --host",
     "publish": "git subtree push --prefix=dist origin gh-pages"
   },
   "author": "",
@@ -33,6 +33,12 @@
     "http-server": "^14.1.1",
     "source-map-explorer": "^2.5.2",
     "terser": "^5.14.2",
-    "vite": "^6.4.4"
+    "vite": "^6.4.5",
+    "minimatch": "file:compat/minimatch-compat"
+  },
+  "overrides": {
+    "minimatch": "$minimatch",
+    "follow-redirects": "1.16.2",
+    "qs": "6.16.1"
   }
 }

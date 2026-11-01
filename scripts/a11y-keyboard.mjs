@@ -43,7 +43,6 @@ function startChrome(debugPort) {
   return spawn(CHROME, [
     '--headless=new',
     '--no-sandbox',
-    '--disable-gpu',
     '--window-size=1024,768',
     `--remote-debugging-port=${debugPort}`,
     'about:blank'
@@ -358,6 +357,10 @@ try {
     return await cdp.evaluate(`document.activeElement.id`) === id
   }
 
+  // Tab traversal through CodeMirror may edit its contents. Restore the
+  // same valid canary program used by the editor browser suite.
+  await cdp.evaluate(`document.querySelector('.CodeMirror').CodeMirror.setValue(${JSON.stringify('search hydra\ngradient(speed: 0).write(o0)')})`)
+
   // Enter activation on the run control evaluates and saves to the URL.
   check('run control focused for activation', await focusControl('run-button'))
   await cdp.press('Enter', 'Enter', 13, '\r')
@@ -372,7 +375,7 @@ try {
 
   // Space activation on the shuffle control produces a trusted click.
   check('shuffle control focused for activation', await focusControl('shuffle-button'))
-  await cdp.press(' ', 'Space', 32)
+  await cdp.press(' ', 'Space', 32, ' ')
   const clicked = await cdp.evaluate(`window.__clicked`)
   check('Space activates the shuffle control', clicked.includes('shuffle-button'),
     `clicked: ${clicked.join(', ')}`)
