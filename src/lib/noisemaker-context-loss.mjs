@@ -22,12 +22,13 @@
  * The port vendors no engine code: it instantiates engine.CanvasRenderer
  * from the pinned CDN bundle, whose class carries no such guards. This patch
  * carries the committed behavior through the renderer's existing interfaces
- * by wrapping the instance's public dispose()/compile() and the canvas
- * handler setup, exactly as the engine would install them. The wrapper for
- * _setupContextLossHandlers re-applies the guard to every handler pair the
- * engine attaches, including the fresh pair created after a canvas
- * replacement, so the guards survive _replaceCanvas like the upstream
- * class's own handlers do.
+ * by wrapping the instance's public dispose()/compile(), the canvas handler
+ * setup, and the canvas replacement path, exactly as the engine would
+ * install them. The wrappers for _setupContextLossHandlers and
+ * _replaceCanvas re-apply the guard to every handler pair the engine
+ * attaches, including the fresh pair created after a canvas replacement, so
+ * the guards survive _replaceCanvas like the upstream class's own handlers
+ * do.
  *
  * The patch is forward-safe: on an engine bundle that already carries the
  * guards, the constructor initializes _isDisposed and the patch leaves every
@@ -65,6 +66,7 @@ export function patchContextLossGuards (renderer) {
 
   guardCanvasHandlers(renderer)
   wrapHandlerSetup(renderer)
+  wrapReplaceCanvas(renderer)
   wrapDispose(renderer)
   wrapCompile(renderer)
   wrapScheduleContextRecovery(renderer)
@@ -115,6 +117,23 @@ function wrapHandlerSetup (renderer) {
   renderer._setupContextLossHandlers = function () {
     originalSetup()
     guardCanvasHandlers(this)
+  }
+}
+
+/**
+ * Re-applies the handler guard after every canvas replacement. The engine's
+ * _replaceCanvas swaps _canvas for a fresh element and re-attaches handlers;
+ * wrapping it directly keeps the guard on the fresh pair even when the
+ * replacement path does not route through _setupContextLossHandlers.
+ * @private
+ */
+function wrapReplaceCanvas (renderer) {
+  if (typeof renderer._replaceCanvas !== 'function') return
+  const originalReplace = renderer._replaceCanvas.bind(renderer)
+  renderer._replaceCanvas = function (parent) {
+    const result = originalReplace(parent)
+    guardCanvasHandlers(this)
+    return result
   }
 }
 

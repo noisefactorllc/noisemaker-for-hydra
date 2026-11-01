@@ -217,6 +217,48 @@ test('a replaced canvas keeps the guard on the fresh handler pair', async () => 
   assert.equal(events.filter(([kind]) => kind === 'restored').length, 0)
 })
 
+test('a _replaceCanvas path that skips _setupContextLossHandlers keeps the guard', async () => {
+  const listeners = new Map()
+  const events = []
+  const renderer = fakeRenderer({ listeners, events })
+  // The engine's _replaceCanvas exists on the class when the patch applies;
+  // this fake mirrors that by defining it before patching.
+  renderer._replaceCanvas = (parent) => {
+    const fresh = fakeCanvas(listeners)
+    if (parent) parent.replaceChild(fresh, renderer._canvas)
+    renderer._canvas = fresh
+    renderer._boundContextLost = (e) => {
+      e.preventDefault()
+      renderer._isContextLost = true
+      renderer.stop()
+      renderer._scheduleContextRecovery()
+      events.push(['lost'])
+    }
+    renderer._boundContextRestored = () => {
+      renderer._clearContextRecovery()
+      events.push(['restored'])
+    }
+    fresh.addEventListener('webglcontextlost', renderer._boundContextLost)
+    fresh.addEventListener('webglcontextrestored', renderer._boundContextRestored)
+  }
+  assert.equal(patchContextLossGuards(renderer), true)
+
+  // The reviewer's scenario: the engine swaps _canvas for a fresh element
+  // and re-attaches raw handlers without routing through the wrapped
+  // _setupContextLossHandlers. The _replaceCanvas wrapper must re-apply
+  // the guard to the fresh pair.
+  const before = renderer._canvas
+  renderer._replaceCanvas(renderer._canvas.parentNode)
+  assert.notEqual(renderer._canvas, before, 'the replacement swapped the canvas')
+
+  await renderer.dispose()
+  listeners.get('webglcontextlost')({ preventDefault () {} })
+  assert.equal(renderer._isContextLost, true, 'the fresh pair records the loss')
+  assert.equal(renderer._contextRecoveryTimer, null, 'the fresh pair is guarded too')
+  listeners.get('webglcontextrestored')()
+  assert.equal(events.filter(([kind]) => kind === 'restored').length, 0)
+})
+
 test('a recovery run stale for a replaced canvas rebuilds nothing', async () => {
   const { renderer } = patchedRenderer()
   const queued = []

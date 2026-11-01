@@ -134,6 +134,80 @@ assert(rendererB._isDisposed === true, 'a disposed renderer must stay disposed a
 assert(rendererB._contextRecoveryTimer === null, 'a disposed renderer must not revive the recovery timer')
 assert(rendererB._isContextLost === true, 'a disposed renderer must not touch the loss flag on restore')
 
+// --- A real canvas replacement must carry the guard onto the fresh pair. ---
+const canvasC = document.createElement('canvas')
+canvasC.width = 32
+canvasC.height = 24
+const rendererC = await makeRenderer(canvasC)
+await rendererC.compile('search synth\nnoise().write(o0)\nrender(o0)')
+
+const originalCanvasC = rendererC._canvas
+rendererC._replaceCanvas(rendererC._canvas.parentNode)
+assert(rendererC._canvas !== originalCanvasC, 'the replacement swapped the canvas')
+
+// The fresh pair on the replaced canvas is guarded: a disposed renderer that
+// loses its context must not schedule a recovery rebuild.
+rendererC.dispose()
+assert(rendererC._isDisposed === true, 'dispose() after the replacement runs')
+rendererC._canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
+assert(rendererC._isContextLost === true, 'the fresh pair records the loss')
+assert(rendererC._isDisposed === true, 'the disposed renderer stays disposed after the loss')
+assert(rendererC._contextRecoveryTimer === null, 'the fresh pair must not schedule a recovery')
+rendererC._canvas.dispatchEvent(new Event('webglcontextrestored'))
+assert(rendererC._isDisposed === true, 'the disposed renderer stays disposed after the restore')
+
+// A live renderer keeps running across a replacement. With enough frames on
+// the clock the recovery rebuild restores a pipeline; with the loss before
+// the second frame the upstream frame gate suppresses the rebuild.
+const canvasD = document.createElement('canvas')
+canvasD.width = 32
+canvasD.height = 24
+const rendererD = await makeRenderer(canvasD)
+await rendererD.compile('search synth\nnoise().write(o0)\nrender(o0)')
+rendererD.start()
+rendererD._frameCount = 5
+rendererD._replaceCanvas(rendererD._canvas.parentNode)
+const liveGlD = rendererD._canvas.getContext('webgl2')
+const loseContextD = liveGlD && liveGlD.getExtension('WEBGL_lose_context')
+assert(loseContextD != null, 'the replaced canvas must expose WEBGL_lose_context')
+loseContextD.loseContext()
+await new Promise(r => setTimeout(r, 250))
+assert(rendererD._isContextLost === true, 'a loss on the replaced canvas is recorded')
+assert(rendererD._isDisposed === false, 'an alive renderer is not disposed by the loss')
+assert(rendererD._contextRecoveryTimer !== null, 'the replaced canvas schedules a recovery rebuild')
+loseContextD.restoreContext()
+let rebuiltD = false
+for (let waited = 0; waited < 4000; waited += 100) {
+  await new Promise(r => setTimeout(r, 100))
+  if (rendererD._pipeline != null && !rendererD._isContextLost) { rebuiltD = true; break }
+}
+assert(rebuiltD, 'the recovery rebuild restores a pipeline after the replacement')
+
+// The same replacement with the loss before the second frame: the upstream
+// frame gate suppresses the rebuild, so the pipeline stays gone.
+const canvasE = document.createElement('canvas')
+canvasE.width = 32
+canvasE.height = 24
+const rendererE = await makeRenderer(canvasE)
+await rendererE.compile('search synth\nnoise().write(o0)\nrender(o0)')
+rendererE.start()
+rendererE._frameCount = 0
+rendererE._replaceCanvas(rendererE._canvas.parentNode)
+const liveGlE = rendererE._canvas.getContext('webgl2')
+const loseContextE = liveGlE && liveGlE.getExtension('WEBGL_lose_context')
+assert(loseContextE != null, 'the gated replaced canvas must expose WEBGL_lose_context')
+loseContextE.loseContext()
+await new Promise(r => setTimeout(r, 250))
+assert(rendererE._contextLostBeforeSecondFrame === true, 'the loss before the second frame is recorded')
+assert(rendererE._rebuildsAfterContextLoss() === false, 'the frame gate suppresses the rebuild')
+loseContextE.restoreContext()
+let rebuiltE = false
+for (let waited = 0; waited < 2000; waited += 100) {
+  await new Promise(r => setTimeout(r, 100))
+  if (rendererE._pipeline != null) { rebuiltE = true; break }
+}
+assert(!rebuiltE, 'the frame gate must keep the pipeline down after the restore')
+
 document.getElementById('out').textContent = 'context-loss-guards-ready'
 </script>
 <script>
