@@ -1,5 +1,6 @@
 import { patchMediaTile } from './noisemaker-media-tile.mjs'
 import { patchParticleInputs } from './noisemaker-particle-inputs.mjs'
+import { patchContextLossGuards } from './noisemaker-context-loss.mjs'
 
 export const DEFAULT_NOISEMAKER_CDN = 'https://shaders.noisedeck.app/1'
 
@@ -44,6 +45,18 @@ export async function createNoisemakerRuntime({
     preferWebGPU
   })
   Object.defineProperty(renderer, 'hydraEngine', { value: engine })
+
+  // Carry upstream 67d6e44c's disposed-renderer context-loss guards through
+  // the renderer's existing interfaces: a disposed renderer must not restart
+  // from late context events, and compile() after disposal re-enables
+  // recovery. Forward-safe: a bundle carrying the guards natively is left as
+  // published. It must run before the first compile, when the engine
+  // attaches its context-loss handlers.
+  try {
+    patchContextLossGuards(renderer)
+  } catch (err) {
+    console.warn(`[noisemaker-runtime] context loss guard patch failed: ${err && err.message}`)
+  }
 
   await renderer.loadManifest()
   const effectIds = Object.keys(renderer.manifest || {})

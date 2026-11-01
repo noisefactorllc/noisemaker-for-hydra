@@ -31,3 +31,20 @@ test('sliceCacheReusable tolerates legacy slice records without a slice object',
   assert.equal(sliceCacheReusable(null, FIXTURE_SHA, 5), false)
   assert.equal(sliceCacheReusable({}, FIXTURE_SHA, 5), false)
 })
+
+test('sliceCacheReusable rejects a cached slice holding different cases than the current slice', () => {
+  const cached = {
+    fixture: { sha256: FIXTURE_SHA },
+    slice: { start: 0, limit: 5 },
+    caseStatus: [{ id: 'classicNoisedeck/bitEffects' }, { id: 'classicNoisedeck/caustic' }]
+  }
+  // Same slice shape, but the cached report ran a different case slice: a
+  // shard run sharing the evidence directory must rerun, not reuse it.
+  assert.equal(sliceCacheReusable(cached, FIXTURE_SHA, 5, 'classicNoisedeck/cellNoise'), false)
+  assert.equal(sliceCacheReusable(cached, FIXTURE_SHA, 5, 'classicNoisedeck/bitEffects'), true)
+  // A report without case status cannot be validated and is never reused
+  // when a case-id check is requested.
+  assert.equal(sliceCacheReusable({ fixture: { sha256: FIXTURE_SHA } }, FIXTURE_SHA, 5, 'classicNoisedeck/bitEffects'), false)
+  // Omitting the case id keeps the pre-existing behavior exactly.
+  assert.equal(sliceCacheReusable(cached, FIXTURE_SHA, 5), true)
+})

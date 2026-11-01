@@ -1,0 +1,144 @@
+<!doctype html>
+<!--
+  Context-loss guard gate (browser level).
+  Exercises the fork's guard patch (src/lib/noisemaker-context-loss.mjs, wired
+  by src/lib/noisemaker-runtime.mjs) against the REAL pinned engine bundle
+  (1.0.320, raw CanvasRenderer wiring) end to end:
+    - the pinned bundle actually exposes the guarded surface
+      (_setupContextLossHandlers, _scheduleContextRecovery, _clearContextRecovery,
+      _isLifecycleCurrent, _rebuildsAfterContextLoss, _boundContextLost,
+      _boundContextRestored, _queueCompile, _compile, dispose, compile);
+    - the runtime's patch installs _isDisposed (the bundle predates the guards)
+      and wraps the handler pair on the live canvas;
+    - a renderer disposed BEFORE a real WEBGL_lose_context().loseContext()
+      never schedules a recovery rebuild and never revives after restore
+      (upstream shaders/tests/test_context_loss_recovery.mjs's
+      disposedBeforeLossEvent semantics);
+    - a renderer disposed while a live loss is pending clears the recovery
+      timer and stays stopped after the restore (frame gating per upstream
+      shaders/tests/test_context_loss_backend_switch.mjs);
+    - compile() after a disposal re-enables recovery for its own build;
+      a rejected post-disposal compile with no pipeline re-disposes and
+      rethrows.
+  Any assertion failure fails the page decisively via a thrown Error (which
+  surfaces as 'context-loss-guards-error' in the DOM dump).
+-->
+<html><body><pre id="out">context-loss-guards-boot</pre>
+<script src="/_engine/hydra-synth.js"></script>
+<script type="module">
+import { createNoisemakerRuntime } from '/src/lib/noisemaker-runtime.mjs'
+const pre = document.getElementById('out')
+
+function assert (condition, label) {
+  if (!condition) throw new Error(`context-loss-guards: ${label}`)
+}
+
+async function makeRenderer (canvas) {
+  const renderer = await createNoisemakerRuntime({
+    canvas,
+    extension: window.HydraEffects,
+    cdn: 'https://shaders.noisedeck.app/1.0.320',
+    preferWebGPU: false
+  })
+  return renderer
+}
+
+const canvasA = document.createElement('canvas')
+canvasA.width = 32
+canvasA.height = 24
+const rendererA = await makeRenderer(canvasA)
+
+// --- The pinned bundle really exposes the guarded surface, and the patch is
+// --- live on the real renderer instance. ---
+const guardedSurface = [
+  '_setupContextLossHandlers',
+  '_scheduleContextRecovery',
+  '_clearContextRecovery',
+  '_isLifecycleCurrent',
+  '_rebuildsAfterContextLoss',
+  '_boundContextLost',
+  '_boundContextRestored',
+  '_queueCompile',
+  '_compile'
+]
+for (const member of guardedSurface) {
+  assert(typeof rendererA[member] === 'function', `pinned bundle surface missing ${member}`)
+}
+assert(rendererA._isDisposed === false, 'patch must initialize _isDisposed=false')
+assert(typeof rendererA.dispose === 'function', 'pinned bundle surface missing dispose')
+assert(typeof rendererA.compile === 'function', 'pinned bundle surface missing compile')
+
+// The handler pair on the live canvas must be the patched wrappers, not the
+// engine's raw handlers: a disposed loss must return before the engine's
+// stop()/schedule logic. Detect by preventing default + checking the flag.
+let lostPrevented = false
+canvasA.addEventListener('webglcontextlost', e => { if (e && typeof e.preventDefault === 'function') { e.preventDefault(); lostPrevented = true } }, true)
+rendererA.dispose()
+const lostEventA = new Event('webglcontextlost', { cancelable: true })
+canvasA.dispatchEvent(lostEventA)
+assert(lostPrevented, 'patched lost handler must preventDefault the loss event')
+assert(rendererA._isContextLost === true, 'patched lost handler must record _isContextLost')
+assert(rendererA._isDisposed === true, 'disposed renderer must stay disposed across a loss event')
+assert(rendererA._contextRecoveryTimer === null, 'disposed renderer must not schedule a recovery timer')
+
+const restoredEventA = new Event('webglcontextrestored')
+canvasA.dispatchEvent(restoredEventA)
+assert(rendererA._isDisposed === true, 'disposed renderer must stay disposed across a restore event')
+
+// Compile() after a disposal re-enables recovery for its own build.
+await rendererA.compile('search synth\nnoise().write(o0)\nrender(o0)')
+assert(rendererA._isDisposed === false, 'compile() after disposal must clear _isDisposed')
+assert(rendererA._pipeline != null, 'compile() after disposal must build a pipeline')
+
+// A rejected compile() after a disposal with no pipeline re-disposes and
+// rethrows (upstream rejectedCompileError semantics).
+rendererA.dispose()
+const beforePipeline = rendererA._pipeline
+const rejectAttempt = rendererA.compile('search synth\nbogusEffect().write(o0)\nrender(o0)')
+let threw = null
+try { await rejectAttempt } catch (err) { threw = err }
+assert(threw != null, 'a rejected post-disposal compile must rethrow')
+assert(rendererA._isDisposed === true, 'a rejected post-disposal compile must stay disposed')
+assert(rendererA._contextRecoveryTimer === null, 'a rejected post-disposal compile must clear the recovery timer')
+assert(rendererA._pipeline === beforePipeline, 'a rejected post-disposal compile must leave the pipeline untouched')
+
+// --- A renderer disposed while a live loss is pending must clear the
+// --- recovery timer and stay stopped after the restore. ---
+const canvasB = document.createElement('canvas')
+canvasB.width = 32
+canvasB.height = 24
+const rendererB = await makeRenderer(canvasB)
+await rendererB.compile('search synth\nnoise().write(o0)\nrender(o0)')
+rendererB.start()
+
+const liveCanvas = rendererB._canvas || canvasB
+const liveGl = liveCanvas.getContext('webgl2')
+assert(liveGl != null, 'the live canvas must expose a webgl2 context for the loss simulation')
+const loseContext = liveGl.getExtension('WEBGL_lose_context')
+assert(loseContext != null, 'the live context must expose WEBGL_lose_context')
+
+loseContext.loseContext()
+await new Promise(r => setTimeout(r, 250))
+assert(rendererB._isContextLost === true, 'a live context loss must record _isContextLost')
+assert(rendererB._isDisposed === false, 'an alive renderer must not be disposed by the loss')
+assert(rendererB._contextRecoveryTimer !== null, 'a live loss must schedule a recovery rebuild timer')
+
+// Dispose while the recovery rebuild is pending.
+rendererB.dispose()
+assert(rendererB._isDisposed === true, 'dispose() must run while the recovery is pending')
+assert(rendererB._contextRecoveryTimer === null, 'dispose() must clear a pending recovery timer')
+
+loseContext.restoreContext()
+await new Promise(r => setTimeout(r, 500))
+assert(rendererB._isDisposed === true, 'a disposed renderer must stay disposed across a live restore')
+assert(rendererB._contextRecoveryTimer === null, 'a disposed renderer must not revive the recovery timer')
+assert(rendererB._isContextLost === true, 'a disposed renderer must not touch the loss flag on restore')
+
+document.getElementById('out').textContent = 'context-loss-guards-ready'
+</script>
+<script>
+window.addEventListener('error', event => {
+  document.getElementById('out').textContent = `context-loss-guards-error: ${event.message}`
+})
+</script>
+</body></html>

@@ -48,7 +48,21 @@ import { selectCases } from './parity-summary'
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const PORT = Number(process.env.PORT || 5199)
-const OUTDIR = resolve(process.argv[2] || join(ROOT, 'parity-evidence'))
+// Sharding (NM_SHARD_INDEX/NM_SHARD_COUNT): when set the gate runs only this
+// shard's slice of the selected cases, so the shards together cover every
+// case exactly once. Unset variables leave the suite exactly as published.
+// Shard evidence lands in a shard-specific directory so parallel shard runs
+// cannot overwrite each other's reports.
+const SHARD_INDEX = process.env.NM_SHARD_INDEX !== undefined ? Number(process.env.NM_SHARD_INDEX) : null
+const SHARD_COUNT = process.env.NM_SHARD_COUNT !== undefined ? Number(process.env.NM_SHARD_COUNT) : null
+if (SHARD_INDEX !== null || SHARD_COUNT !== null) {
+  if (SHARD_INDEX === null || SHARD_COUNT === null ||
+      !Number.isInteger(SHARD_INDEX) || !Number.isInteger(SHARD_COUNT) ||
+      SHARD_COUNT < 2 || SHARD_COUNT > 8 || SHARD_INDEX < 0 || SHARD_INDEX >= SHARD_COUNT) {
+    throw new Error(`invalid shard spec: index=${SHARD_INDEX} count=${SHARD_COUNT}`)
+  }
+}
+const OUTDIR = resolve(process.argv[2] || join(ROOT, SHARD_INDEX !== null ? `parity-evidence/shard-${SHARD_INDEX}` : 'parity-evidence'))
 const BATCH = Number(process.env.GATE_BATCH || 5)
 const fixtureSha256 = createHash('sha256')
   .update(readFileSync(join(ROOT, 'test/fixtures/parity-cases.json')))
@@ -58,8 +72,24 @@ const requestedCaseIds = process.env.GATE_CASE_IDS ? JSON.parse(process.env.GATE
 if (!Array.isArray(requestedCaseIds) || !requestedCaseIds.every(id => typeof id === 'string')) {
   throw new Error('GATE_CASE_IDS must be a JSON array of case IDs')
 }
-const selectedCases = selectCases(fixture.cases, requestedCaseIds)
-const TOTAL = requestedCaseIds.length ? selectedCases.length : Number(process.env.GATE_TOTAL || selectedCases.length)
+let selectedCases = selectCases(fixture.cases, requestedCaseIds)
+if (SHARD_INDEX !== null) {
+  // Deterministic contiguous split: the first `extra` shards take one more
+  // case, so shard index i of count n owns exactly one disjoint slice of the
+  // selected cases and the shards together cover every case exactly once.
+  const total = selectedCases.length
+  const perShard = Math.floor(total / SHARD_COUNT)
+  const extra = total % SHARD_COUNT
+  const start = SHARD_INDEX * perShard + Math.min(SHARD_INDEX, extra)
+  const count = perShard + (SHARD_INDEX < extra ? 1 : 0)
+  selectedCases = selectedCases.slice(start, start + count)
+  process.stderr.write(`[parity-gate] shard ${SHARD_INDEX}/${SHARD_COUNT}: cases ${start}..${start + count - 1} (${count} of ${total})\n`)
+}
+// Sharded runs total their own slice only: a GATE_TOTAL left over from a
+// full-suite invocation must not extend a shard past its assigned cases.
+const TOTAL = requestedCaseIds.length || SHARD_INDEX !== null
+  ? selectedCases.length
+  : Number(process.env.GATE_TOTAL || selectedCases.length)
 const pinned = fixture.authorities
 const S32 = { width: 32, height: 24 }
 const S18 = { width: 24, height: 18 }
@@ -452,12 +482,15 @@ try {
   mkdirSync(OUTDIR, { recursive: true })
   for (let sliceStart = 0; sliceStart < TOTAL; sliceStart += BATCH) {
     const limit = Math.min(BATCH, TOTAL - sliceStart)
-    const sliceFile = join(OUTDIR, `slice-${String(sliceStart).padStart(3, '0')}.json`)
+    // Shard runs scope their slice files so two shards sharing one evidence
+    // directory never overwrite each other's reports.
+    const sliceFile = join(OUTDIR, `slice-${SHARD_INDEX !== null ? `s${SHARD_INDEX}-` : ''}${String(sliceStart).padStart(3, '0')}.json`)
     let cached = null
     if (!requestedCaseIds.length) {
       try { cached = JSON.parse(readFileSync(sliceFile, 'utf8')) } catch (_) {}
     }
-    if (cached && sliceCacheReusable(cached, fixtureSha256, limit)) {
+    const sliceFirstCaseId = selectedCases[sliceStart] && selectedCases[sliceStart].id
+    if (cached && sliceCacheReusable(cached, fixtureSha256, limit, sliceFirstCaseId)) {
       reports.push({ report: cached, chromeExit: 0 })
       log(`slice ${sliceStart}: reusing cached slice report ${sliceFile} (fixture sha and slice limit match)`)
       continue
