@@ -1,0 +1,110 @@
+<!doctype html>
+<!--
+  WebGPU device-loss watch gate (browser level).
+  Exercises the fork's device-loss watch patch (src/lib/noisemaker-device-loss.mjs,
+  wired by src/lib/noisemaker-runtime.mjs) against the REAL pinned engine
+  bundle (1.0.320, raw CanvasRenderer wiring) end to end. The pinned bundle
+  predates upstream 7153bec43607, so its backends expose no WebGPU device;
+  the fixture gives the WebGL2 backend prototype a device with a pending
+  lost promise — exactly the surface upstream _watchDeviceLoss reads —
+  compiles the real engine against it, then resolves the promise. The loss
+  of the current pipeline's device must route through the same handling as
+  a lost WebGL context: the loop stops, onContextLost runs, and after the
+  recovery wait the program rebuilds on a fresh canvas in the old one's
+  place, the loop resumes and onContextRestored runs so hosts read `canvas`
+  again. Any assertion failure fails the page decisively via a thrown Error
+  (which surfaces as 'device-loss-watch-error' in the DOM dump).
+-->
+<html><body><pre id="out">device-loss-watch-boot</pre>
+<script src="/_engine/hydra-synth.js"></script>
+<script type="module">
+import { createNoisemakerRuntime } from '/src/lib/noisemaker-runtime.mjs'
+const pre = document.getElementById('out')
+
+function assert (condition, label) {
+  if (!condition) throw new Error(`device-loss-watch: ${label}`)
+}
+
+const canvas = document.createElement('canvas')
+canvas.width = 32
+canvas.height = 24
+const renderer = await createNoisemakerRuntime({
+  canvas,
+  extension: window.HydraEffects,
+  cdn: 'https://shaders.noisedeck.app/1.0.320',
+  preferWebGPU: false
+})
+
+// --- The fixture's device surface: give the WebGL2 backend prototype a
+// --- device with a pending lost promise, the surface the watch reads. ---
+const WebGL2Backend = renderer.hydraEngine?.WebGL2Backend
+assert(typeof WebGL2Backend === 'function', 'the engine exports WebGL2Backend')
+let loseDevice
+const deviceLost = new Promise(resolve => { loseDevice = resolve })
+WebGL2Backend.prototype.device = { lost: deviceLost }
+
+let contextLostCount = 0
+let contextRestoredCount = 0
+renderer._onContextLost = () => { contextLostCount += 1 }
+renderer._onContextRestored = () => { contextRestoredCount += 1 }
+
+await renderer.compile('search synth\nnoise().write(o0)\nrender(o0)')
+const firstPipeline = renderer._pipeline
+assert(firstPipeline != null, 'the first compile builds a pipeline')
+const liveCanvas = renderer._canvas
+assert(liveCanvas != null, 'the renderer exposes its canvas')
+assert(firstPipeline.backend.device === WebGL2Backend.prototype.device, 'the live pipeline backend carries the injected device surface')
+renderer.start()
+assert(renderer._isRunning === true, 'the loop runs before the loss')
+// Move past the first-frame gate: a loss while the program drew its first
+// frame suppresses the rebuild (upstream _rebuildsAfterContextLoss), which
+// this gate does not exercise.
+renderer._frameCount = 5
+
+// Lose the current pipeline's device: the watch fires through the
+// backend-lost handling.
+loseDevice({ reason: 'destroyed', message: 'device destroyed by the fixture' })
+await new Promise(r => setTimeout(r, 250))
+
+assert(renderer._isContextLost === true, 'the device loss is recorded')
+assert(renderer._isRunning === false, 'the loop stops on the device loss')
+assert(renderer._contextRecoveryTimer !== null, 'the device loss schedules a recovery rebuild')
+assert(contextLostCount === 1, `onContextLost runs once, got ${contextLostCount}`)
+assert(firstPipeline.backend.isContextLost === true, 'the pipeline backend is marked lost')
+
+// The rebuilt pipeline must not inherit the already-resolved promise: drop
+// the fixture device before the recovery rebuild attaches its own watch.
+delete WebGL2Backend.prototype.device
+
+// The recovery rebuild runs after CONTEXT_RESTORE_WAIT_MS on a fresh canvas.
+let rebuilt = false
+let freshCanvas = null
+for (let waited = 0; waited < 9000; waited += 100) {
+  await new Promise(r => setTimeout(r, 100))
+  if (renderer._pipeline != null && renderer._pipeline !== firstPipeline &&
+      renderer._canvas !== liveCanvas && !renderer._isContextLost) {
+    rebuilt = true
+    freshCanvas = renderer._canvas
+    break
+  }
+}
+assert(rebuilt, 'the recovery rebuild restores a new pipeline on a fresh canvas')
+assert(renderer._isRunning === true, 'the loop resumes on the rebuilt pipeline')
+assert(contextRestoredCount >= 1, `onContextRestored runs after the rebuild, got ${contextRestoredCount}`)
+assert(freshCanvas.getContext('webgl2') != null, 'the fresh canvas exposes a live webgl2 context')
+
+// A second compile on the rebuilt pipeline stays healthy: without the
+// fixture device its backend exposes none, so the watch attaches inertly.
+const secondPipeline = renderer._pipeline
+await renderer.compile('search synth\nnoise(speed: 2).write(o0)\nrender(o0)')
+assert(renderer._pipeline != null, 'the recompile keeps a pipeline current')
+assert(renderer._isContextLost === false, 'the recompile does not record a loss')
+
+document.getElementById('out').textContent = 'device-loss-watch-ready'
+</script>
+<script>
+window.addEventListener('error', event => {
+  document.getElementById('out').textContent = `device-loss-watch-error: ${event.message}`
+})
+</script>
+</body></html>

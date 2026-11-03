@@ -1,6 +1,7 @@
 import { patchMediaTile } from './noisemaker-media-tile.mjs'
 import { patchParticleInputs } from './noisemaker-particle-inputs.mjs'
 import { patchContextLossGuards } from './noisemaker-context-loss.mjs'
+import { patchDeviceLossWatch } from './noisemaker-device-loss.mjs'
 
 export const DEFAULT_NOISEMAKER_CDN = 'https://shaders.noisedeck.app/1'
 
@@ -56,6 +57,19 @@ export async function createNoisemakerRuntime({
     patchContextLossGuards(renderer)
   } catch (err) {
     console.warn(`[noisemaker-runtime] context loss guard patch failed: ${err && err.message}`)
+  }
+
+  // Carry upstream 7153bec43607's WebGPU device-loss watch through the
+  // renderer's existing interfaces: a lost WebGPU device (a GPU process
+  // exit, a driver reset) must route through the same handling as a lost
+  // WebGL context, so the loop stops and the program rebuilds on a fresh
+  // canvas instead of freezing on the dead device. Forward-safe: a bundle
+  // carrying the watch natively is left as published. It must run before
+  // the first compile, so every build's pipeline gets watched.
+  try {
+    patchDeviceLossWatch(renderer)
+  } catch (err) {
+    console.warn(`[noisemaker-runtime] device loss watch patch failed: ${err && err.message}`)
   }
 
   await renderer.loadManifest()
