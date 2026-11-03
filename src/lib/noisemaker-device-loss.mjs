@@ -17,22 +17,23 @@
  * The port vendors no engine code: it instantiates engine.CanvasRenderer
  * from the pinned CDN bundle, whose class predates the watch. This patch
  * carries the committed behavior through the renderer's existing interfaces
- * by wrapping _compile — the single choke point every build passes through
+ * by wrapping _compile — the choke point every build passes through
  * (the public compile(), the recovery rebuild and the restore rebuild) — and
  * attaching the watch to the pipeline that is current when the build
  * resolves, exactly where the upstream class watches the pipelines it makes
  * current. The watch fires only while the pipeline it captured is still
  * current, so a retired device lost after a backend switch is ignored like
- * upstream's. One watch attaches per pipeline, matching upstream's
- * per-assignment attachment on the initial and replacement pipelines.
+ * upstream's. The watch attaches on assignment, matching upstream's
+ * per-assignment attachment on the initial and replacement pipelines, and a
+ * pipeline that is already watched is not watched again.
  *
  * The patch is forward-safe: on an engine bundle that already carries the
  * watch (_watchDeviceLoss), the patch leaves every surface as published.
  */
 
 /**
- * Mirrors upstream 7153bec43607's _onBackendLost: one loss-handling body for
- * a lost WebGL context or WebGPU device.
+ * Mirrors upstream 7153bec43607's _onBackendLost: the loss-handling body
+ * shared by a lost WebGL context and a lost WebGPU device.
  * @private
  */
 function onBackendLost (renderer, message) {
@@ -59,7 +60,7 @@ function onBackendLost (renderer, message) {
 }
 
 /**
- * Mirrors upstream 7153bec43607's _watchDeviceLoss: watch one pipeline's
+ * Mirrors upstream 7153bec43607's _watchDeviceLoss: watch a pipeline's
  * WebGPU device and route its loss through the backend-lost handling, but
  * only while that pipeline is still the renderer's current one.
  * @private
