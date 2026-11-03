@@ -6,7 +6,7 @@
   window.HydraEffects.loadHydraEffects(), and
   src/lib/noisemaker-runtime.mjs (createNoisemakerRuntime, which applies
   the particle-input patch to the loaded definitions). Verifies that
-  upstream moved-inputs contract is live on the real pinned engine (1.0.325):
+  upstream moved-inputs contract is live on the real pinned engine (1.0.328):
   each particle effect accepts its named surface argument in the DSL
   (heightTex, diffuseTex), the sim pass then reads the referenced surface
   (global_o1) while the chained input moves to the feeder node (node_N_out),
@@ -30,7 +30,7 @@ canvas.width = 64; canvas.height = 64
 const renderer = await createNoisemakerRuntime({
   canvas,
   extension: window.HydraEffects,
-  cdn: 'https://shaders.noisedeck.app/1.0.325',
+  cdn: 'https://shaders.noisedeck.app/1.0.328',
   preferWebGPU: false
 })
 
