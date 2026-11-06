@@ -10,7 +10,7 @@
  * math on the runtime resolution: when fullResolution matches resolution
  * the untiled expression runs unchanged, so normal-size rendering stays
  * bit-identical on compilers with relaxed math. The mirror below carries
- * the tile-aware sources at b659833032cf. The pinned CDN authority (1.0.340)
+ * the tile-aware sources at b659833032cf. The pinned CDN authority (1.0.342)
  * already carries the commits, so on the pinned bundle the patch detects the
  * published tile contract and leaves the definition as published; the patch
  * still applies to older bundles: after loadEffects() and before the first
