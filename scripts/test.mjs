@@ -250,7 +250,8 @@ const cases = [
     extraPages: [
       { path: '/test/particle-inputs.html', expected: ['particle-inputs-ready'] },
       { path: '/test/context-loss-guards.html', expected: ['context-loss-guards-ready'] },
-      { path: '/test/device-loss-watch.html', expected: ['device-loss-watch-ready'] }
+      { path: '/test/device-loss-watch.html', expected: ['device-loss-watch-ready'] },
+      { path: '/test/stateful-instances.html', expected: ['stateful-instances-ready'] }
     ]
   }
 ]
