@@ -1,0 +1,118 @@
+<!doctype html>
+<!--
+  Sink error report gate (browser level).
+  Upstream db2173e34223 gave the pipeline a sink-error reporter: each error a
+  sink throws from configure(), deferRender() or submit() now also reaches
+  that sink's own optional onError(error) method, while sinks without onError
+  and sinks that do not throw see the same calls, order and counters as
+  before, and a throwing reporter stays isolated from rendering and from the
+  other sinks. Upstream shaders/tests/test_pipeline.js covers the contract
+  against the engine's own Pipeline with a mock backend; this page drives the
+  same assertions through the port's actual runtime wiring (companion bundle,
+  loadHydraEffects, createNoisemakerRuntime) against the pinned engine bundle
+  1.0.350 (which carries upstream db2173e34223) on the real WebGL2 backend:
+  a failing sink with onError receives exactly its three errors, a sink
+  without onError keeps the old silent isolation, a throwing reporter stays
+  isolated, a healthy sink sees the same calls with no report, the per-sink
+  counters match, and the resize completes after the reported errors.
+-->
+<html><body><pre id="out">sink-error-report-boot</pre>
+<script src="/_engine/hydra-synth.js"></script>
+<script type="module">
+import { createNoisemakerRuntime } from '/src/lib/noisemaker-runtime.mjs'
+const pre = document.getElementById('out')
+
+function assert (condition, label) {
+  if (!condition) throw new Error(`sink-error-report: ${label}`)
+}
+
+const canvas = document.createElement('canvas')
+canvas.width = 320
+canvas.height = 240
+const renderer = await createNoisemakerRuntime({
+  canvas,
+  extension: window.HydraEffects,
+  cdn: 'https://shaders.noisedeck.app/1.0.350',
+  preferWebGPU: false
+})
+renderer.stop()
+await renderer.compile('search synth\nnoise().write(o0)\nrender(o0)')
+const pipeline = renderer.pipeline
+assert(pipeline != null, 'the compile builds a pipeline')
+assert(typeof pipeline.addSink === 'function', 'the live pipeline exposes addSink')
+
+const configureError = new Error('configure failed')
+const deferError = new Error('defer probe failed')
+const submitError = new Error('submit failed')
+const reported = []
+let failing = false
+const failed = {
+  configure () { if (failing) throw configureError },
+  deferRender () { if (failing) throw deferError; return false },
+  submit () { if (failing) throw submitError; return true },
+  close () {},
+  onError (error) { reported.push(['failed', error]) }
+}
+// A sink without onError fails exactly as before: counted and isolated.
+const silent = {
+  configure () { if (failing) throw new Error('silent configure failed') },
+  submit () { if (failing) throw new Error('silent submit failed'); return true },
+  close () {}
+}
+// A sink whose reporter throws does not stop the resize or the frame.
+let reporterCalls = 0
+const throwingReporter = {
+  configure () { if (failing) throw new Error('configure failed again') },
+  submit () { return true },
+  close () {},
+  onError () {
+    reporterCalls++
+    throw new Error('reporter failed')
+  }
+}
+// A sink that does not fail sees the same calls as before and no report.
+const healthyCalls = []
+const healthy = {
+  configure (descriptor) { healthyCalls.push(['configure', descriptor.width, descriptor.height]) },
+  deferRender () { healthyCalls.push(['deferRender']); return false },
+  submit (textureId, timestamp) { healthyCalls.push(['submit', timestamp]); return true },
+  close () {},
+  onError (error) { reported.push(['healthy', error]) }
+}
+pipeline.addSink(failed)
+pipeline.addSink(silent)
+pipeline.addSink(throwingReporter)
+pipeline.addSink(healthy)
+healthyCalls.length = 0
+failing = true
+
+pipeline.resize(640, 480)
+const deferred = pipeline.shouldDeferRender()
+pipeline.render(0, 7)
+
+assert(deferred === false, 'a throwing deferRender must not defer the frame')
+assert(reported.length === 3, `each error must reach only the sink that threw it, got ${JSON.stringify(reported.map(([sink, error]) => [sink, String(error)]))}`)
+assert(reported[0][0] === 'failed' && reported[0][1] === configureError, 'the configure error reaches the sink that threw it')
+assert(reported[1][0] === 'failed' && reported[1][1] === deferError, 'the deferRender error reaches the sink that threw it')
+assert(reported[2][0] === 'failed' && reported[2][1] === submitError, 'the submit error reaches the sink that threw it')
+assert(reporterCalls === 1, `the throwing reporter must receive its configure error once, got ${reporterCalls}`)
+assert(JSON.stringify(healthyCalls) === JSON.stringify([['configure', 640, 480], ['deferRender'], ['submit', 7]]), `a sink that does not fail must see the same calls: ${JSON.stringify(healthyCalls)}`)
+const stats = pipeline.sinkManager.stats
+const expected = [
+  [failed, { accepted: 0, dropped: 0, failed: 3 }],
+  [silent, { accepted: 0, dropped: 0, failed: 2 }],
+  [throwingReporter, { accepted: 1, dropped: 0, failed: 1 }],
+  [healthy, { accepted: 1, dropped: 0, failed: 0 }]
+]
+for (const [sink, counts] of expected) {
+  assert(JSON.stringify(stats.get(sink)) === JSON.stringify(counts), `unexpected sink counters ${JSON.stringify(stats.get(sink))}`)
+}
+// The resize completes after the reported sink errors: the o0 surface renders
+// at the new size on the real backend.
+const surface = pipeline.surfaces.get('o0')
+assert(surface != null, 'the o0 surface survives the resize')
+const px = await pipeline.backend.readPixels(surface.read)
+assert((px.width ?? 640) === 640 && (px.height ?? 480) === 480, `resize did not complete after reported sink errors: ${px.width}x${px.height}`)
+
+pre.textContent = 'sink-error-report-ready'
+</script></body></html>
