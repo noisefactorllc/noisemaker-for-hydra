@@ -11,7 +11,7 @@
   same assertions through the port's actual runtime wiring (companion bundle,
   loadHydraEffects, createNoisemakerRuntime) against the pinned engine bundle
   1.0.350 (which carries upstream db2173e34223) on the real WebGL2 backend:
-  a failing sink with onError receives exactly its three errors, a sink
+  a failing sink with onError receives each of its own errors, a sink
   without onError keeps the old silent isolation, a throwing reporter stays
   isolated, a healthy sink sees the same calls with no report, the per-sink
   counters match, and the resize completes after the reported errors.
