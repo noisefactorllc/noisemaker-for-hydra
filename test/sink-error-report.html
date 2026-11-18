@@ -10,7 +10,7 @@
   against the engine's own Pipeline with a mock backend; this page drives the
   same assertions through the port's actual runtime wiring (companion bundle,
   loadHydraEffects, createNoisemakerRuntime) against the pinned engine bundle
-  1.0.350 (which carries upstream db2173e34223) on the real WebGL2 backend:
+  1.0.351 (which carries upstream db2173e34223) on the real WebGL2 backend:
   a failing sink with onError receives each of its own errors, a sink
   without onError keeps the old silent isolation, a throwing reporter stays
   isolated, a healthy sink sees the same calls with no report, the per-sink
@@ -32,7 +32,7 @@ canvas.height = 240
 const renderer = await createNoisemakerRuntime({
   canvas,
   extension: window.HydraEffects,
-  cdn: 'https://shaders.noisedeck.app/1.0.350',
+  cdn: 'https://shaders.noisedeck.app/1.0.351',
   preferWebGPU: false
 })
 renderer.stop()
