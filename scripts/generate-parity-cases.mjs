@@ -6,24 +6,24 @@
  * Usage: node scripts/generate-parity-cases.mjs /path/to/noisemaker-checkout
  *
  * The upstream checkout must be at commit
- * b631fc2c37d75f4cedbdc5e760486f7ecd3a2ca8 (published authority 1.0.351,
- * release tag v1.0.351). Writes test/fixtures/parity-cases.json.
+ * 7f3721e973944db9a680bc7048b2c3a5b49c9d8a (published authority 1.0.355,
+ * release tag v1.0.355). Writes test/fixtures/parity-cases.json.
  */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import { resolve, join } from 'node:path'
 import { createHash } from 'node:crypto'
 
-const UPSTREAM_COMMIT = 'b631fc2c37d75f4cedbdc5e760486f7ecd3a2ca8'
+const UPSTREAM_COMMIT = '7f3721e973944db9a680bc7048b2c3a5b49c9d8a'
 const AUTHORITIES = {
   upstreamCommit: UPSTREAM_COMMIT,
-  engineBundle: 'https://shaders.noisedeck.app/1.0.351/noisemaker-shaders-core.esm.min.js',
+  engineBundle: 'https://shaders.noisedeck.app/1.0.355/noisemaker-shaders-core.esm.min.js',
   // Pinned published identities (sha256 recorded when the matrix was re-minted
-  // at upstream b631fc2c; the gate verifies these before executing any case).
+  // at upstream 7f3721e9; the gate verifies these before executing any case).
   // The effect-catalog manifest bytes are unchanged since 1.0.182 (same
   // manifest sha256), so the minted case set is unchanged.
-  engineBundleSha256: '2a5c295f599351cf1ee1523f7726483028ac0c18dee5d8926cc539105fbba82e',
-  manifest: 'https://shaders.noisedeck.app/1.0.351/effects/manifest.json',
+  engineBundleSha256: '7580a0497d245509a037b36b8e1e0fbd7e72d4764960606ac4cb7a89cab7ebae',
+  manifest: 'https://shaders.noisedeck.app/1.0.355/effects/manifest.json',
   manifestSha256: '05c4d7b7744837ae90a3bb4c89e5403ff09448a74d9d7e824abb3d719ad3314e',
   rollingCore: 'https://shaders.noisedeck.app/1/noisemaker-shaders-core.esm.min.js',
   companion: '/_engine/hydra-synth.js',
