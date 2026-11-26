@@ -252,7 +252,8 @@ const cases = [
       { path: '/test/context-loss-guards.html', expected: ['context-loss-guards-ready'] },
       { path: '/test/device-loss-watch.html', expected: ['device-loss-watch-ready'] },
       { path: '/test/stateful-instances.html', expected: ['stateful-instances-ready'] },
-      { path: '/test/sink-error-report.html', expected: ['sink-error-report-ready'] }
+      { path: '/test/sink-error-report.html', expected: ['sink-error-report-ready'] },
+      { path: '/test/stable-engine-contracts.html', expected: ['stable-engine-contracts-ready'] }
     ]
   }
 ]

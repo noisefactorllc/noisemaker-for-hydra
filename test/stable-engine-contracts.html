@@ -1,0 +1,96 @@
+<!doctype html>
+<html><body><pre id="out">stable-engine-contracts-boot</pre>
+<script src="/_engine/hydra-synth.js"></script>
+<script type="module">
+import { createNoisemakerRuntime } from '/src/lib/noisemaker-runtime.mjs'
+
+const out = document.getElementById('out')
+const assert = (condition, message) => { if (!condition) throw new Error(message) }
+const same = (actual, expected, message) => assert(JSON.stringify(actual) === JSON.stringify(expected), message)
+let renderer
+try {
+  const fixture = await (await fetch('/test/fixtures/parity-cases.json')).json()
+  const cdn = fixture.authorities.engineBundle.replace(/\/[^/]+$/, '')
+  const canvas = document.createElement('canvas')
+  canvas.width = 32; canvas.height = 24
+  renderer = await createNoisemakerRuntime({ canvas, cdn, preferWebGPU: false })
+  renderer.stop()
+  const engine = renderer.hydraEngine
+  // Compile once through the host so its loaded definitions populate the DSL registry.
+  await renderer.compile('search synth\nnoise().write(o0)\nrender(o0)')
+  const compile = source => {
+    const result = engine.compile(source)
+    const errors = result.diagnostics.filter(d => d.severity === 'error')
+    assert(errors.length === 0, `compile errors: ${JSON.stringify(errors)}`)
+    return result
+  }
+  const steps = result => result.plans.flatMap(plan => plan.chain || [])
+  const pixels = frame => {
+    assert(frame.width === 32 && frame.height === 24, 'unexpected readback dimensions')
+    assert(frame.data?.length === 32 * 24 * 4, 'incomplete pixel readback')
+    const rgb = new Set()
+    for (let i = 0; i < frame.data.length; i += 4) rgb.add(`${frame.data[i]},${frame.data[i + 1]},${frame.data[i + 2]}`)
+    assert(rgb.size > 1, 'pixel readback must contain nonconstant RGB')
+    return Array.from(frame.data)
+  }
+
+  const warning = compile('search synth, filter\nnoise().invert(1, 9, 9).write(o0)')
+  const diagnostic = warning.diagnostics.find(d => d.code === 'S009')
+  assert(diagnostic?.severity === 'warning', 'excess positionals must produce S009 warning')
+  assert(steps(warning).find(s => s.op === 'filter.invert').args.mode === 1, 'filled positional slot changed')
+
+  const bound = compile('search hydra\nlet t = solid(#804020)\nt(g: 0.25).write(o0)')
+  const tint = steps(bound).find(s => s.op === 'hydra.solid').args
+  same([tint.r, tint.g, tint.b], [128 / 255, 0.25, 32 / 255], 'let-bound RGB components changed')
+
+  const source = 'search synth, filter\nnoise(octaves: 3, _id: "pond").invert(_id: "flip").write(o0, _id: "out")\nrender(o0)'
+  const tagged = compile(source)
+  same(steps(tagged).map(s => s.args._id), ['pond', 'flip', 'out'], 'element IDs were dropped')
+  const saved = engine.unparse(tagged)
+  same(steps(compile(saved)).map(s => s.args._id), ['pond', 'flip', 'out'], 'saved IDs changed')
+  await renderer.compile(source)
+  renderer.syncTime(0.37)
+  renderer.render(0.37)
+  const taggedPixels = await renderer.pipeline.backend.readPixels(renderer.pipeline.surfaces.get('o0').read)
+  for (const pass of renderer.pipeline.graph.passes) assert(!('_id' in (pass.uniforms || {})), 'metadata became a shader uniform')
+  await renderer.compile(source.replace(/, _id: "[^"]+"|_id: "[^"]+"/g, ''))
+  renderer.syncTime(0.37)
+  renderer.render(0.37)
+  const barePixels = await renderer.pipeline.backend.readPixels(renderer.pipeline.surfaces.get('o0').read)
+  same(pixels(taggedPixels), pixels(barePixels), 'IDs changed rendered pixels')
+
+  // Stable effect bindings exercise the shared unparser without scene grammar.
+  for (const keyword of ['tex: noise(octaves: 3)', 'tex: noise(octaves: 3).invert()', 'tex: noise(octaves: 3), mix: osc()']) {
+    const original = compile(`search synth, filter, mixer\nlet layer = blendMode(${keyword})\nnoise().layer().write(o0)\nrender(o0)`)
+    const text = engine.unparse(original)
+    const again = compile(text)
+    const semantic = value => JSON.stringify(value, (key, item) => key === 'loc' || key === 'rawKwargs' ? undefined : item)
+    assert(semantic(again.vars[0].expr) === semantic(original.vars[0].expr), 'let expression changed when saved')
+    assert(semantic(again.plans) === semantic(original.plans), 'saved let changed compiled plans')
+  }
+
+  const bad = engine.compile('search synth, mixer, filter\nnoise().write(o1)\nnoise().blendMode(tex: read(o1).invert()).write(o0)')
+  const readError = bad.diagnostics.find(d => d.severity === 'error' && /tex/.test(d.message))
+  assert(readError?.location?.line === 3 && readError.location.column > 0, 'read-chain argument must report a located diagnostic')
+
+  await renderer.compile('search synth\nnoise().write(o0)\nrender(o0)')
+  const pipeline = renderer.pipeline
+  for (const duration of [30, 10]) {
+    pipeline.setAnimationDuration(duration)
+    const step = 1 / (60 * duration)
+    pipeline.syncTime(1 - 2 * step)
+    for (const time of [1 - step, 0, step, 2 * step]) {
+      pipeline.render(time)
+      assert(Math.abs(pipeline.globalUniforms.deltaTime - step) <= 1e-9, `loop delta changed at ${time}`)
+    }
+  }
+  pipeline.syncTime(0)
+  pipeline.render(0.25)
+  assert(pipeline.globalUniforms.deltaTime === 0.25, 'zero-time synchronization was ignored')
+  out.textContent = 'stable-engine-contracts-ready'
+} catch (error) {
+  out.textContent = `stable-engine-contracts-error: ${error.message}`
+} finally {
+  renderer?.dispose()
+}
+</script></body></html>
