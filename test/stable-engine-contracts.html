@@ -150,6 +150,32 @@ void main() { fragColor = texelFetch(workTex, ivec2(gl_FragCoord.xy), 0); }` }
     })
     await expectFrame(`${name}()`, expected)
   }
+  // 1.5.25: vector constructors on color parameters preserve the supplied
+  // components; a wrong component count keeps the parameter's default.
+  for (const call of ['vec3(0.3, 0.2, 0.25)', 'vec4(0.3, 0.2, 0.25, 0.4)']) {
+    const solid = compile(`search synth, filter\nsolid(color: ${call}).write(o0)`)
+    same(steps(solid).find(s => s.op === 'synth.solid').args.color,
+      call.startsWith('vec3') ? [0.3, 0.2, 0.25] : [0.3, 0.2, 0.25, 0.4],
+      `${call} changed on synth.solid`)
+    same(steps(compile(`search synth, filter\nsolid().tint(color: ${call}).write(o0)`))
+      .find(s => s.op === 'filter.tint').args.color,
+      call.startsWith('vec3') ? [0.3, 0.2, 0.25] : [0.3, 0.2, 0.25, 0.4],
+      `${call} changed on filter.tint`)
+  }
+  const rejected = compile('search synth\nsolid(color: vec3(0.3, 0.2)).write(o0)')
+  assert(rejected.diagnostics.some(d => d.code === 'S002'), 'malformed color constructor arity was accepted')
+  same(steps(rejected).find(s => s.op === 'synth.solid').args.color, [0.5, 0.5, 0.5],
+    'rejected constructor did not keep the default color')
+  await renderer.compile('search synth, filter\nsolid(color: vec3(0.3, 0.2, 0.25)).write(o0)\nrender(o0)')
+  renderer.syncTime(0)
+  renderer.render(0)
+  const constructorPixels = await renderer.pipeline.backend.readPixels(renderer.pipeline.surfaces.get('o0').read)
+  await renderer.compile('search synth, filter\nsolid(color: [0.3, 0.2, 0.25]).write(o0)\nrender(o0)')
+  renderer.syncTime(0)
+  renderer.render(0)
+  const literalPixels = await renderer.pipeline.backend.readPixels(renderer.pipeline.surfaces.get('o0').read)
+  same(Array.from(constructorPixels.data), Array.from(literalPixels.data),
+    'color constructor changed rendered pixels')
   out.textContent = 'stable-engine-contracts-ready'
 } catch (error) {
   out.textContent = `stable-engine-contracts-error: ${error.message}`

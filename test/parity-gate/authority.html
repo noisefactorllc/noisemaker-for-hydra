@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
   Rendered-parity gate: AUTHORITY side.
-  Raw published Noisemaker engine (pinned immutable 1.5.17 CDN identity,
-  release tag v1.5.17 from upstream 5596e69fd6e3b9014e9df0f8674e10e70c332e11),
+  Raw published Noisemaker engine (pinned immutable 1.5.25 CDN identity,
+  release tag v1.5.25 from upstream 688794aca5998d9573afa5601c2b9b023c896007),
   default CanvasRenderer wiring only. No companion, no fork runtime code.
   Receives per-case render requests from the parent gate page and returns
   RGBA8 readbacks of the o0 surface.
@@ -33,7 +33,7 @@ window.__shaderLogs = []
 })()
 </script>
 <script type="module">
-const CDN = 'https://shaders.noisedeck.app/1.5.17'
+const CDN = 'https://shaders.noisedeck.app/1.5.25'
 const pre = document.getElementById('out')
 const engine = await import(`${CDN}/noisemaker-shaders-core.esm.min.js`)
 const canvas = document.createElement('canvas')
