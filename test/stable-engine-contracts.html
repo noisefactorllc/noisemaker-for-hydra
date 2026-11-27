@@ -87,6 +87,69 @@ try {
   pipeline.syncTime(0)
   pipeline.render(0.25)
   assert(pipeline.globalUniforms.deltaTime === 0.25, 'zero-time synchronization was ignored')
+
+  for (const field of ['outputTex', 'outputXyz', 'outputVel', 'outputRgba']) {
+    const effect = new engine.Effect({ name: 'handoff', func: 'handoff', [field]: 'work' })
+    assert(effect[field] === 'work', `configuration dropped ${field}`)
+  }
+  const shader = color => ({ glsl: `#version 300 es
+precision highp float;
+out vec4 fragColor;
+void main() { fragColor = vec4(${color}); }` })
+  const copy = { glsl: `#version 300 es
+precision highp float;
+uniform sampler2D workTex;
+out vec4 fragColor;
+void main() { fragColor = texelFetch(workTex, ivec2(gl_FragCoord.xy), 0); }` }
+  const expectFrame = async (source, expected) => {
+    await renderer.compile(`search user, synth, filter\n${source}.write(o0)\nrender(o0)`)
+    renderer.syncTime(0)
+    renderer.render(0)
+    const current = renderer.pipeline
+    const target = current.frameReadTextures?.get('o0') ?? current.surfaces.get('o0').read
+    const frame = await current.backend.readPixels(target)
+    assert(frame.width === 32 && frame.height === 24, 'probe readback dimensions changed')
+    assert(frame.data.length === 32 * 24 * 4, 'probe readback is incomplete')
+    for (let i = 0; i < frame.data.length; i++) {
+      assert(Math.abs(frame.data[i] - expected[i % 4] * 255) <= 1,
+        `${source}: channel ${i} is ${frame.data[i]}`)
+    }
+  }
+  for (const target of ['outputTex', 'work']) {
+    const name = target === 'work' ? 'storageNamedProbe' : 'storageDirectProbe'
+    await renderer.registerPortableEffect({
+      namespace: 'user', name, func: name, globals: {},
+      ...(target === 'work' ? {
+        textures: { work: { width: '100%', height: '100%', format: 'rgba8unorm' } },
+        outputTex: 'work'
+      } : {}),
+      shaders: { fill: shader('1.0, 0.0, 0.0, 1.0') },
+      passes: [{ name: 'fill', type: 'compute', program: 'fill', storageTextures: { outputBuffer: target } }]
+    })
+    await expectFrame('solid(color: #ffffff)', [1, 1, 1, 1])
+    await expectFrame(`${name}().invert()`, [0, 1, 1, 1])
+  }
+  for (const [blend, expected] of [
+    [['ONE', 'ZERO'], [0.5, 0.5, 0.5, 0.5]],
+    [['ZERO', 'ONE'], [0.25, 0.5, 1, 1]],
+    [['SRC_COLOR', 'ZERO'], [0.25, 0.25, 0.25, 0.25]],
+    [['DST_COLOR', 'ZERO'], [0.125, 0.25, 0.5, 0.5]],
+    [['ONE_MINUS_SRC_COLOR', 'ZERO'], [0.25, 0.25, 0.25, 0.25]],
+    [['ONE_MINUS_DST_COLOR', 'ZERO'], [0.375, 0.25, 0, 0]]
+  ]) {
+    const name = `factorProbe${blend[0].replaceAll('_', '')}`
+    await renderer.registerPortableEffect({
+      namespace: 'user', name, func: name, globals: {},
+      textures: { work: { width: '100%', height: '100%', format: 'rgba16f' } },
+      shaders: { backdrop: shader('0.25, 0.5, 1.0, 1.0'), source: shader('0.5, 0.5, 0.5, 0.5'), copy },
+      passes: [
+        { program: 'backdrop', outputs: { fragColor: 'work' } },
+        { program: 'source', blend, outputs: { fragColor: 'work' } },
+        { program: 'copy', inputs: { workTex: 'work' }, outputs: { fragColor: 'outputTex' } }
+      ]
+    })
+    await expectFrame(`${name}()`, expected)
+  }
   out.textContent = 'stable-engine-contracts-ready'
 } catch (error) {
   out.textContent = `stable-engine-contracts-error: ${error.message}`

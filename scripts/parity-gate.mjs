@@ -6,7 +6,7 @@
  * drives headless Chromium over the DevTools protocol through
  * test/fixtures/parity-cases.json (210 pinned authority effect IDs):
  *   - the authority side: test/parity-gate/authority.html renders each case
- * with the raw published Noisemaker engine (pinned immutable 1.5.3 CDN
+ * with the raw published Noisemaker engine (pinned immutable 1.5.17 CDN
  *     bundle, default CanvasRenderer wiring), and
  *   - the port side: test/parity-gate/port.html renders the same programs
  *     through the tracked companion bundle plus the fork's
